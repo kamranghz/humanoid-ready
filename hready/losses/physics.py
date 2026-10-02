@@ -16,46 +16,14 @@ from __future__ import annotations
 import torch
 from torch import Tensor
 
+from hready.losses._constants import (
+    COM_MASS_FRAC_22,
+    COM_MASS_FRAC_DOC,
+    COM_MASS_FRAC_SOURCE,
+)
+
 G: float = 9.81
 _EPS: float = 1e-8
-
-# Segment mass (% total body mass), male/female from de Leva (1996) Table 1 /
-# Visual3D documentation (Zatsiorsky-Seluyanov adjusted), averaged (F+M)/2:
-# head 6.81%, trunk 43.015%, upper arm 2.63%, forearm 1.50%, hand 0.585%,
-# thigh 14.47%, shank 4.57%, foot 1.33% (each side where bilateral).
-COM_MASS_FRAC_SOURCE = (
-    "de Leva (1996) segment mass fractions (%TBW), averaged male/female tables; "
-    "mapped to SMPL-X body joint positions 0..21 (see com_from_joints docstring)."
-)
-# Joint order matches SMPL-X kinematic tree indices 0..21 (pelvis … wrists).
-# Mapping: trunk split equally across pelvis+spine1–3+neck; thigh→hip, shank→knee,
-# foot→foot joint; upper arm→shoulder, forearm→elbow, hand→wrist; collar/ankle=0.
-_COM_RAW_22: tuple[float, ...] = (
-    0.43015 / 5,  # 0 pelvis — trunk share
-    0.1447,  # 1 L hip — L thigh
-    0.1447,  # 2 R hip — R thigh
-    0.43015 / 5,  # 3 spine1
-    0.0457,  # 4 L knee — L shank
-    0.0457,  # 5 R knee — R shank
-    0.43015 / 5,  # 6 spine2
-    0.0,  # 7 L ankle (mass on foot joint)
-    0.0,  # 8 R ankle
-    0.43015 / 5,  # 9 spine3
-    0.0133,  # 10 L foot
-    0.0133,  # 11 R foot
-    0.43015 / 5,  # 12 neck — trunk share
-    0.0,  # 13 L collar
-    0.0,  # 14 R collar
-    0.0681,  # 15 head
-    0.0263,  # 16 L shoulder — L upper arm
-    0.0263,  # 17 R shoulder
-    0.0150,  # 18 L elbow — L forearm
-    0.0150,  # 19 R elbow
-    0.00585,  # 20 L wrist — L hand
-    0.00585,  # 21 R wrist
-)
-_s = sum(_COM_RAW_22)
-COM_MASS_FRAC_22: tuple[float, ...] = tuple(v / _s for v in _COM_RAW_22)
 
 
 def com_mass_fractions(device=None, dtype=torch.float32) -> Tensor:
@@ -74,16 +42,10 @@ def com_from_joints(
 ) -> Tensor:
     """Center of mass from the first 22 SMPL-X body joint positions.
 
-    Mass fractions follow de Leva (1996) segment masses (% total body mass),
-    averaged over published male and female columns, then mapped to joint
-    indices 0..21 (pelvis, L/R hip, spine1, L/R knee, spine2, L/R ankle,
-    spine3, L/R foot, neck, L/R collar, head, L/R shoulder, L/R elbow,
-    L/R wrist). Trunk mass is split equally across pelvis, spine1–3, and
-    neck; bilateral segments use hip/knee/foot and shoulder/elbow/wrist pairs;
-    collar and ankle joints carry zero (foot mass on toe/foot joint). The
-    vector is renormalized to sum 1. Each segment mass is placed at the
-    proximal joint of that segment (kinematic approximation). Not
-    subject-specific anthropometry.
+    Mass fractions are :data:`~hready.losses._constants.COM_MASS_FRAC_22`
+    (de Leva 1996, mapping in :data:`~hready.losses._constants.COM_MASS_FRAC_DOC`).
+    Each segment mass is placed at the proximal joint (kinematic approximation).
+    Not subject-specific anthropometry.
     """
     if joints.shape[-2] < 22:
         raise ValueError(f"com_from_joints expects J >= 22, got {joints.shape[-2]}")
@@ -168,7 +130,8 @@ def balance_com_in_support(
         com = com.unsqueeze(0)
     if foot_pts.dim() == 3:
         foot_pts = foot_pts.unsqueeze(0)
-        contact = contact.unsqueeze(0)
+        if contact.dim() == 2:
+            contact = contact.unsqueeze(0)
     com_xy = com[..., :2]
     feet_xy = foot_pts[..., :2]
     active = contact > contact_thresh
