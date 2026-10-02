@@ -1,0 +1,51 @@
+# Local path config (copy from configs/paths.example.yaml)
+configs/paths.yaml
+
+# Licensed models and datasets (live under data_root, never in repo)
+/models/
+/datasets/
+/data/
+
+# Large artifacts
+checkpoints/
+shards/
+*.ckpt
+*.pt
+*.pth
+*.npz
+*.pkl
+*.tar
+*.zip
+*.mp4
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.eggs/
+dist/
+build/
+*.egg
+
+# Virtual envs (project `env/` holds versions.lock — do not ignore)
+.venv/
+venv/
+
+# Test / tooling caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db

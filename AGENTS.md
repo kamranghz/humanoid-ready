@@ -1,0 +1,245 @@
+# HumanoidReady v8.1 — project specification + CVPR 2027 paper track
+
+> Save as `AGENTS.md` at the repo root (Cursor reads it; same file works as `CLAUDE.md`).
+> **Agent: read §0–§2 the paper track (§6) and the checklist (§7) before any task. Work on one checklist item at a time.
+> Mark it ☑ with its evidence path when done. Do not add scope that is not in this file.**
+
+This version is organized by work packages (WP); each work package has one piece of evidence. Nothing else is in scope.
+Items marked *(later)* need data that is not downloaded yet and are done only if time allows.
+
+---
+
+> **Naming:** project **HumanoidReady** (repo `humanoid-ready`, package `hready`, conda env `hready`). Image→SMPL-X model **HR-HMR**; physics refinement model **HR-Refine**. "HumanoidReady" (arXiv 2411.17189) and "PhysHMR" (arXiv 2510.02566) are existing works — never use those names.
+> Tagline: *From human video to physically verified, humanoid-ready motion.*
+
+## 0. One-paragraph goal
+
+Build **HumanoidReady**: a from-scratch human-motion perception stack that goes from images/video to SMPL-X bodies,
+cleans the motion with physics and biomechanics losses, estimates contact and joint torques, and checks whether the
+motion is executable by a Unitree G1 humanoid in Isaac Lab + Newton. Main message:*pose accuracy is not
+physical usability — this stack measures and enforces the latter.*
+
+## 1. Data and models available (frozen — no more downloads unless a WP marked *(later)* is started)
+
+| Asset | Path (under `D:\projects\hready_data`) | Used by |
+|---|---|---|
+| SMPL-X `locked_head` (neutral, 16 betas) — **single training body model** | `models/smplx/locked_head/` | all |
+| SMPL-X `v1_1` — only for the BEDLAM-CLIFF baseline output | `models/smplx/v1_1/` | WP-A1 baseline |
+| SMPL-X extras (segm, flip, model_transfer), MANO | `models/smplx/extras/`, `models/mano/` | WP-A1, WP-D |
+| AMASS SMPL-X N (21 subsets + MOYO) | `datasets/amass/smplx_n/` | WP-A2, A3, B2, B3, C1, D |
+| BABEL v1.0 | `datasets/babel/babel_v1.0_release/` | WP-B3, C1 |
+| BEDLAM labels, locked-head 16b (training) | `datasets/bedlam/labels/lockedhead_16b/` | WP-A1 |
+| BEDLAM images: 2 tars (`..._closeup_suburb_a_6fps`, `..._orbit_bigOffice_6fps`) | `datasets/bedlam/images/` | WP-A1, B1 |
+| BEDLAM-CLIFF / BEDLAM-HMR checkpoints (pretrained baseline) | `data/BEDLAM/checkpoints/` | WP-A1 |
+| 3DPW test video + GT *(to download, paper item R3)*; EMDB if obtainable | `datasets/3dpw/`, `datasets/emdb/` | §6 paper |
+
+The repo **never** contains these files. Code reads paths from `configs/paths.yaml` (git-ignored; a
+`paths.example.yaml` is committed).
+
+## 2. Rules
+
+0. **Physics engine is fixed: NVIDIA Isaac Lab with the Newton backend** for all robot simulation (WP-D, B3) and Newton for human inverse dynamics (WP-B2). PhysX (via Isaac Lab) and MuJoCo are used **only** for the paper's cross-engine study (§6), under the configuration-fair protocol; every single-engine result is reported in Newton.
+
+1. No fabricated numbers. Every number in README/slides/paper comes from a script that ran; outputs in `results/`.
+2. "From scratch" = random init for HR-HMR and HR-Refine. Pretrained models appear only as labeled baselines.
+3. Verify library APIs from installed packages (Isaac Lab, Newton, smplx, SOMA-X change often); pin versions in `env/versions.lock`.
+4. Never commit licensed models or data. `.gitignore` covers `models/`, `datasets/`, `data/`, checkpoints, shards.
+5. Each WP has its own CLI entry point. Checks are run but not saved: the agent may run any test, smoke test or sanity script to verify its work, but it does so from a scratch location (e.g. a temp dir or `python -c`), shows the raw output, and deletes every such file before finishing. No test files, mock files, placeholder reports, demo scripts or other extra files are committed. `git status --short --untracked-files=all` must list only files the current checklist item calls for.
+6. Blocked > 2 h → use the WP's fallback and log it in `docs/pivot_log.md` (it also records how the plan changed).
+7. Small scale is fine. State the scale honestly (e.g. "trained on 2 BEDLAM scenes").
+
+---
+
+### 2b. Environment decision (S3, Oct 1 2026)
+
+- Machine: Windows 11, **RTX 4090 24 GB** (driver 610.60, CUDA 13.3 runtime available), data on `D:\projects\hready_data`.
+- **Windows-native conda** for all project code: env `hready` (PyTorch, smplx, training, data, metrics). Reasons: Isaac Sim/Lab already run natively on Windows, all existing envs are Windows conda, and reading `D:` from WSL2 (`/mnt/d`) is slow.
+- **Isaac Lab + Newton:** reuse the existing Isaac Lab installation (separate env); `hready` talks to it through files (retargeted trajectories in, metrics/videos out), not imports.
+- **WSL2 only as fallback**, per baseline, if a public HMR method (GVHMR, WHAM, TRAM) does not install on Windows (Linux-only CUDA extensions). Log every such case in `docs/pivot_log.md`.
+- DDP on Windows uses the `gloo` backend (no NCCL); multi-GPU NCCL runs happen on Kaggle (Linux). `torch.compile` is optional on Windows.
+
+## 3. Work packages
+
+### A. Architecting Proprietary Articulation Models
+
+**WP-A1 — Zero-to-One model: 3D pose, dense mesh, kinematic tracking** *(scope: 3D human pose estimation, dense full-body mesh recovery and kinematic tracking; vision models trained from scratch)*
+- **HR-HMR:** ViT-S/16 encoder, random init, on person crops → transformer decoder → SMPL-X (6D joint rotations, 16 betas, camera) → full 10,475-vertex mesh.
+- **Tracking:** temporal transformer over per-frame tokens for video; simple IoU/ID tracker for multiple people.
+- **Data:** BEDLAM 2 tars + locked-head labels. Handle rotated `closeup` images. Split by subject.
+- **Baseline:** BEDLAM-CLIFF checkpoint (pretrained HRNet backbone, labeled as such), same held-out frames, compared on vertices/joints.
+- **Evidence:** `results/A1/` — MPJPE, PA-MPJPE, PVE vs baseline; training curves; overlay images. State honestly that HR-HMR is trained on 2 scenes from random init.
+- *Fallback:* ResNet-18-sized CNN encoder from scratch.
+
+**WP-A2 — Distributed, multi-view, temporal training** *(scope: multi-view and temporal architectures on multiple GPUs and multi-modal data; PyTorch scaling)*
+- **HR-Refine:** spatio-temporal transformer that takes noisy SMPL-X sequences + 2D keypoints from 1–4 **virtual cameras** (incl. a head-mounted egocentric camera) + optional synthetic IMU, and outputs clean world-frame motion.
+- Training data: AMASS, corrupted on the fly (jitter, occlusion masks, dropout, foot sinking).
+- One code path for 1→N GPUs: `torchrun` + DDP (FSDP option), bf16, checkpoint/resume.
+- Multi-GPU evidence: DDP equivalence test (2 processes vs 1, same result) + one Kaggle 2×T4 run (1 vs 2 GPU throughput).
+- **Evidence:** `results/A2/` — scaling table; 1/2/4-view ablation.
+
+**WP-A3 — Loss innovation** *(scope: loss functions for biomechanical constraints, temporal smoothness, postural balance and physical plausibility)*
+- Losses, each switchable: foot skating (contact-weighted), ground penetration, bone-length consistency, anatomical ROM, CoM-in-support-polygon (balance), gravity/momentum consistency in flight, acceleration/jerk smoothness.
+- Each loss has a unit test: 0 on valid motion, > 0 with correct gradient sign on violating motion.
+- **Evidence:** `results/A3/ablation.csv` — full vs reconstruction-only vs minus each loss; physical metrics + PA-MPJPE cost.
+
+### B. Human-Scene Interaction & Complex Motion
+
+**WP-B1 — Motion blur, self-occlusion, multi-person crowding** *(scope: dynamic scene understanding)*
+- HR-HMR augmentations: motion-blur kernels, synthetic occluders, crop truncation; the multi-person BEDLAM tar (orbit_bigOffice, 3 people) for crowding.
+- HR-Refine robustness: occlusion-rate and jitter sweeps.
+- **Evidence:** `results/B1/` — error vs blur level, occlusion level, number of people.
+
+**WP-B2 — Allocentric & egocentric tracking; foot contact, joint torques, affordances** *(scope: tracking bodies through complex spaces; foot-ground contact, joint torques and environmental affordances)*
+- Allocentric = fixed/orbit cameras; egocentric = virtual head-mounted camera in HR-Refine (same model, ego-only ablation).
+- **Contact:** per-vertex contact head (labels from clean AMASS: height + velocity thresholds); report foot-contact F1.
+- **Joint torques:** inverse dynamics on SMPL-X with segment masses, computed with **NVIDIA Newton** (default); a simple recursive Newton–Euler implementation is the fallback; optional OpenSim cross-check.
+- **Affordances (scoped):** aggregate contacts into support labels (stand/sit/lean surfaces) from BABEL-labelled AMASS clips.
+- **Evidence:** `results/B2/` — contact F1, torque plots raw vs refined, ego-only vs allocentric error.
+- *(later)* PROX / EgoBody for real scene meshes and real egocentric video.
+
+**WP-B3 — Regularization for action-conditioned humanoid models** *(scope: regularization for downstream action-conditioned humanoid models)*
+- Small action-conditioned motion prior on AMASS + BABEL labels, two variants: plain vs regularized with HumanoidReady signals (contact, torque bounds, balance).
+- Compare generated motion on physical metrics and on G1 (WP-D).
+- **Evidence:** `results/B3/`.
+
+### C. Emergent Perception R&D
+
+**WP-C1 — Rapid prototyping: action segmentation, intent prediction, sensor integration** *(scope: action segmentation, intent prediction and sensor integration)*
+- Action segmentation head on HR-Refine (BABEL frame labels): frame accuracy, edit score.
+- Intent head: predict next 0.5–1.0 s of root + pose: ADE/FDE.
+- Sensor integration: synthetic body-worn IMU from AMASS fused with video keypoints: video-only vs IMU-only vs fused.
+- **Evidence:** `results/C1/`.
+
+**WP-C2 — Agile problem solving in the data engine** *(scope: resolving data-pipeline bottlenecks)*
+- Profile the AMASS/BEDLAM loader, fix the top bottleneck, report before/after throughput.
+- Keep `docs/pivot_log.md` with dated problem → decision → outcome entries.
+- **Evidence:** `results/C2/bottleneck.md`, `docs/pivot_log.md`.
+
+### D. Dense Contact & Physics-Aware Tracking
+
+**WP-D — Pipeline to robot control** *(scope: contact surfaces, gravity and momentum, linking human video to robot control and locomotion)*
+- Retarget SMPL-X → Unitree G1 (verified open-source retargeter or IK). Track in **Isaac Lab + Newton** with PD + feedforward.
+- Metrics: time-to-fall, tracking error, foot slip, torque saturation, assist wrench (force needed to keep the robot on the reference).
+- Main result: raw vs HR-Refine-cleaned motion on G1; and correlation between pose error and robot feasibility (*pose accuracy ≠ physical usability*).
+- Physics QA flag per clip (PASS / REVIEW / FAIL with reason) from the physical metrics.
+- **Evidence:** `results/D/` — table + rollout videos.
+- *Optional differentiator (thesis link):* same clips in PhysX and MuJoCo to check engine dependence.
+- *Fallback:* standalone Newton with G1 MJCF.
+
+---
+
+## 4. "Who You Are" → evidence
+
+| Capability | Evidence |
+|---|---|
+| Deep learning, 3D CV, articulated tracking | WP-A1, A2, B1 |
+| Training large-scale vision models from scratch | WP-A1 (random-init ViT) + WP-A2 (DDP/multi-GPU path) |
+| SMPL / SMPL-X / GHUM / MHR / SOMA-X, IK, dense mesh | SMPL-X throughout; **SOMA-X wrapper converting SMPL-X ↔ MHR with round-trip error**; IK in retargeting; dense 10,475-vertex mesh; `docs/body_models.md` comparing all five models |
+| PyTorch and scaling frameworks | DDP/FSDP, bf16, `torch.compile`, checkpoint/resume (WP-A2) |
+| Multi-TB image/video data | Streaming shard pipeline + rolling-window processing (download → process → delete), measured throughput; real scale stated honestly *(multi-TB run later, on the BEDLAM 30fps mirror)* |
+| Fast-paced, shifting priorities | `docs/pivot_log.md` |
+| **Strong signal:** first-author top-tier paper | `paper/` draft from these results, working title "Pose Accuracy Is Not Physical Usability" |
+| **Strong signal:** AMASS, Human3.6M, EgoBody, PROX and their optimization challenges | AMASS used throughout; `docs/dataset_challenges.md` (SMPL-X version mismatch, frame rates, GT artifacts in AMASS, BEDLAM rotated images, motion leakage between AMASS and BEDLAM). *(later)* Human3.6M, EgoBody, PROX evaluation |
+
+---
+
+## 5. Repository layout
+
+```
+humanoid-ready/
+  AGENTS.md  README.md  pyproject.toml
+  configs/   (paths.example.yaml, one yaml per WP)
+  hready/            (Python package)
+    body/      (smplx wrapper, rotations, soma-x wrapper)
+    data/      (amass, babel, bedlam loaders; corruption; synthetic IMU; shards)
+    losses/    (physics + biomechanics losses)
+    metrics/   (pose, physical, contact, stats/bootstrap)
+    models/    (hr_hmr, hr_refine, heads)
+    train/     (DDP trainer)
+    robot/     (retarget, isaaclab_newton tracker, metrics)
+    dynamics/  (inverse dynamics / torques)
+  scripts/   tests/   results/   docs/   paper/
+```
+
+---
+
+## 6. Paper track — CVPR 2027 (registration Nov 10, submission Nov 16, 2026, AoE)
+
+The paper is written from the same code and results as the work packages. It does **not** need every checklist item.
+
+**Working title:** *Is Humanoid Executability a Reliable Benchmark for Human Motion Recovery?*
+
+**Positioning (from the literature check, Oct 1 2026).**
+- Physics losses for HMR are well covered (PhysCap, SimPoE, PhysDiff, PhysPT, PhysHMR, body-momentum). HR-Refine is a tool here, not the contribution.
+- Simulation-based plausibility metrics already exist for simulated human characters (Measuring Physical Plausibility…, 2025), and BeyondRetarget (arXiv 2609.29850) reports method-level agreement between pose error and G1 execution success in MuJoCo. The paper must cite both and not claim "MPJPE is unrelated to executability" in general.
+- PolySim and GMR show simulators disagree for humanoid **policies**; no work found tests whether **evaluation verdicts on human-motion data** (method rankings, per-clip PASS/FAIL) survive a change of physics engine. This is the open gap and the paper's core.
+
+**Contributions.**
+1. A configuration-fair protocol to evaluate HMR outputs by humanoid executability (retarget → fixed open-source G1 tracking policy → executability metrics), with HMR error and retargeting error separated.
+2. Method-level vs **clip-level** analysis: agreement between MPJPE/PA-MPJPE, physical metrics, and executability (Spearman/Kendall with subject-cluster bootstrap CIs).
+3. **Cross-engine stability** of these verdicts in Newton, PhysX and MuJoCo (Kendall τ of method and clip rankings, PASS/FAIL agreement, within-engine repeatability, record of what could not be matched).
+4. HR-Refine as a plug-in: does physical refinement change executability, and is that change engine-stable?
+
+**Subjects of evaluation:** public HMR methods GVHMR, WHAM, TRAM, BEDLAM-CLIFF (and HR-HMR if ready), all with their own released checkpoints, labeled as such.
+
+**Data:** 3DPW test (video + GT); EMDB if obtainable in week 1; AMASS ground truth as the "perfect HMR" upper bound.
+
+**Controller:** one open-source general motion-tracking policy for Unitree G1 that runs in all three engines (choose in week 1; PD-only tracking is a fallback and must be labeled as such).
+
+**Rules:** thresholds and analysis plan frozen in `paper/claims_map.md` before the cross-engine runs; negative or mixed findings are reported as found.
+
+## 7. Checklist (work in this order)
+
+| # | Item | Work package | Data | Done when | ☐/☑ |
+|---|---|---|---|---|---|
+| 1 | Repo skeleton, `pyproject`, `.gitignore`, CPU CI, `paths.example.yaml` | — | none | CI green | ☐ |
+| 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Required: body models | SMPL-X | tests pass | ☐ |
+| 3 | Physics/biomech losses | WP-A3 | none | each loss checked analytically (0 on valid motion, >0 with correct gradient sign on violation); raw output shown, check files not saved | ☐ |
+| 4 | Metrics + bootstrap CI | all | none | checked against hand-computed values; raw output shown, check files not saved | ☐ |
+| 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☐ |
+| 6 | **G1 smoke test:** one AMASS walk → G1 in Isaac Lab + Newton, metrics + video | WP-D | AMASS | video + JSON | ☐ |
+| 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer | WP-A2, B2 | AMASS | overfits 1 batch; resume works | ☐ |
+| 8 | HR-Refine training + loss ablation | WP-A3 | AMASS | `results/A3/ablation.csv` | ☐ |
+| 9 | Contact, action, intent heads; IMU fusion ablation | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1` | ☐ |
+| 10 | Joint torques (inverse dynamics) raw vs refined | WP-B2 | AMASS | torque plots | ☐ |
+| 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag | WP-D | AMASS | `results/D/` | ☐ |
+| 12 | BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations | WP-A1, B1 | BEDLAM | training curves, overlays | ☐ |
+| 13 | BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1` | ☐ |
+| 14 | Action-conditioned prior ± physics regularization, evaluated on G1 | WP-B3 | AMASS, BABEL | `results/B3/` | ☐ |
+| 15 | DDP equivalence test + Kaggle 2×T4 run | WP-A2 | AMASS | scaling table | ☐ |
+| 16 | Loader bottleneck before/after; shard + rolling-window pipeline | WP-C2, Req. multi-TB | AMASS/BEDLAM | `results/C2/` | ☐ |
+| 17 | SOMA-X wrapper SMPL-X ↔ MHR round-trip; `body_models.md` | Req. body models | SMPL-X | round-trip error reported | ☐ |
+| 18 | README with §4 table linked to evidence; `dataset_challenges.md`; `pivot_log.md` | all | — | every number traced to `results/` | ☐ |
+| 19 | Paper draft + slides | Strong signal | — | compiles | ☐ |
+| 20 | *(later)* Human3.6M / EgoBody / PROX eval; multi-TB run | Strong signal | needs download | — | ☐ |
+
+### Paper track checklist (interleaved with the items above; see the week plan)
+
+| # | Item | Done when | ☐/☑ |
+|---|---|---|---|
+| R1 | Read BeyondRetarget, Measuring Physical Plausibility, PolySim, GMR, PHUMA, PhysHMR in full; `paper/related_work.md` | each paper: setup, metrics, engines, overlap with us | ☐ |
+| R2 | Choose the G1 tracking policy that runs in Newton, PhysX and MuJoCo; record in `docs/decisions.md` | runs one AMASS clip in all three | ☐ |
+| R3 | Download 3DPW (and EMDB if available) | loader test passes | ☐ |
+| R4 | Run GVHMR, WHAM, TRAM, BEDLAM-CLIFF on the test videos; convert to SMPL-X locked_head | per-method outputs + MPJPE/PA-MPJPE match published numbers within tolerance | ☐ |
+| R5 | Freeze analysis plan + thresholds in `paper/claims_map.md` | dated commit before R7 | ☐ |
+| R6 | Executability in Newton for all methods + AMASS GT upper bound; method- and clip-level analysis | `results/paper/newton/` | ☐ |
+| R7 | Same in PhysX and MuJoCo; configuration-fairness record; Kendall τ, PASS/FAIL agreement, repeatability | `results/paper/cross_engine/` | ☐ |
+| R8 | HR-Refine on all method outputs; effect on executability per engine | `results/paper/refine/` | ☐ |
+| R9 | Draft: intro, related work, method, experiments, limitations; every number from `results/paper/` | compiles in CVPR template | ☐ |
+| R10 | Register abstract (Nov 10) and submit (Nov 16); supplementary (Nov 23) | submitted | ☐ |
+
+### Week plan to the CVPR deadline
+
+| Week | Dates | Checklist items | Paper items |
+|---|---|---|---|
+| 1 | Oct 1–8 | S1–S4, 1–4 | R1, R2, R3 |
+| 2 | Oct 9–15 | 5, 6 | R4 |
+| 3 | Oct 16–22 | 10 | R5, R6 |
+| 4 | Oct 23–29 | — | R7 |
+| 5 | Oct 30–Nov 5 | 7, 8 | R8, R9 (draft) |
+| 6 | Nov 6–16 | — | R9 (final), R10 |
+| after | Nov 17 → | 9, 11–19 | camera-ready / workshop / arXiv |
+
+
+**Minimum milestone:** items 1–6 (and 7–8 if time). Items 1–11 cover the physics, loss, contact,
+torque and robot clauses; 12–13 cover from-scratch vision; 14–19 complete the rest.
