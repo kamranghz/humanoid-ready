@@ -12,6 +12,8 @@ _LAZY: dict[str, tuple[str, str]] = {
     "assign_split": ("hready.data.amass", "assign_split"),
     "assert_no_subject_leakage": ("hready.data.amass", "assert_no_subject_leakage"),
     "AmassIndexEntry": ("hready.data.amass", "AmassIndexEntry"),
+    "build_babel_index": ("hready.data.babel", "build_babel_index"),
+    "load_babel_labels": ("hready.data.babel", "load_babel_labels"),
 }
 
 __all__ = list(_LAZY.keys())
@@ -37,3 +39,4 @@ if TYPE_CHECKING:
         load_clip,
         load_index,
     )
+    from hready.data.babel import build_babel_index, load_babel_labels

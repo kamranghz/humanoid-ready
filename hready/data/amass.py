@@ -17,7 +17,7 @@ import numpy as np
 import yaml
 
 _TARGET_FPS = 30.0
-_INDEX_VERSION = 2
+_INDEX_VERSION = 3
 _INDEX_NAME = "amass_index.json"
 _FLOOR_NAME = "amass_floor.json"
 
@@ -25,6 +25,16 @@ _FLOOR_NAME = "amass_floor.json"
 _NON_SUBSET_DIRS = frozenset({"extra", "train", "val", "test"})
 _MOYO_SPLITS = ("train", "val", "test", "extra")
 _MOTION_SUFFIX = "_stageii.npz"
+
+# NPZ ``mocap_frame_rate`` kept as ``mocap_frame_rate`` on the index entry; ``fps`` is playback.
+_SUBSET_PLAYBACK_FPS: dict[str, float] = {
+    "DFaust": 60.0,
+}
+
+
+def playback_fps_for_subset(subset: str, mocap_frame_rate: float) -> float:
+    """FPS used for resampling, duration, and BABEL alignment (see dataset_challenges.md)."""
+    return _SUBSET_PLAYBACK_FPS.get(subset, mocap_frame_rate)
 
 
 def _repo_root() -> Path:
@@ -69,6 +79,7 @@ class AmassIndexEntry:
     n_frames: int
     duration: float
     gender: str
+    mocap_frame_rate: float = 0.0
     moyo_split: Optional[str] = None
     split_group: str = ""
     split: Optional[str] = None
@@ -109,14 +120,12 @@ def _read_motion_header(npz_path: Path) -> Optional[dict[str, Any]]:
         return None
     with np.load(npz_path, allow_pickle=True) as data:
         trans = data["trans"]
-        fps = float(data["mocap_frame_rate"])
+        mocap_frame_rate = float(data["mocap_frame_rate"])
         n_frames = int(trans.shape[0])
         gender = str(data["gender"]) if "gender" in data else "unknown"
-        duration = (n_frames - 1) / fps if n_frames > 1 else 0.0
         return {
-            "fps": fps,
+            "mocap_frame_rate": mocap_frame_rate,
             "n_frames": n_frames,
-            "duration": duration,
             "gender": gender,
         }
 
@@ -151,15 +160,20 @@ def _iter_motion_npz(amass_root: Path) -> tuple[list[AmassIndexEntry], ScanStats
             stats.skipped_reasons.append(_motion_skip_reason(npz_path) or "unknown")
             return
         rel = npz_path.relative_to(amass_root).as_posix()
+        mocap_fps = float(hdr["mocap_frame_rate"])
+        play_fps = playback_fps_for_subset(subset, mocap_fps)
+        n_frames = int(hdr["n_frames"])
+        duration = (n_frames - 1) / play_fps if n_frames > 1 else 0.0
         entries.append(
             AmassIndexEntry(
                 rel_path=rel,
                 subset=subset,
                 subject=subject,
                 clip_id=_clip_id_from_path(npz_path),
-                fps=hdr["fps"],
-                n_frames=hdr["n_frames"],
-                duration=hdr["duration"],
+                fps=play_fps,
+                mocap_frame_rate=mocap_fps,
+                n_frames=n_frames,
+                duration=duration,
                 gender=hdr["gender"],
                 moyo_split=moyo_split,
             )
@@ -212,6 +226,8 @@ def load_index_payload(cache_dir: Optional[Path] = None) -> dict[str, Any]:
         row = dict(row)
         row.setdefault("split_group", "")
         row.setdefault("split", None)
+        if "mocap_frame_rate" not in row or not row["mocap_frame_rate"]:
+            row["mocap_frame_rate"] = float(row.get("fps", 0.0))
         entries.append(AmassIndexEntry(**row))
     meta = raw.get("meta", {})
     return {"entries": entries, "meta": meta}
@@ -569,9 +585,11 @@ def assert_no_subject_leakage(entries: list[AmassIndexEntry]) -> None:
 def _load_floor_sidecar(cache_dir: Path) -> dict[str, Any]:
     path = _floor_path(cache_dir)
     if not path.is_file():
-        return {"version": 1, "entries": {}}
+        return {"version": 2, "entries": {}}
     with path.open(encoding="utf-8") as f:
-        return json.load(f)
+        data = json.load(f)
+    data.setdefault("version", 1)
+    return data
 
 
 def _save_floor_sidecar(cache_dir: Path, data: dict[str, Any]) -> None:
@@ -645,7 +663,10 @@ def floor_offset(
     sidecar = _load_floor_sidecar(cache_dir)
     cached = sidecar["entries"].get(entry.rel_path)
     if cached is not None and not recompute:
-        return cached
+        if cached.get("playback_fps") != entry.fps:
+            recompute = True
+        else:
+            return cached
 
     raw = _load_npz_raw(amass_root / entry.rel_path)
     floor, stats = _compute_floor_offset_mesh(
@@ -657,6 +678,7 @@ def floor_offset(
     )
     record = {
         "floor_offset": floor,
+        "playback_fps": entry.fps,
         "method": "p1_per_frame_min_vertex_z_subsample10",
         "outlier": False,
         **stats,
@@ -734,6 +756,11 @@ def _target_times(n_tgt: int, fps_tgt: float) -> np.ndarray:
     if n_tgt <= 1:
         return np.zeros(1, dtype=np.float64)
     return np.arange(n_tgt, dtype=np.float64) / fps_tgt
+
+
+def resample_translation(trans: np.ndarray, fps_src: float, fps_tgt: float) -> np.ndarray:
+    """Resample root translation to ``fps_tgt`` (same path as ``load_clip``)."""
+    return _resample_translation(trans, fps_src, fps_tgt)
 
 
 def _resample_translation(trans: np.ndarray, fps_src: float, fps_tgt: float) -> np.ndarray:
@@ -1000,3 +1027,132 @@ def resampling_alignment_errors(
         "max_trans_l2": trans_max,
         "sample_mappings": mappings[:5],
     }
+
+
+_GRAVITY_MIN_FRAMES_30HZ = 6
+_GRAVITY_AIR_MARGIN_M = 0.05
+# SMPL-X body: ankles and feet (contact-capable).
+_CONTACT_JOINT_IDS = (7, 8, 10, 11)
+
+
+def min_flight_native_frames(fps: float) -> int:
+    """At least six 30 Hz frames worth of samples at ``fps``."""
+    return max(3, int(math.ceil(_GRAVITY_MIN_FRAMES_30HZ * fps / _TARGET_FPS)))
+
+
+def parabola_vertical_accel_m_s2(t_sec: np.ndarray, z_m: np.ndarray) -> float:
+    """Fit ``z = a t^2 + b t + c``; return ``2a`` (m/s^2)."""
+    if t_sec.size < 3:
+        return float("nan")
+    t0 = float(t_sec[0])
+    coeff = np.polyfit(t_sec - t0, z_m, 2)
+    return float(2.0 * coeff[0])
+
+
+def flight_windows_contact_above_floor(
+    foot_min_z_grounded: np.ndarray,
+    *,
+    margin_m: float = _GRAVITY_AIR_MARGIN_M,
+) -> list[tuple[int, int]]:
+    """Contiguous runs with all contact joints above the floor by ``margin_m``."""
+    air = foot_min_z_grounded > margin_m
+    windows: list[tuple[int, int]] = []
+    i = 0
+    n = air.size
+    while i < n:
+        if not air[i]:
+            i += 1
+            continue
+        j = i + 1
+        while j < n and air[j]:
+            j += 1
+        windows.append((i, j))
+        i = j
+    return windows
+
+
+def frame_window_from_times(
+    start_t: float, end_t: float, fps: float, n_frames: int
+) -> tuple[int, int]:
+    i0 = max(0, int(math.floor(start_t * fps)))
+    i1 = min(n_frames, max(i0 + 1, int(math.ceil(end_t * fps))))
+    return i0, i1
+
+
+def intersect_time_windows(
+    a: list[tuple[int, int]], b: list[tuple[int, int]]
+) -> list[tuple[int, int]]:
+    out: list[tuple[int, int]] = []
+    for i0, i1 in a:
+        for j0, j1 in b:
+            k0 = max(i0, j0)
+            k1 = min(i1, j1)
+            if k1 > k0:
+                out.append((k0, k1))
+    return merge_time_windows(out)
+
+
+def merge_time_windows(windows: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    if not windows:
+        return []
+    windows = sorted(windows)
+    merged = [windows[0]]
+    for i0, i1 in windows[1:]:
+        p0, p1 = merged[-1]
+        if i0 <= p1:
+            merged[-1] = (p0, max(p1, i1))
+        else:
+            merged.append((i0, i1))
+    return merged
+
+
+def native_pelvis_and_foot_heights(
+    raw: dict[str, np.ndarray],
+    *,
+    stride: int = 1,
+    frame_slice: Optional[tuple[int, int]] = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    """Pelvis and min foot joint z (world frame) on native AMASS frames."""
+    import torch
+    from hready.body.smplx_wrapper import load_body
+
+    body = load_body("locked_head")
+    device = torch.device("cpu")
+    dtype = torch.float32
+    n = raw["root_orient"].shape[0]
+    if frame_slice is None:
+        idx = np.arange(0, n, stride, dtype=int)
+    else:
+        a, b = frame_slice
+        idx = np.arange(a, b, stride, dtype=int)
+    pelvis: list[float] = []
+    foot_min: list[float] = []
+    for i in idx:
+        go = torch.as_tensor(raw["root_orient"][i], device=device, dtype=dtype).unsqueeze(0)
+        bp = torch.as_tensor(raw["pose_body"][i], device=device, dtype=dtype).reshape(1, 63)
+        tr = torch.as_tensor(raw["trans"][i], device=device, dtype=dtype).unsqueeze(0)
+        be = torch.as_tensor(raw["betas"], device=device, dtype=dtype).unsqueeze(0)
+        out = body.forward(go, bp, be, tr)
+        j = out.joints[0].detach().cpu().numpy()
+        pelvis.append(float(j[0, 2]))
+        foot_min.append(float(min(j[k, 2] for k in _CONTACT_JOINT_IDS)))
+    return np.asarray(idx, dtype=int), np.asarray(pelvis), np.asarray(foot_min)
+
+
+def gravity_accel_from_flight_parabolas(
+    pelvis_z_grounded: np.ndarray,
+    fps: float,
+    windows: list[tuple[int, int]],
+) -> list[float]:
+    """Parabolic fit on pelvis height inside each native frame window."""
+    min_n = min_flight_native_frames(fps)
+    accels: list[float] = []
+    for i0, i1 in windows:
+        if i1 - i0 < min_n:
+            continue
+        z = pelvis_z_grounded[i0:i1]
+        if z.size < 3:
+            continue
+        t = np.arange(i0, i1, dtype=np.float64) / fps
+        accels.append(parabola_vertical_accel_m_s2(t, z))
+    return accels

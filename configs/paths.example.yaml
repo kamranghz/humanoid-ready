@@ -4,11 +4,11 @@
 data_root: D:/projects/hready_data
 amass_root: D:/projects/hready_data/datasets/amass/smplx_n
 cache_dir: D:/projects/hready_data/cache
+babel_root: D:/projects/hready_data/datasets/babel/babel_v1.0_release
 
 # Example resolved paths (not required until loaders are implemented):
 # smplx_locked_head: D:/projects/hready_data/models/smplx/locked_head
 # smplx_v1_1: D:/projects/hready_data/models/smplx/v1_1
 # amass_smplx_n: D:/projects/hready_data/datasets/amass/smplx_n
-# babel: D:/projects/hready_data/datasets/babel/babel_v1.0_release
 # bedlam_labels: D:/projects/hready_data/datasets/bedlam/labels/lockedhead_16b
 # bedlam_images: D:/projects/hready_data/datasets/bedlam/images
