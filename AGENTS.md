@@ -192,8 +192,8 @@ The paper is written from the same code and results as the work packages. It doe
 
 | # | Item | Work package | Data | Done when | ☐/☑ |
 |---|---|---|---|---|---|
-| 1 | Repo skeleton, `pyproject`, `.gitignore`, CPU CI, `paths.example.yaml` | — | none | CI green | ☐ |
-| 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Required: body models | SMPL-X | tests pass | ☐ |
+| 1 | Repo skeleton, `pyproject`, `.gitignore`, CPU CI, `paths.example.yaml` | — | none | CI green | ☑ evidence: `.github/workflows/ci.yml`, CI run on commit `10cab7b` |
+| 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Required: body models | SMPL-X | tests pass | ☑ evidence: `hready/body/rotations.py`, `hready/body/smplx_wrapper.py` |
 | 3 | Physics/biomech losses | WP-A3 | none | each loss checked analytically (0 on valid motion, >0 with correct gradient sign on violation); raw output shown, check files not saved | ☐ |
 | 4 | Metrics + bootstrap CI | all | none | checked against hand-computed values; raw output shown, check files not saved | ☐ |
 | 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☐ |

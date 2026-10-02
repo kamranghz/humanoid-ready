@@ -16,6 +16,12 @@ dependencies = [
 dev = [
     "pytest>=7.0",
 ]
+ml = [
+    "torch",
+    "numpy",
+    "scipy",
+    "smplx",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
