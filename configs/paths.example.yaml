@@ -2,6 +2,8 @@
 # All assets in AGENTS.md §1 live under data_root.
 
 data_root: D:/projects/hready_data
+amass_root: D:/projects/hready_data/datasets/amass/smplx_n
+cache_dir: D:/projects/hready_data/cache
 
 # Example resolved paths (not required until loaders are implemented):
 # smplx_locked_head: D:/projects/hready_data/models/smplx/locked_head

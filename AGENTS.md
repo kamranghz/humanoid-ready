@@ -93,7 +93,7 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 - Allocentric = fixed/orbit cameras; egocentric = virtual head-mounted camera in HR-Refine (same model, ego-only ablation).
 - **Contact:** per-vertex contact head (labels from clean AMASS: height + velocity thresholds); report foot-contact F1.
 - **Joint torques:** inverse dynamics on SMPL-X with segment masses, computed with **NVIDIA Newton** (default); a simple recursive Newton–Euler implementation is the fallback; optional OpenSim cross-check.
-- **Affordances (scoped):** aggregate contacts into support labels (stand/sit/lean surfaces) from BABEL-labelled AMASS clips.
+- **Affordances (scoped):** support-surface estimation — classify **stand / sit / lean** plus **support height** from foot–body contacts. BABEL action labels (e.g. sit, lean) are a **proxy** for support surfaces; report **agreement with BABEL action labels** (affordance F1), not ground-truth surface accuracy. Real scene meshes (PROX / EgoBody) remain item **20b** / paper *(later)*.
 - **Evidence:** `results/B2/` — contact F1, torque plots raw vs refined, ego-only vs allocentric error.
 - *(later)* PROX / EgoBody for real scene meshes and real egocentric video.
 
@@ -132,14 +132,14 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 
 | Capability | Evidence |
 |---|---|
-| Deep learning, 3D CV, articulated tracking | WP-A1, A2, B1 |
-| Training large-scale vision models from scratch | WP-A1 (random-init ViT) + WP-A2 (DDP/multi-GPU path) |
-| SMPL / SMPL-X / GHUM / MHR / SOMA-X, IK, dense mesh | SMPL-X throughout; **SOMA-X wrapper converting SMPL-X ↔ MHR with round-trip error**; IK in retargeting; dense 10,475-vertex mesh; `docs/body_models.md` comparing all five models |
-| PyTorch and scaling frameworks | DDP/FSDP, bf16, `torch.compile`, checkpoint/resume (WP-A2) |
-| Multi-TB image/video data | Streaming shard pipeline + rolling-window processing (download → process → delete), measured throughput; real scale stated honestly *(multi-TB run later, on the BEDLAM 30fps mirror)* |
+| Deep learning, 3D CV, articulated tracking | WP-A1, A2, B1. **Scope:** HR-Refine **egocentric camera is virtual** until EgoBody eval (item 20b); **body-worn IMU is synthetic** (AMASS-derived, not hardware). |
+| Training large-scale vision models from scratch | WP-A1 (random-init ViT) + WP-A2 (DDP/multi-GPU path). **Scope:** **HR-HMR trained on 2 BEDLAM scenes** from random init (not full BEDLAM). |
+| SMPL / SMPL-X / GHUM / MHR / SOMA-X, IK, dense mesh | SMPL-X throughout; **SOMA-X pivot** SMPL-X ↔ MHR (item 17); IK in retargeting; dense 10,475-vertex mesh; `docs/body_models.md` comparing models (**GHUM documented only** — not supported by SOMA-X). |
+| PyTorch and scaling frameworks | DDP/FSDP, bf16, `torch.compile`, checkpoint/resume (WP-A2). **Scope:** DDP path verified on **1 GPU (Windows gloo) + Kaggle 2×T4**, not a large NCCL cluster. |
+| Multi-TB image/video data | Streaming shard pipeline + rolling-window processing (download → process → delete), measured throughput. **Scope:** multi-TB handled as a **measured streaming pipeline**, not a multi-TB training run *(full mirror run later)*. |
 | Fast-paced, shifting priorities | `docs/pivot_log.md` |
 | **Strong signal:** first-author top-tier paper | `paper/` draft from these results, working title "Pose Accuracy Is Not Physical Usability" |
-| **Strong signal:** AMASS, Human3.6M, EgoBody, PROX and their optimization challenges | AMASS used throughout; `docs/dataset_challenges.md` (SMPL-X version mismatch, frame rates, GT artifacts in AMASS, BEDLAM rotated images, motion leakage between AMASS and BEDLAM). *(later)* Human3.6M, EgoBody, PROX evaluation |
+| **Strong signal:** AMASS, Human3.6M, EgoBody, PROX and their optimization challenges | AMASS used throughout; `docs/dataset_challenges.md` (SMPL-X version mismatch, frame rates, GT artifacts in AMASS, BEDLAM rotated images, motion leakage between AMASS and BEDLAM). *(later)* Human3.6M, EgoBody, PROX evaluation (item **20b**) |
 
 ---
 
@@ -196,22 +196,23 @@ The paper is written from the same code and results as the work packages. It doe
 | 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Required: body models | SMPL-X | checks pass; raw output shown, check files not saved | ☑ evidence: `hready/body/rotations.py`, `hready/body/smplx_wrapper.py` |
 | 3 | Physics/biomech losses | WP-A3 | none | each loss checked analytically (0 on valid motion, >0 with correct gradient sign on violation); raw output shown, check files not saved | ☑ evidence: `hready/losses/physics.py`, `hready/losses/biomech.py`, `hready/losses/__init__.py` |
 | 4 | Metrics + bootstrap CI | all | none | checked against hand-computed values; raw output shown, check files not saved | ☑ evidence: `hready/metrics/pose.py`, `hready/metrics/physical.py`, `hready/metrics/contact.py`, `hready/metrics/stats.py`, `hready/metrics/__init__.py`, `hready/losses/_constants.py` |
-| 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☐ |
+| 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☐ stage **5a** done: `hready/data/amass.py` index/resample/floor/splits (5b BABEL, 5c contact+IMU pending) |
 | 6 | **G1 smoke test:** one AMASS walk → G1 in Isaac Lab + Newton, metrics + video | WP-D | AMASS | video + JSON | ☐ |
 | 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer | WP-A2, B2 | AMASS | overfits 1 batch; resume works | ☐ |
 | 8 | HR-Refine training + loss ablation | WP-A3 | AMASS | `results/A3/ablation.csv` | ☐ |
-| 9 | Contact, action, intent heads; IMU fusion ablation | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1` | ☐ |
+| 9 | Contact, action, intent heads; IMU fusion ablation | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1`; **affordance F1** (agreement with BABEL action labels) | ☐ |
 | 10 | Joint torques (inverse dynamics) raw vs refined | WP-B2 | AMASS | torque plots | ☐ |
-| 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag | WP-D | AMASS | `results/D/` | ☐ |
+| 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag | WP-D | AMASS | `results/D/`; end-to-end: one real video (**3DPW** test sequence) → HMR → HR-Refine → G1 rollout video in `results/D/e2e/` | ☐ |
 | 12 | BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations | WP-A1, B1 | BEDLAM | training curves, overlays | ☐ |
-| 13 | BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1` | ☐ |
+| 13 | BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1`; **tracking:** ID-switch count and jitter on `orbit_bigOffice`, temporal transformer vs per-frame baseline | ☐ |
 | 14 | Action-conditioned prior ± physics regularization, evaluated on G1 | WP-B3 | AMASS, BABEL | `results/B3/` | ☐ |
 | 15 | DDP equivalence test + Kaggle 2×T4 run | WP-A2 | AMASS | scaling table | ☐ |
 | 16 | Loader bottleneck before/after; shard + rolling-window pipeline | WP-C2, Req. multi-TB | AMASS/BEDLAM | `results/C2/` | ☐ |
-| 17 | SOMA-X wrapper SMPL-X ↔ MHR round-trip; `body_models.md` | Req. body models | SMPL-X | round-trip error reported | ☐ |
+| 17 | SOMA-X pivot SMPL-X ↔ MHR + `body_models.md` | Req. body models | SMPL-X | round-trip error reported. **SMPL-X ↔ MHR** goes through the **SOMA-X pivot** (`py-soma-x` tools convert **to** SOMA; no direct SMPL-X↔MHR API documented). Implement in a **separate conda env `hready-soma`** (chumpy conflicts with NumPy 2.x in `hready`); API verified from the installed package (rule 3). **GHUM** in `docs/body_models.md` only (not supported by SOMA-X). | ☐ |
 | 18 | README with §4 table linked to evidence; `dataset_challenges.md`; `pivot_log.md` | all | — | every number traced to `results/` | ☐ |
 | 19 | Paper draft + slides | Strong signal | — | compiles | ☐ |
-| 20 | *(later)* Human3.6M / EgoBody / PROX eval; multi-TB run | Strong signal | needs download | — | ☐ |
+| 20a | File access requests for Human3.6M, EgoBody and PROX *(no downloads yet)* | Strong signal | — | requests filed | ☐ |
+| 20b | *(later)* Human3.6M / EgoBody / PROX eval on a small subset; multi-TB run | Strong signal | needs download | — | ☐ |
 
 ### Paper track checklist (interleaved with the items above; see the week plan)
 
@@ -224,7 +225,7 @@ The paper is written from the same code and results as the work packages. It doe
 | R5 | Freeze analysis plan + thresholds in `paper/claims_map.md` | dated commit before R7 | ☐ |
 | R6 | Executability in Newton for all methods + AMASS GT upper bound; method- and clip-level analysis | `results/paper/newton/` | ☐ |
 | R7 | Same in PhysX and MuJoCo; configuration-fairness record; Kendall τ, PASS/FAIL agreement, repeatability | `results/paper/cross_engine/` | ☐ |
-| R8 | HR-Refine on all method outputs; effect on executability per engine | `results/paper/refine/` | ☐ |
+| R8 | HR-Refine on all method outputs; effect on executability per engine | `results/paper/refine/`, `results/D/e2e/` | ☐ |
 | R9 | Draft: intro, related work, method, experiments, limitations; every number from `results/paper/` | compiles in CVPR template | ☐ |
 | R10 | Register abstract (Nov 10) and submit (Nov 16); supplementary (Nov 23) | submitted | ☐ |
 
@@ -236,7 +237,7 @@ The paper is written from the same code and results as the work packages. It doe
 | 2 | Oct 9–15 | 5, 6 | R4 |
 | 3 | Oct 16–22 | 10 | R5, R6 |
 | 4 | Oct 23–29 | — | R7 |
-| 5 | Oct 30–Nov 5 | 7, 8 | R8, R9 (draft) |
+| W5 | Oct 30–Nov 5 | 7, 8 | R8, R9 (draft) |
 | 6 | Nov 6–16 | — | R9 (final), R10 |
 | after | Nov 17 → | 9, 11–19 | camera-ready / workshop / arXiv |
 
