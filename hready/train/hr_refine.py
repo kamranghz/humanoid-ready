@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import argparse
 import os
+
+os.environ.setdefault("USE_LIBUV", "0")
 import time
 from pathlib import Path
 from typing import Any
@@ -12,6 +14,7 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 
+from hready.data.refine_corrupt import corruption_config_from_dict
 from hready.data.refine_dataset import HRRefineWindowDataset, collate_windows
 from hready.losses import LossConfig
 from hready.train.hr_refine_engine import (
@@ -64,6 +67,7 @@ def train_main(cfg: dict[str, Any]) -> None:
         physics_scale=float(cfg.get("loss", {}).get("physics", 1.0)),
     )
     loss_cfg = LossConfig()
+    corrupt_cfg = corruption_config_from_dict(cfg.get("corruption"))
     ckpt_dir = repo_root() / cfg.get("checkpoint_dir", "results/A2/hr_refine")
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
@@ -99,11 +103,12 @@ def train_main(cfg: dict[str, Any]) -> None:
             body,
             batch,
             optimizer,
-            step=step,
-            base_seed=base_seed,
             parents=parents,
             loss_cfg=loss_cfg,
             hyper=hyper,
+            corrupt_cfg=corrupt_cfg,
+            base_seed=base_seed,
+            corrupt_step=step,
             scaler=scaler,
             use_bf16=use_bf16,
         )

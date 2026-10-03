@@ -38,6 +38,15 @@ class TrainHyper:
     physics_scale: float = 1.0
     grad_clip: float = 1.0
     smpl_joint_recon: bool = True
+    joints_only_recon: bool = False
+
+
+@dataclass
+class FixedCorruptionBatch:
+    corrupt_pose: dict[str, Tensor]
+    keypoints: Tensor
+    clean_packed: dict[str, Tensor]
+    joints_clean: Tensor
 
 
 def repo_root() -> Path:
@@ -49,7 +58,6 @@ def repo_root() -> Path:
 
 
 def setup_distributed() -> tuple[int, int, int, torch.device]:
-    """Return (rank, local_rank, world_size, device)."""
     if os.name == "nt":
         os.environ.setdefault("USE_LIBUV", "0")
     if "RANK" in os.environ:
@@ -73,6 +81,13 @@ def cleanup_distributed() -> None:
         dist.destroy_process_group()
 
 
+def set_deterministic_training(enabled: bool = True) -> None:
+    if enabled:
+        torch.use_deterministic_algorithms(True)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+
 def smpl_parents(body: SmplxBody) -> Tensor:
     return body._model.parents.detach().clone().to(dtype=torch.long)
 
@@ -93,6 +108,7 @@ def reconstruction_loss(
     w_joint: float,
     w_rot: float,
     use_joint_smpl: bool = True,
+    joints_only: bool = False,
 ) -> Tensor:
     r_loss = (
         (pred["root_rot_6d"] - clean_packed["root_rot_6d"]).abs().mean()
@@ -101,58 +117,83 @@ def reconstruction_loss(
     t_loss = (pred["transl"] - clean_packed["transl"]).abs().mean()
     if use_joint_smpl:
         j_loss = (joints_pred[..., :22, :] - joints_clean[..., :22, :]).abs().mean()
+        if joints_only:
+            return w_joint * j_loss
         return w_joint * j_loss + w_rot * r_loss + w_joint * t_loss
     return w_rot * r_loss + w_joint * t_loss
 
 
-def train_step(
-    model: nn.Module,
+def prepare_fixed_corruption(
     body: SmplxBody,
     batch: dict[str, Tensor],
     *,
-    step: int,
     base_seed: int,
-    parents: Tensor,
-    loss_cfg: LossConfig,
-    hyper: TrainHyper,
-    corrupt_cfg: CorruptionConfig | None = None,
+    corrupt_step: int,
+    corrupt_cfg: CorruptionConfig,
     cam_cfg: VirtualCameraConfig | None = None,
-    use_bf16: bool = True,
-) -> dict[str, float]:
-    device = batch["transl"].device
-    b, t = batch["transl"].shape[:2]
+) -> FixedCorruptionBatch:
     clean = {
         "transl": batch["transl"],
         "root_aa": batch["root_orient"],
         "body_aa": batch["pose_body"],
     }
-    with torch.cuda.amp.autocast(enabled=False):
+    with torch.no_grad():
         joints_clean, _ = smpl_forward_bt(
             body, clean["transl"], clean["root_aa"], clean["body_aa"], batch["betas"]
         )
-    rng = make_corruption_rng(base_seed, step)
     corrupted = apply_corruption(
         clean,
-        joints_clean.detach(),
-        rng=rng,
+        joints_clean,
+        rng=make_corruption_rng(base_seed, corrupt_step),
         cfg=corrupt_cfg,
-        cam_cfg=cam_cfg,
+        cam_cfg=cam_cfg or VirtualCameraConfig(),
     )
-    corrupt_pose = corrupted["corrupt_pose"]
-    keypoints = corrupted["keypoints"]
-    clean_packed = corrupted["clean_pose"]
+    return FixedCorruptionBatch(
+        corrupt_pose=corrupted["corrupt_pose"],
+        keypoints=corrupted["keypoints"],
+        clean_packed=corrupted["clean_pose"],
+        joints_clean=joints_clean,
+    )
 
-    with torch.cuda.amp.autocast(enabled=use_bf16 and device.type == "cuda"):
+
+def forward_loss(
+    model: nn.Module,
+    body: SmplxBody,
+    batch: dict[str, Tensor],
+    *,
+    parents: Tensor,
+    loss_cfg: LossConfig,
+    hyper: TrainHyper,
+    corrupt_cfg: CorruptionConfig,
+    base_seed: int = 0,
+    corrupt_step: int = 0,
+    fixed: FixedCorruptionBatch | None = None,
+    use_bf16: bool = False,
+) -> dict[str, Tensor | float]:
+    device = batch["transl"].device
+    b, t = batch["transl"].shape[:2]
+    if fixed is None:
+        fixed = prepare_fixed_corruption(
+            body,
+            batch,
+            base_seed=base_seed,
+            corrupt_step=corrupt_step,
+            corrupt_cfg=corrupt_cfg,
+        )
+    joints_clean = fixed.joints_clean
+    corrupt_pose = fixed.corrupt_pose
+    keypoints = fixed.keypoints
+    clean_packed = fixed.clean_packed
+
+    with torch.amp.autocast("cuda", enabled=use_bf16 and device.type == "cuda"):
         pred = model(corrupt_pose, keypoints)
-        transl_p, root_aa_p, body_aa_p = unpack_pose(pred)
-        need_pred_smpl = hyper.smpl_joint_recon or hyper.physics_scale > 0
-        if need_pred_smpl:
-            with torch.cuda.amp.autocast(enabled=False):
-                joints_pred, verts_pred = smpl_forward_bt(
-                    body, transl_p, root_aa_p, body_aa_p, batch["betas"]
-                )
-        else:
-            joints_pred, verts_pred = joints_clean, joints_clean
+    transl_p, root_aa_p, body_aa_p = unpack_pose(pred)
+    need_pred_smpl = hyper.smpl_joint_recon or hyper.physics_scale > 0
+    if need_pred_smpl:
+        joints_pred, verts_pred = smpl_forward_bt(body, transl_p, root_aa_p, body_aa_p, batch["betas"])
+    else:
+        joints_pred, verts_pred = joints_clean, joints_clean
+    with torch.amp.autocast("cuda", enabled=use_bf16 and device.type == "cuda"):
         recon = reconstruction_loss(
             pred,
             clean_packed,
@@ -161,9 +202,10 @@ def train_step(
             w_joint=hyper.recon_joint,
             w_rot=hyper.recon_rot,
             use_joint_smpl=hyper.smpl_joint_recon,
+            joints_only=hyper.joints_only_recon,
         )
         foot_pos, contact = foot_tensors(joints_pred, float(batch["fps"]))
-        phys_out = compute_losses(
+        phys = compute_losses(
             {
                 "joints": joints_pred.float(),
                 "verts_or_joints": verts_pred.float(),
@@ -176,15 +218,9 @@ def train_step(
                 "body_pose_rot_repr": "axis_angle",
             },
             loss_cfg,
-        )
-        phys = phys_out["total"]
+        )["total"]
         loss = recon.float() + hyper.physics_scale * phys
-
-    return {
-        "loss": float(loss.detach().cpu()),
-        "recon": float(recon.detach().cpu()),
-        "physics": float(phys.detach().cpu()),
-    }
+    return {"loss": loss, "recon": recon, "physics": phys}
 
 
 def backward_step(
@@ -193,76 +229,32 @@ def backward_step(
     batch: dict[str, Tensor],
     optimizer: torch.optim.Optimizer,
     *,
-    step: int,
-    base_seed: int,
     parents: Tensor,
     loss_cfg: LossConfig,
     hyper: TrainHyper,
-    scaler: torch.cuda.amp.GradScaler | None,
+    corrupt_cfg: CorruptionConfig,
+    base_seed: int = 0,
+    corrupt_step: int = 0,
+    fixed: FixedCorruptionBatch | None = None,
+    scaler: torch.cuda.amp.GradScaler | None = None,
     use_bf16: bool = True,
 ) -> dict[str, float]:
-    device = batch["transl"].device
-    optimizer.zero_grad(set_to_none=True)
-    b, t = batch["transl"].shape[:2]
-    clean = {
-        "transl": batch["transl"],
-        "root_aa": batch["root_orient"],
-        "body_aa": batch["pose_body"],
-    }
-    with torch.cuda.amp.autocast(enabled=False):
-        joints_clean, _ = smpl_forward_bt(
-            body, clean["transl"], clean["root_aa"], clean["body_aa"], batch["betas"]
-        )
-    corrupted = apply_corruption(
-        clean,
-        joints_clean.detach(),
-        rng=make_corruption_rng(base_seed, step),
-        cfg=CorruptionConfig(),
-        cam_cfg=VirtualCameraConfig(),
+    out = forward_loss(
+        model,
+        body,
+        batch,
+        parents=parents,
+        loss_cfg=loss_cfg,
+        hyper=hyper,
+        corrupt_cfg=corrupt_cfg,
+        base_seed=base_seed,
+        corrupt_step=corrupt_step,
+        fixed=fixed,
+        use_bf16=use_bf16,
     )
-    corrupt_pose = corrupted["corrupt_pose"]
-    keypoints = corrupted["keypoints"]
-    clean_packed = corrupted["clean_pose"]
-
-    with torch.cuda.amp.autocast(enabled=use_bf16 and device.type == "cuda"):
-        pred = model(corrupt_pose, keypoints)
-        transl_p, root_aa_p, body_aa_p = unpack_pose(pred)
-        need_pred_smpl = hyper.smpl_joint_recon or hyper.physics_scale > 0
-        if need_pred_smpl:
-            with torch.cuda.amp.autocast(enabled=False):
-                joints_pred, verts_pred = smpl_forward_bt(
-                    body, transl_p, root_aa_p, body_aa_p, batch["betas"]
-                )
-        else:
-            joints_pred, verts_pred = joints_clean, joints_clean
-        recon = reconstruction_loss(
-            pred,
-            clean_packed,
-            joints_pred,
-            joints_clean,
-            w_joint=hyper.recon_joint,
-            w_rot=hyper.recon_rot,
-            use_joint_smpl=hyper.smpl_joint_recon,
-        )
-        foot_pos, contact = foot_tensors(joints_pred, float(batch["fps"]))
-        phys_out = compute_losses(
-            {
-                "joints": joints_pred.float(),
-                "verts_or_joints": verts_pred.float(),
-                "foot_pos": foot_pos.float(),
-                "foot_pts": foot_pos.float(),
-                "contact": contact.float(),
-                "fps": batch["fps"],
-                "parents": parents.to(device),
-                "body_pose": body_aa_p.reshape(b, t, 21, 3).float(),
-                "body_pose_rot_repr": "axis_angle",
-            },
-            loss_cfg,
-        )
-        phys = phys_out["total"]
-        loss = recon.float() + hyper.physics_scale * phys
-
-    if scaler is not None and use_bf16 and device.type == "cuda":
+    loss = out["loss"]
+    optimizer.zero_grad(set_to_none=True)
+    if scaler is not None and use_bf16 and batch["transl"].device.type == "cuda":
         scaler.scale(loss).backward()
         scaler.unscale_(optimizer)
         torch.nn.utils.clip_grad_norm_(model.parameters(), hyper.grad_clip)
@@ -272,11 +264,10 @@ def backward_step(
         loss.backward()
         torch.nn.utils.clip_grad_norm_(model.parameters(), hyper.grad_clip)
         optimizer.step()
-
     return {
         "loss": float(loss.detach().cpu()),
-        "recon": float(recon.detach().cpu()),
-        "physics": float(phys.detach().cpu()),
+        "recon": float(out["recon"].detach().cpu()),
+        "physics": float(out["physics"].detach().cpu()),
     }
 
 
@@ -302,7 +293,7 @@ def save_checkpoint(
 ) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
-        "step": step,
+        "step": int(step),
         "base_seed": base_seed,
         "config": config,
         "model": unwrap(model).state_dict(),
@@ -322,6 +313,7 @@ def load_checkpoint(
     model: nn.Module,
     optimizer: torch.optim.Optimizer | None = None,
     scheduler: torch.optim.lr_scheduler.LRScheduler | None = None,
+    restore_rng: bool = True,
 ) -> dict[str, Any]:
     ckpt = torch.load(path, map_location="cpu", weights_only=False)
     unwrap(model).load_state_dict(ckpt["model"])
@@ -329,11 +321,12 @@ def load_checkpoint(
         optimizer.load_state_dict(ckpt["optimizer"])
     if scheduler is not None and ckpt.get("scheduler") is not None:
         scheduler.load_state_dict(ckpt["scheduler"])
-    random.setstate(ckpt["python_random"])
-    np.random.set_state(ckpt["numpy_random"])
-    torch.set_rng_state(ckpt["torch_random"])
-    if ckpt.get("cuda_random") is not None and torch.cuda.is_available():
-        torch.cuda.set_rng_state_all(ckpt["cuda_random"])
+    if restore_rng:
+        random.setstate(ckpt["python_random"])
+        np.random.set_state(ckpt["numpy_random"])
+        torch.set_rng_state(ckpt["torch_random"])
+        if ckpt.get("cuda_random") is not None and torch.cuda.is_available():
+            torch.cuda.set_rng_state_all(ckpt["cuda_random"])
     return ckpt
 
 

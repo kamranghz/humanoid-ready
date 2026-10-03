@@ -9,38 +9,16 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from hready.data.amass import (
-    AmassIndexEntry,
-    assign_split,
-    clip_flags,
-    load_clip,
-    load_index,
-)
-from hready.data.foot_height_rise import load_foot_height_rise_cache
+from hready.data.amass import AmassIndexEntry, load_clip
+from hready.data.refine_eligible_cache import eligible_entries
+from hready.data.refine_eligible_cache import split_counts as cached_split_counts
 
 SplitName = Literal["train", "val", "test"]
 WINDOW = 64
-_ELIGIBLE_CACHE: dict[SplitName, list[AmassIndexEntry]] = {}
 
 
 def _eligible_entries(split: SplitName) -> list[AmassIndexEntry]:
-    if split in _ELIGIBLE_CACHE:
-        return _ELIGIBLE_CACHE[split]
-    rise_cache = load_foot_height_rise_cache()
-    rise_entries = rise_cache.get("entries", {})
-    out: list[AmassIndexEntry] = []
-    for e in load_index():
-        if assign_split(e) != split:
-            continue
-        flags = clip_flags(e)
-        if flags.get("skate_flag"):
-            continue
-        rec = rise_entries.get(e.rel_path)
-        if rec and rec.get("status") == "assessable" and float(rec.get("rise_cm", 0)) > 5.0:
-            continue
-        out.append(e)
-    _ELIGIBLE_CACHE[split] = out
-    return out
+    return eligible_entries(split)
 
 
 class HRRefineWindowDataset(Dataset):
@@ -69,10 +47,9 @@ class HRRefineWindowDataset(Dataset):
         t = clip["root_orient"].shape[0]
         if t >= self.window:
             i0 = self._rng.randint(0, t - self.window)
-            i1 = i0 + self.window
-            root = clip["root_orient"][i0:i1]
-            body = clip["pose_body"][i0:i1]
-            transl = clip["transl"][i0:i1]
+            root = clip["root_orient"][i0 : i0 + self.window]
+            body = clip["pose_body"][i0 : i0 + self.window]
+            transl = clip["transl"][i0 : i0 + self.window]
         else:
             root = clip["root_orient"]
             body = clip["pose_body"]
@@ -103,4 +80,4 @@ def collate_windows(batch: list[dict[str, Any]]) -> dict[str, torch.Tensor]:
 
 
 def split_counts() -> dict[str, int]:
-    return {s: len(_eligible_entries(s)) for s in ("train", "val", "test")}
+    return cached_split_counts()
