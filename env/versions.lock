@@ -1,0 +1,30 @@
+# HumanoidReady pinned runtime versions (read from installed envs, 2026-10-03).
+# Re-generate with pip/importlib.metadata; do not hand-edit version numbers.
+
+[hready]
+# conda env: hready (Windows-native)
+python = "3.11.17"
+torch = "2.11.0+cu128"
+numpy = "2.4.6"
+scipy = "1.17.1"
+matplotlib = "3.11.2"
+smplx = "0.1.28"
+
+[hready-gmr]
+# conda env: hready-gmr (Windows; GMR retarget subprocess)
+python = "3.10.22"
+mujoco = "3.14.0"
+gmr_root = "D:/projects/third_party/GMR"
+gmr_commit = "bb1bbe40774794fceb2a7c579a3464a28e68c844"
+
+[isaaclab-newton-wsl]
+# WSL venv: /mnt/d/RoboticsResearch/environments/isaaclab-newton-beta2/bin/python
+python = "3.12.13"
+torch = "2.10.0+cu128"
+isaaclab = "6.1.17"
+isaaclab_newton = "0.13.6"
+isaacsim = "6.0.1.0"
+newton = "1.2.1"
+warp-lang = "1.13.0"
+mujoco-warp = "3.8.0.3"
+isaaclab_root = "D:/RoboticsResearch/repositories/IsaacLab-Newton"
