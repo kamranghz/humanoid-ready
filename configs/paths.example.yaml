@@ -6,6 +6,10 @@ amass_root: D:/projects/hready_data/datasets/amass/smplx_n
 cache_dir: D:/projects/hready_data/cache
 babel_root: D:/projects/hready_data/datasets/babel/babel_v1.0_release
 
+# GMR retargeting (third-party MIT; subprocess only — see hready/robot/retarget.py)
+gmr_root: D:/projects/third_party/GMR
+gmr_python: C:/Users/kghol072/AppData/Local/anaconda3/envs/hready-gmr/python.exe
+
 # Example resolved paths (not required until loaders are implemented):
 # smplx_locked_head: D:/projects/hready_data/models/smplx/locked_head
 # smplx_v1_1: D:/projects/hready_data/models/smplx/v1_1
