@@ -204,6 +204,7 @@ def forward_loss(
             use_joint_smpl=hyper.smpl_joint_recon,
             joints_only=hyper.joints_only_recon,
         )
+    if hyper.physics_scale > 0:
         foot_pos, contact = foot_tensors(joints_pred, float(batch["fps"]))
         phys = compute_losses(
             {
@@ -220,6 +221,9 @@ def forward_loss(
             loss_cfg,
         )["total"]
         loss = recon.float() + hyper.physics_scale * phys
+    else:
+        phys = torch.zeros((), device=device)
+        loss = recon.float()
     return {"loss": loss, "recon": recon, "physics": phys}
 
 
@@ -336,6 +340,7 @@ def build_model_and_body(
     model = HRRefine(**model_cfg).to(device)
     body = load_body("locked_head")
     body._model.to(device)
+    body._model.eval()
     parents = smpl_parents(body)
     return model, body, parents
 
