@@ -61,7 +61,7 @@ Per-frame values up to about **+230 mm** come from **airborne or briefly elevate
 
 **Limitation:** If the subject stays on an **elevated support for the whole clip**, the 1st-percentile rule makes that support **z = 0**; true ground is not recovered.
 
-Floor outlier flag (`flag_floor_outliers`, default `z_thresh=0.35`): median `floor_offset` over the **50** cached floor entries in `amass_floor.json` is **-0.0246 m**; the outlier flag is **provisional** until floor height is computed for the whole index. Outlier when `abs(rec["floor_offset"] - med) > z_thresh`. **`DFaust/50002/50002_chicken_wings_stageii.npz`** has `floor_offset` **-0.612 m** (`abs(offset - med)` about **0.587 m** > 0.35; cause not investigated).
+Floor outliers use the **full-index** median **−0.0228 m** (`flag_floor_outliers`, `z_thresh=0.35`); **136** clips flagged (see Contact labels section). Example: **`DFaust/50002/50002_chicken_wings_stageii.npz`** remains an outlier under the full cache.
 
 ### MOYO
 
@@ -174,7 +174,7 @@ Selected prefix mapped / total / labeled: KIT **6666 / 6666 / 3108**; BMLrub **5
 
 **Segmentation vs clip labels:** `ann_source` is stored per entry. **Frame-level segmentation metrics (edit score, frame accuracy) must use only `ann_source == "frame_ann"`** — `seq_ann` tags span the whole clip. `print_annotation_source_report()` prints counts per BABEL file and per our train/val/test. Indexed labeled sequences: **frame_ann 6647**, **seq_ann 3466** (our train **5149 / 2840**, val **933 / 367**, test **565 / 259** frame vs seq).
 
-**BMLrub treadmill:** **313** labeled sequences have `treadmill` in `feat_p` or `rel_path`. Root translation is nearly constant while the support foot moves at belt speed in the world frame, so velocity-based contact labels and foot-skating metrics on GT are invalid; these clips will be flagged (`is_bmlrub_treadmill_clip`) and excluded from contact labels and physical evaluation in item **5c**.
+**BMLrub treadmill:** **313** labeled sequences have `treadmill` in `feat_p` or `rel_path`. Root translation is nearly constant while the support foot moves at belt speed in the world frame, so velocity-based contact labels and foot-skating metrics on GT are invalid; belt-like clips are caught by **`skate_flag`** (not filename alone). **`treadmill_name`** is kept for analysis only.
 
 **Vocabulary:** **243** distinct `act_cat`; **K=30** = union of categories with **>= 30 min** labeled time (**25** categories) and fixed affordance channels **lean, lie, kneel, crouch, jump, stand up** (always present even below 30 min; **jump** also passes the 30 min rule, so union size is 30 not 31). Affordance support (hours, sequences with label): lean **0.18 h / 154**, lie **0.05 / 39**, kneel **0.10 / 94**, crouch **0.09 / 89**, jump **0.56 / 527**, stand up **0.23 / 420**. **F1 on channels with far below 30 min labeled time (lie, kneel, crouch, lean) is unreliable**; treat as affordance probes, not balanced classification.
 
@@ -203,3 +203,64 @@ Categories matched by exact name or whole token (`act_cat_matches_keyword`), not
 Excluding treadmill `feat_p`, the same 300-clip sample gives run median **1.01 m/s** vs walk **0.66 m/s**. Global labeled-frame speeds: walk median **0.55 m/s**, run **0.20 m/s** (BMLrub treadmill walk dominates, **145815** frames at **0.088 m/s**); excluding treadmill: walk **0.72**, run **0.69**. Per-prefix run medians (n>=500 frames): CMU **1.80**, MPIHDM05 **1.26**, EyesJapanDataset **1.18**, HumanEva **1.19**; BMLrub run **0.15** (short steps on treadmill). Low global run median is mostly **in-place / treadmill** translation, not mocap timing error.
 
 `extra_train.json` / `extra_val.json`: `seq_ann` and `frame_ann` are JSON **null** on all **7921** / **2636** sequences (e.g. `extra_train` first row: `feat_p=BMLrub/.../0020_lifting_heavy2_poses.npz`, `dur=6.77`, annotations null; **0** labels with non-null `act_cat`).
+
+## Contact labels and clip flags (item 5c-1)
+
+Caches under `cache_dir`: `amass_floor.json`, `amass_clip_flags.json`, `foot_traj/` + `foot_traj_index.json`. Optional `amass_skate_scores.json` sidecar; contact is **not** cached as npz.
+
+### Floor cache (full index)
+
+GPU-batched locked_head forward on native-fps frames every **10th** plus last; **1st percentile** of per-frame min vertex **z** (same rule as `floor_offset`). Full rebuild: **17,355** clips, **301 s** wall (**~58 clips/s** on RTX 4090). Global median `floor_offset`: **−0.0228 m**. **DFaust** is a whole-subset offset (subset median **≈ −0.604 m**, p5/p95 **≈ −0.623 / −0.594 m**), not per-clip noise. **`floor_outlier`** uses **|offset − subset_median| > 0.35 m** (not global median): **6** clips after the rule change (was **136** vs global). Each entry stores `playback_fps` for invalidation.
+
+### Skate flag and `foot_traj` (full index, Oct 2026)
+
+**Root cause (foot channels):** `smplx_parts_segm.pkl` **`segm`** length **20,908** = **`len(body.faces)`**, not vertex count **10,475**. Prior code used `segm[:10475]` and `np.where(segm == part)` as vertex ids — those were **face indices** misused as vertex indices. Foot channels are now **LBS-based** (no segmentation pickle).
+
+**`skate_score`:** 30 Hz `foot_traj` **`(T,4,3)`**; per-channel horizontal speed from **FD on each channel's own xy** (not cross-channel); per frame `j = argmin_c z[t,c]`; if `z[t,j] ≤ 3 cm`, collect `speed[t,j]`; median over crop (**4 s** center, 120 frames). High non-BMLrub scores (e.g. MOYO yoga **28 m/s**) come from **1–2 near-floor frames** with **0.2–1.0 m** single-step xy jumps (floor/penetration artifacts), not cross-channel differencing.
+
+**`T_SKATE = 0.35 m/s` (frozen):** valley of the BMLrub bimodal histogram; **> p99** of non-BMLrub (**~0.265 m/s**); only **15** clips change flag between **0.35** and **0.5 m/s**.
+
+**BMLrub `skate_score` histogram (foot_traj sample, bimodal):**
+
+| Group | n | p5 | p50 | p95 |
+| --- | ---: | ---: | ---: | ---: |
+| (a) `treadmill` in filename | 412 | 0.52 | 1.04 | 2.01 |
+| (b) other BMLrub | 2,540 | 0.006 | 0.021 | 2.63 |
+
+Low mode **~0.01–0.06 m/s**; high mode **~0.63–3.5 m/s**.
+
+**Clip flags (all **17,355** clips, skate from `foot_traj`):** `skate_flag = skate_score > T_SKATE` (all subsets). `skate_reason` = **`belt`** if `root_speed_median < 0.5 × skate_score` else **`slide`**. `treadmill_name` is informational only; **`exclude_contact`** = `skate_flag | floor_outlier | too_short | corrupt` (name alone does **not** exclude). Totals: **1252** `skate_flag`, **1213** belt / **39** slide, **412** name-flag; **412 / 1213** name-flag recall among belt-signature clips (**~34%**). **`exclude_contact` hours: 3.19** of **58.84** h indexed.
+
+| Subset | n clips | n skate_flag | % | n belt | n slide | n name-flag |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| BMLrub | 3061 | 1197 | 39.1 | 1193 | 4 | 412 |
+| KIT | 4232 | 9 | 0.2 | 0 | 9 | 0 |
+| CMU | 1983 | 11 | 0.6 | 8 | 3 | 0 |
+| MOYO | 388 | 7 | 1.8 | 7 | 0 | 0 |
+| HDM05 | 215 | 8 | 3.7 | 0 | 8 | 0 |
+| ACCAD | 252 | 8 | 3.2 | 2 | 6 | 0 |
+| (other subsets) | … | 0–3 each | <4% | … | … | 0 |
+
+**`foot_traj/`:** **17,355** npz files (full index). Contact is computed **on demand** from cached positions when present (`compute_foot_contact` / `compute_skate_score`); **`amass_contact` npz cache not built.**
+
+**Contact thresholds (BABEL `frame_ann`, all non-excluded segments):** **5063** walk / **6269** stand / **517** jump / **666** sit segments. Median metrics per combo (speed FD, 30 Hz, `min_run=3`):
+
+| h_on | v_on | walk L% | walk R% | alt% | dbl% | stand L% | stand R% | jump flight% | sit% | PASS |
+| ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :---: |
+| 0.02 | 0.10 | 36.8 | 39.5 | 65.0 | 2.0 | 100 | 100 | 0.00 | 94.4 | FAIL |
+| 0.02 | 0.20 | 40.0 | 42.9 | 65.5 | 4.8 | 100 | 100 | 0.00 | 97.3 | FAIL |
+| 0.02 | 0.30 | 41.8 | 44.7 | 64.5 | 6.8 | 100 | 100 | 0.00 | 99.2 | FAIL |
+| 0.03 | 0.10 | 48.9 | 51.2 | 78.9 | 6.5 | 100 | 100 | 0.00 | 100 | FAIL |
+| 0.03 | 0.20 | 52.6 | 55.0 | 75.5 | 11.8 | 100 | 100 | 0.00 | 100 | FAIL |
+| 0.03 | 0.30 | 54.5 | 57.3 | 73.1 | 15.2 | 100 | 100 | 0.00 | 100 | FAIL |
+| 0.05 | 0.10 | 54.2 | 54.7 | 83.8 | 10.2 | 100 | 100 | 0.00 | 100 | FAIL |
+| 0.05 | 0.20 | 58.3 | 58.7 | 78.9 | 16.9 | 100 | 100 | 0.00 | 100 | **PASS** |
+| 0.05 | 0.30 | 60.8 | 61.1 | 75.0 | 21.2 | 100 | 100 | 0.00 | 100 | **PASS** |
+
+**Locked in code:** **`h_on=0.05`**, **`h_off=0.06`**, **`v_on=0.2`**, **`v_off=0.25`** (walk per-foot **55–70%**, alternation **>15%**, stand **≥90%**, jump flight **0%**).
+
+### Foot channels (LBS clusters)
+
+Left/right foot = LBS argmax joints **{7,10}** / **{8,11}** (**254** verts/side). Native **+X** lateral, **+Y** up, **+Z** forward. Sole = **15 mm** along **Y** above lowest foot vertex; heel/toe split at ankle forward **Z**; full clusters (e.g. **27 / 124 / 29 / 122** verts). **CMU stand** `91_48` frames **0–40**: all four channels **0.0–2.3 cm**. **Penetration** (40 clips, full mesh): median **0.7 mm**, p95 **2.8 mm**, max **5.0 mm**, **0%** **> 2 cm**.
+
+30 Hz bool **`(T, 4)`** via `compute_foot_contact` / `load_contact` on demand from **`foot_traj`**.

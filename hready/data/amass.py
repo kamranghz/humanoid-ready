@@ -9,6 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
+from collections import defaultdict
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Any, Literal, Optional, Union
@@ -20,6 +21,8 @@ _TARGET_FPS = 30.0
 _INDEX_VERSION = 3
 _INDEX_NAME = "amass_index.json"
 _FLOOR_NAME = "amass_floor.json"
+_FLAGS_NAME = "amass_clip_flags.json"
+_FLOOR_OUTLIER_Z_THRESH = 0.35
 
 # Top-level folders under smplx_n that are not motion subsets.
 _NON_SUBSET_DIRS = frozenset({"extra", "train", "val", "test"})
@@ -150,7 +153,9 @@ def _iter_motion_npz(amass_root: Path) -> tuple[list[AmassIndexEntry], ScanStats
     stats = ScanStats()
     amass_root = amass_root.resolve()
 
-    def _consume(npz_path: Path, subset: str, subject: str, moyo_split: Optional[str]) -> None:
+    def _consume(
+        npz_path: Path, subset: str, subject: str, moyo_split: Optional[str]
+    ) -> None:
         if not npz_path.name.endswith(_MOTION_SUFFIX) or "_shape" in npz_path.name:
             return
         hdr = _read_motion_header(npz_path)
@@ -210,6 +215,10 @@ def _floor_path(cache_dir: Path) -> Path:
     return cache_dir / _FLOOR_NAME
 
 
+def _flags_path(cache_dir: Path) -> Path:
+    return cache_dir / _FLAGS_NAME
+
+
 def load_index(cache_dir: Optional[Path] = None) -> list[AmassIndexEntry]:
     return load_index_payload(cache_dir)["entries"]
 
@@ -218,7 +227,9 @@ def load_index_payload(cache_dir: Optional[Path] = None) -> dict[str, Any]:
     cache_dir = cache_dir or cache_dir_from_config()
     path = _index_path(cache_dir)
     if not path.is_file():
-        raise FileNotFoundError(f"AMASS index not found at {path}; run build_index() first.")
+        raise FileNotFoundError(
+            f"AMASS index not found at {path}; run build_index() first."
+        )
     with path.open(encoding="utf-8") as f:
         raw = json.load(f)
     entries = []
@@ -316,7 +327,11 @@ def _print_index_summary(
     for fps, cnt in fps_hist.most_common(15):
         print(f"    {fps}: {cnt}")
 
-    not_mult = [e for e in entries if abs(e.fps / _TARGET_FPS - round(e.fps / _TARGET_FPS)) > 1e-3]
+    not_mult = [
+        e
+        for e in entries
+        if abs(e.fps / _TARGET_FPS - round(e.fps / _TARGET_FPS)) > 1e-3
+    ]
     print(f"  clips with fps not a multiple of 30: {len(not_mult)}")
     short = [e for e in entries if e.duration < 1.0]
     print(f"  clips shorter than 1 s: {len(short)}")
@@ -512,7 +527,9 @@ def audit_subject_grouping(
 
         clip_betas: list[tuple[float, ...]] = []
         for e in es:
-            clip_betas.append(_beta_vector_key(_read_npz_betas(amass_root / e.rel_path)))
+            clip_betas.append(
+                _beta_vector_key(_read_npz_betas(amass_root / e.rel_path))
+            )
         n_distinct_betas = len(set(clip_betas))
         beta_to_folders = _beta_folders_from_folder_betas(folder_betas)
         shared_beta_vectors = sum(1 for fl in beta_to_folders.values() if len(fl) > 1)
@@ -521,11 +538,15 @@ def audit_subject_grouping(
             f"beta_vectors_in_>1_folder={shared_beta_vectors}"
         )
         if n_distinct_betas == len(folders) and shared_beta_vectors == 0:
-            print("    -> folder~subject (one beta per folder, no cross-folder sharing)")
+            print(
+                "    -> folder~subject (one beta per folder, no cross-folder sharing)"
+            )
         elif shared_beta_vectors > 0:
             print("    -> folders share betas (merge via union-find for splits)")
         elif n_distinct_betas > len(folders):
-            print("    -> per-clip shape fits within folders (no stable subject identity)")
+            print(
+                "    -> per-clip shape fits within folders (no stable subject identity)"
+            )
         elif len(folders) == 1:
             print("    -> single folder bucket in subset")
 
@@ -605,40 +626,51 @@ def _subsample_frame_indices(n_frames: int, every: int = 10) -> np.ndarray:
     return idx
 
 
+def _resolve_torch_device(device: Optional[str] = None) -> Any:
+    import torch
+
+    if device is not None:
+        return torch.device(device)
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")
+
+
 def _compute_floor_offset_mesh(
     root_orient: np.ndarray,
     pose_body: np.ndarray,
     transl: np.ndarray,
     betas: np.ndarray,
     fps: float,
+    *,
+    device: Optional[str] = None,
+    body: Optional[Any] = None,
 ) -> tuple[float, dict[str, float]]:
     """Floor height from locked_head mesh (1st percentile of per-frame min vertex z).
 
-    Uses every 10th frame (plus last) to limit cost. The 1st percentile of
-    per-frame minimum vertex ``z`` is more robust than a global minimum (single
-    foot penetration / marker glitch) while still tracking the support surface.
+    Uses every 10th frame (plus last). Batched SMPL-X forward on ``device``.
     """
     import torch
     from hready.body.smplx_wrapper import load_body
 
-    body = load_body("locked_head")
-    device = torch.device("cpu")
+    dev = _resolve_torch_device(device)
+    if body is None:
+        body = load_body("locked_head")
+        body._model.to(dev)
     dtype = torch.float32
     idx = _subsample_frame_indices(root_orient.shape[0], every=10)
-    mins: list[float] = []
-    pelvis_z: list[float] = []
-    head_above: list[float] = []
-    for i in idx:
-        go = torch.as_tensor(root_orient[i], device=device, dtype=dtype).unsqueeze(0)
-        bp = torch.as_tensor(pose_body[i], device=device, dtype=dtype).reshape(1, 63)
-        tr = torch.as_tensor(transl[i], device=device, dtype=dtype).unsqueeze(0)
-        be = torch.as_tensor(betas, device=device, dtype=dtype).unsqueeze(0)
-        out = body.forward(go, bp, be, tr)
-        vz = out.vertices[0, :, 2].detach().cpu().numpy()
-        mins.append(float(vz.min()))
-        pelvis_z.append(float(out.joints[0, 0, 2].item()))
-        head_z = float(out.joints[0, 15, 2].item())
-        head_above.append(1.0 if head_z > pelvis_z[-1] else 0.0)
+    go = torch.as_tensor(root_orient[idx], device=dev, dtype=dtype)
+    bp = torch.as_tensor(pose_body[idx], device=dev, dtype=dtype).reshape(len(idx), 63)
+    tr = torch.as_tensor(transl[idx], device=dev, dtype=dtype)
+    be = (
+        torch.as_tensor(betas, device=dev, dtype=dtype)
+        .unsqueeze(0)
+        .expand(len(idx), -1)
+    )
+    out = body.forward(go, bp, be, tr)
+    vz = out.vertices[:, :, 2].detach().cpu().numpy()
+    mins = vz.min(axis=1)
+    pelvis_z = out.joints[:, 0, 2].detach().cpu().numpy()
+    head_z = out.joints[:, 15, 2].detach().cpu().numpy()
+    head_above = (head_z > pelvis_z).astype(np.float64)
     floor = float(np.percentile(mins, 1))
     stats = {
         "pelvis_z_median": float(np.median(pelvis_z)),
@@ -688,21 +720,301 @@ def floor_offset(
     return record
 
 
+def build_floor_cache(
+    *,
+    amass_root: Optional[Path] = None,
+    cache_dir: Optional[Path] = None,
+    force: bool = False,
+    device: Optional[str] = None,
+) -> dict[str, Any]:
+    """Compute floor offsets for every indexed clip (GPU-batched per clip)."""
+    import time
+
+    amass_root = (amass_root or amass_root_from_config()).resolve()
+    cache_dir = (cache_dir or cache_dir_from_config()).resolve()
+    entries = load_index(cache_dir)
+    sidecar = _load_floor_sidecar(cache_dir)
+    sidecar["version"] = 3
+    import torch
+    from hready.body.smplx_wrapper import load_body
+
+    dev = _resolve_torch_device(device)
+    body = load_body("locked_head")
+    body._model.to(dev)
+    t0 = time.perf_counter()
+    built = 0
+    for i, entry in enumerate(entries):
+        cached = sidecar["entries"].get(entry.rel_path)
+        if (
+            cached is not None
+            and not force
+            and cached.get("playback_fps") == entry.fps
+            and cached.get("method") == "p1_per_frame_min_vertex_z_subsample10"
+        ):
+            continue
+        raw = _load_npz_raw(amass_root / entry.rel_path)
+        floor, stats = _compute_floor_offset_mesh(
+            raw["root_orient"],
+            raw["pose_body"].reshape(-1, 21, 3),
+            raw["trans"],
+            raw["betas"],
+            entry.fps,
+            device=device,
+            body=body,
+        )
+        sidecar["entries"][entry.rel_path] = {
+            "floor_offset": floor,
+            "playback_fps": entry.fps,
+            "method": "p1_per_frame_min_vertex_z_subsample10",
+            "outlier": False,
+            **stats,
+        }
+        built += 1
+        if built % 500 == 0:
+            _save_floor_sidecar(cache_dir, sidecar)
+            print(f"  floor cache: {i + 1}/{len(entries)} clips ({built} new)")
+    flagged = flag_floor_outliers(cache_dir, z_thresh=_FLOOR_OUTLIER_Z_THRESH)
+    _save_floor_sidecar(cache_dir, sidecar)
+    elapsed = time.perf_counter() - t0
+    floors = [v["floor_offset"] for v in sidecar["entries"].values()]
+    med = float(np.median(floors)) if floors else 0.0
+    return {
+        "n_clips": len(entries),
+        "n_built": built,
+        "wall_s": elapsed,
+        "clips_per_s": len(entries) / elapsed if elapsed > 0 else 0.0,
+        "global_median_floor_offset_m": med,
+        "floor_outliers": flagged,
+    }
+
+
+def _load_flags_sidecar(cache_dir: Path) -> dict[str, Any]:
+    path = _flags_path(cache_dir)
+    if not path.is_file():
+        return {"version": 1, "entries": {}}
+    with path.open(encoding="utf-8") as f:
+        return json.load(f)
+
+
+def _save_flags_sidecar(cache_dir: Path, data: dict[str, Any]) -> None:
+    cache_dir.mkdir(parents=True, exist_ok=True)
+    with _flags_path(cache_dir).open("w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2)
+
+
+def _treadmill_name_flag(rel_path: str) -> bool:
+    return "treadmill" in rel_path.lower()
+
+
+def median_root_horizontal_speed_m_s(
+    entry: AmassIndexEntry,
+    *,
+    amass_root: Path,
+    max_frames_30hz: int = 120,
+) -> float:
+    """Median root horizontal speed on the 30 Hz grid (same center crop as skate score)."""
+    raw = _load_npz_raw(amass_root / entry.rel_path)
+    transl = resample_translation(raw["trans"], float(entry.fps), _TARGET_FPS)
+    if transl.shape[0] > max_frames_30hz:
+        s0 = (transl.shape[0] - max_frames_30hz) // 2
+        transl = transl[s0 : s0 + max_frames_30hz]
+    if transl.shape[0] < 2:
+        return 0.0
+    xy = transl[:, :2]
+    dt = 1.0 / _TARGET_FPS
+    speed = np.linalg.norm(np.diff(xy, axis=0), axis=1) / dt
+    return float(np.median(speed))
+
+
+def _flags_for_entry(
+    entry: AmassIndexEntry,
+    *,
+    amass_root: Path,
+    floor_rec: Optional[dict[str, Any]],
+    raw: Optional[dict[str, np.ndarray]] = None,
+    device: Optional[str] = None,
+    body: Optional[Any] = None,
+    skate_score: Optional[float] = None,
+) -> dict[str, Any]:
+    from hready.data.contact import T_SKATE, compute_skate_score, load_foot_positions
+
+    treadmill_name = _treadmill_name_flag(entry.rel_path)
+    if skate_score is None:
+        skate_score = float("nan")
+        if floor_rec is not None:
+            positions = None
+            try:
+                positions = load_foot_positions(
+                    entry, cache_dir=cache_dir_from_config()
+                )
+            except FileNotFoundError:
+                positions = None
+            if positions is not None:
+                skate_score = compute_skate_score(
+                    entry,
+                    float(floor_rec["floor_offset"]),
+                    positions=positions,
+                )
+            elif body is not None:
+                skate_score = compute_skate_score(
+                    entry,
+                    float(floor_rec["floor_offset"]),
+                    amass_root=amass_root,
+                    device=device,
+                    body=body,
+                )
+    else:
+        skate_score = float(skate_score)
+    root_speed = median_root_horizontal_speed_m_s(entry, amass_root=amass_root)
+    skate_flag = bool(np.isfinite(skate_score) and skate_score > T_SKATE)
+    if skate_flag:
+        skate_reason = "belt" if root_speed < 0.5 * skate_score else "slide"
+    else:
+        skate_reason = None
+    floor_outlier = bool(floor_rec.get("outlier", False)) if floor_rec else False
+    too_short = entry.duration < 1.0
+    corrupt = False
+    exclude = skate_flag or floor_outlier or too_short or corrupt
+    return {
+        "treadmill_name": treadmill_name,
+        "skate_score": skate_score,
+        "root_speed_median_m_s": root_speed,
+        "skate_flag": skate_flag,
+        "skate_reason": skate_reason,
+        "floor_outlier": floor_outlier,
+        "too_short": too_short,
+        "corrupt": corrupt,
+        "exclude_contact": exclude,
+        "exclude_physical_eval": exclude,
+    }
+
+
+def clip_flags(
+    entry: Union[AmassIndexEntry, str],
+    *,
+    amass_root: Optional[Path] = None,
+    cache_dir: Optional[Path] = None,
+) -> dict[str, Any]:
+    """Per-clip QA flags (cached in ``amass_clip_flags.json``)."""
+    cache_dir = (cache_dir or cache_dir_from_config()).resolve()
+    if isinstance(entry, str):
+        entry = _entry_by_rel(load_index(cache_dir), entry)
+    sidecar = _load_flags_sidecar(cache_dir)
+    rec = sidecar["entries"].get(entry.rel_path)
+    if rec is not None:
+        return rec
+    amass_root = (amass_root or amass_root_from_config()).resolve()
+    floor_side = _load_floor_sidecar(cache_dir)
+    floor_rec = floor_side["entries"].get(entry.rel_path)
+    rec = _flags_for_entry(entry, amass_root=amass_root, floor_rec=floor_rec)
+    sidecar["entries"][entry.rel_path] = rec
+    _save_flags_sidecar(cache_dir, sidecar)
+    return rec
+
+
+def build_clip_flags_cache(
+    *,
+    amass_root: Optional[Path] = None,
+    cache_dir: Optional[Path] = None,
+    device: Optional[str] = None,
+    compute_missing_skate: bool = False,
+) -> dict[str, Any]:
+    """Recompute flags for all indexed clips (requires floor cache)."""
+    amass_root = (amass_root or amass_root_from_config()).resolve()
+    cache_dir = (cache_dir or cache_dir_from_config()).resolve()
+    entries = load_index(cache_dir)
+    floor_side = _load_floor_sidecar(cache_dir)
+    sidecar: dict[str, Any] = {"version": 1, "entries": {}}
+    counts: dict[str, int] = defaultdict(int)
+    by_subset: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    name_among_skate_belt = 0
+    skate_belt_total = 0
+    from hready.body.smplx_wrapper import load_body
+
+    dev = _resolve_torch_device(device)
+    body = load_body("locked_head")
+    body._model.to(dev)
+    skate_scores: dict[str, float] = {}
+    skate_path = cache_dir / "amass_skate_scores.json"
+    if skate_path.is_file():
+        with skate_path.open(encoding="utf-8") as f:
+            skate_scores = json.load(f).get("entries", {})
+
+    for i, entry in enumerate(entries):
+        floor_rec = floor_side["entries"].get(entry.rel_path)
+        sc: Optional[float] = (
+            float(skate_scores[entry.rel_path])
+            if entry.rel_path in skate_scores
+            else None
+        )
+        need_forward = sc is None and compute_missing_skate
+        rec = _flags_for_entry(
+            entry,
+            amass_root=amass_root,
+            floor_rec=floor_rec,
+            device=device,
+            body=body if need_forward else None,
+            skate_score=sc,
+        )
+        sidecar["entries"][entry.rel_path] = rec
+        if rec.get("skate_flag") and rec.get("skate_reason") == "belt":
+            skate_belt_total += 1
+            if rec.get("treadmill_name"):
+                name_among_skate_belt += 1
+        for k in (
+            "treadmill_name",
+            "skate_flag",
+            "floor_outlier",
+            "too_short",
+            "corrupt",
+            "exclude_contact",
+        ):
+            if rec.get(k):
+                counts[k] += 1
+                by_subset[entry.subset][k] += 1
+        if rec.get("skate_reason") == "belt":
+            counts["skate_belt"] = counts.get("skate_belt", 0) + 1
+            by_subset[entry.subset]["skate_belt"] = (
+                by_subset[entry.subset].get("skate_belt", 0) + 1
+            )
+        elif rec.get("skate_reason") == "slide":
+            counts["skate_slide"] = counts.get("skate_slide", 0) + 1
+            by_subset[entry.subset]["skate_slide"] = (
+                by_subset[entry.subset].get("skate_slide", 0) + 1
+            )
+        if (i + 1) % 2000 == 0:
+            print(f"  clip flags: {i + 1}/{len(entries)}", flush=True)
+    _save_flags_sidecar(cache_dir, sidecar)
+    return {
+        "counts": dict(counts),
+        "by_subset": {k: dict(v) for k, v in by_subset.items()},
+        "name_flag_among_skate_belt": name_among_skate_belt,
+        "skate_belt_total": skate_belt_total,
+    }
+
+
 def flag_floor_outliers(
     cache_dir: Optional[Path] = None,
     *,
     z_thresh: float = 0.35,
 ) -> list[str]:
-    """Mark clips whose floor offset is far from the global median (stairs, lying, etc.)."""
+    """Mark clips whose floor offset deviates from their **subset** median (not global)."""
     cache_dir = cache_dir or cache_dir_from_config()
     sidecar = _load_floor_sidecar(cache_dir)
-    floors = [v["floor_offset"] for v in sidecar["entries"].values()]
-    if not floors:
-        return []
-    med = float(np.median(floors))
+    entries = load_index(cache_dir)
+    rel_subset = {e.rel_path: e.subset for e in entries}
+    by_subset: dict[str, list[float]] = defaultdict(list)
+    for rel, rec in sidecar["entries"].items():
+        sub = rel_subset.get(rel, rel.split("/")[0])
+        by_subset[sub].append(float(rec["floor_offset"]))
+    subset_med = {
+        sub: float(np.median(vals)) for sub, vals in by_subset.items() if vals
+    }
     flagged: list[str] = []
     for rel, rec in sidecar["entries"].items():
-        out = abs(rec["floor_offset"] - med) > z_thresh
+        sub = rel_subset.get(rel, rel.split("/")[0])
+        med = subset_med.get(sub, float(np.median(list(subset_med.values()))))
+        out = abs(float(rec["floor_offset"]) - med) > z_thresh
         rec["outlier"] = out
         if out:
             flagged.append(rel)
@@ -758,12 +1070,16 @@ def _target_times(n_tgt: int, fps_tgt: float) -> np.ndarray:
     return np.arange(n_tgt, dtype=np.float64) / fps_tgt
 
 
-def resample_translation(trans: np.ndarray, fps_src: float, fps_tgt: float) -> np.ndarray:
+def resample_translation(
+    trans: np.ndarray, fps_src: float, fps_tgt: float
+) -> np.ndarray:
     """Resample root translation to ``fps_tgt`` (same path as ``load_clip``)."""
     return _resample_translation(trans, fps_src, fps_tgt)
 
 
-def _resample_translation(trans: np.ndarray, fps_src: float, fps_tgt: float) -> np.ndarray:
+def _resample_translation(
+    trans: np.ndarray, fps_src: float, fps_tgt: float
+) -> np.ndarray:
     n_src = trans.shape[0]
     n_tgt = _target_frame_count(n_src, fps_src, fps_tgt)
     if n_src == n_tgt and abs(fps_src - fps_tgt) < 1e-6:
@@ -825,9 +1141,7 @@ def _quaternion_hemisphere_continuous(q: Any) -> Any:
     return out
 
 
-def _slerp_quaternion_series(
-    q_src: Any, t_src: np.ndarray, t_tgt: np.ndarray
-) -> Any:
+def _slerp_quaternion_series(q_src: Any, t_src: np.ndarray, t_tgt: np.ndarray) -> Any:
     import torch
 
     out = []
@@ -1128,8 +1442,12 @@ def native_pelvis_and_foot_heights(
     pelvis: list[float] = []
     foot_min: list[float] = []
     for i in idx:
-        go = torch.as_tensor(raw["root_orient"][i], device=device, dtype=dtype).unsqueeze(0)
-        bp = torch.as_tensor(raw["pose_body"][i], device=device, dtype=dtype).reshape(1, 63)
+        go = torch.as_tensor(
+            raw["root_orient"][i], device=device, dtype=dtype
+        ).unsqueeze(0)
+        bp = torch.as_tensor(raw["pose_body"][i], device=device, dtype=dtype).reshape(
+            1, 63
+        )
         tr = torch.as_tensor(raw["trans"][i], device=device, dtype=dtype).unsqueeze(0)
         be = torch.as_tensor(raw["betas"], device=device, dtype=dtype).unsqueeze(0)
         out = body.forward(go, bp, be, tr)

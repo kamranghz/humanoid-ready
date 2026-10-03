@@ -14,6 +14,9 @@ _LAZY: dict[str, tuple[str, str]] = {
     "AmassIndexEntry": ("hready.data.amass", "AmassIndexEntry"),
     "build_babel_index": ("hready.data.babel", "build_babel_index"),
     "load_babel_labels": ("hready.data.babel", "load_babel_labels"),
+    "load_contact": ("hready.data.contact", "load_contact"),
+    "clip_flags": ("hready.data.amass", "clip_flags"),
+    "build_floor_cache": ("hready.data.amass", "build_floor_cache"),
 }
 
 __all__ = list(_LAZY.keys())
@@ -40,3 +43,4 @@ if TYPE_CHECKING:
         load_index,
     )
     from hready.data.babel import build_babel_index, load_babel_labels
+    from hready.data.contact import load_contact
