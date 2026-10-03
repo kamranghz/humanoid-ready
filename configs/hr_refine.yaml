@@ -1,0 +1,24 @@
+# HR-Refine training (checklist item 7). Data paths: configs/paths.yaml only.
+seed: 0
+window: 64
+batch_size: 8
+lr: 3.0e-4
+weight_decay: 0.01
+max_steps: 10000
+log_every: 50
+save_every: 500
+bf16: true
+
+model:
+  d_model: 256
+  n_heads: 8
+  n_layers: 4
+  ff_dim: 512
+  dropout: 0.1
+
+loss:
+  recon_joint: 1.0
+  recon_rot: 0.1
+  physics: 0.001
+
+checkpoint_dir: results/A2/hr_refine

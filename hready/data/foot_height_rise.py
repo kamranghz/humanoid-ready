@@ -10,7 +10,11 @@ from typing import Any
 import numpy as np
 
 from hready.data.amass import AmassIndexEntry, cache_dir_from_config, load_index
-from hready.data.contact import _foot_traj_path
+
+
+def _foot_traj_path(cache_dir: Path, rel_path: str) -> Path:
+    safe = rel_path.replace("/", "__")
+    return cache_dir / "foot_traj" / f"{safe}.npz"
 
 _FOOT_HEIGHT_RISE_JSON = "amass_foot_height_rise.json"
 _TARGET_FPS = 30.0
