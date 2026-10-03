@@ -243,7 +243,7 @@ Low mode **~0.01–0.06 m/s**; high mode **~0.63–3.5 m/s**.
 
 **`foot_traj/`:** **17,355** npz files (full index). Contact is computed **on demand** from cached positions when present (`compute_foot_contact` / `compute_skate_score`); **`amass_contact` npz cache not built.**
 
-**Contact thresholds (BABEL `frame_ann`, all non-excluded segments):** **5063** walk / **6269** stand / **517** jump / **666** sit segments. Median metrics per combo (speed FD, 30 Hz, `min_run=3`):
+**Contact thresholds (BABEL `frame_ann`, all non-excluded segments):** **5063** walk / **6269** stand / **517** jump / **666** sit segments. **Descriptive gait statistics** (medians over labeled segments; speed FD, 30 Hz, `min_run=3`; walk L/R/dbl use per-foot **any** heel|toe contact). Not automated regression targets — contact **code** is regression-checked against commit `27cc2da` on random `foot_traj` clips.
 
 | h_on | v_on | walk L% | walk R% | alt% | dbl% | stand L% | stand R% | jump flight% | sit% | PASS |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :---: |
@@ -254,7 +254,7 @@ Low mode **~0.01–0.06 m/s**; high mode **~0.63–3.5 m/s**.
 | 0.03 | 0.20 | 52.6 | 55.0 | 75.5 | 11.8 | 100 | 100 | 0.00 | 100 | FAIL |
 | 0.03 | 0.30 | 54.5 | 57.3 | 73.1 | 15.2 | 100 | 100 | 0.00 | 100 | FAIL |
 | 0.05 | 0.10 | 54.2 | 54.7 | 83.8 | 10.2 | 100 | 100 | 0.00 | 100 | FAIL |
-| 0.05 | 0.20 | 58.3 | 58.7 | 78.9 | 16.9 | 100 | 100 | 0.00 | 100 | **PASS** |
+| 0.05 | 0.20 | 58.3 | 58.7 | 78.9 | 16.9 | 100 | 100 | 0.00 | 100 | **PASS** *(walk L/R/dbl: descriptive medians over **5063** walk segments)* |
 | 0.05 | 0.30 | 60.8 | 61.1 | 75.0 | 21.2 | 100 | 100 | 0.00 | 100 | **PASS** |
 
 **Locked in code:** **`h_on=0.05`**, **`h_off=0.06`**, **`v_on=0.2`**, **`v_off=0.25`** (walk per-foot **55–70%**, alternation **>15%**, stand **≥90%**, jump flight **0%**).
