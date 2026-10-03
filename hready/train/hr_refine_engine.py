@@ -28,6 +28,9 @@ from hready.models.hr_refine import HRRefine
 
 FOOT_CHANNEL_JOINTS = (7, 10, 8, 11)
 
+if os.name == "nt":
+    os.environ["USE_LIBUV"] = "0"
+
 
 @dataclass
 class TrainHyper:
@@ -57,16 +60,70 @@ def repo_root() -> Path:
     raise FileNotFoundError("repo root not found")
 
 
+def _patch_windows_tcp_store() -> None:
+    """Force ``use_libuv=False`` on all TCPStore paths (Windows wheels without libuv)."""
+    if os.name != "nt":
+        return
+    import torch.distributed.rendezvous as rdv
+    from torch.distributed import TCPStore
+
+    if getattr(rdv, "_hready_libuv_patched", False):
+        return
+
+    def _create_c10d_store(hostname, port, rank, world_size, timeout, use_libuv=True):
+        if not 0 <= port < 2**16:
+            raise ValueError(f"port must have value from 0 to 65535 but was {port}.")
+        if rdv._torchelastic_use_agent_store():
+            return TCPStore(
+                host_name=hostname,
+                port=port,
+                world_size=world_size,
+                is_master=False,
+                timeout=timeout,
+                use_libuv=False,
+            )
+        start_daemon = rank == 0
+        return TCPStore(
+            host_name=hostname,
+            port=port,
+            world_size=world_size,
+            is_master=start_daemon,
+            timeout=timeout,
+            multi_tenant=True,
+            use_libuv=False,
+        )
+
+    rdv._create_c10d_store = _create_c10d_store
+    rdv._hready_libuv_patched = True
+
+
+if os.name == "nt":
+    _patch_windows_tcp_store()
+
+
 def setup_distributed() -> tuple[int, int, int, torch.device]:
     if os.name == "nt":
-        os.environ.setdefault("USE_LIBUV", "0")
+        os.environ["USE_LIBUV"] = "0"
+        os.environ.setdefault("MASTER_ADDR", "127.0.0.1")
+        _patch_windows_tcp_store()
     if "RANK" in os.environ:
         rank = int(os.environ["RANK"])
         local_rank = int(os.environ.get("LOCAL_RANK", rank))
         world_size = int(os.environ["WORLD_SIZE"])
         if not dist.is_initialized():
             backend = "gloo" if os.name == "nt" else "nccl"
-            dist.init_process_group(backend=backend)
+            if os.name == "nt" and world_size == 1:
+                import tempfile
+
+                init_file = Path(tempfile.gettempdir()) / f"hready_pg_{os.getpid()}.bin"
+                dist.init_process_group(
+                    backend=backend,
+                    init_method=f"file:///{init_file.as_posix()}",
+                    rank=rank,
+                    world_size=world_size,
+                )
+            else:
+                dist.init_process_group(backend=backend)
         if torch.cuda.is_available():
             torch.cuda.set_device(local_rank)
             device = torch.device("cuda", local_rank)

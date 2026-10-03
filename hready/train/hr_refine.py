@@ -5,7 +5,7 @@ from __future__ import annotations
 import argparse
 import os
 
-os.environ.setdefault("USE_LIBUV", "0")
+os.environ["USE_LIBUV"] = "0"
 import time
 from pathlib import Path
 from typing import Any
@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 
 from hready.data.refine_corrupt import corruption_config_from_dict
 from hready.data.refine_dataset import HRRefineWindowDataset, collate_windows
-from hready.losses import LossConfig
+from hready.losses import LossConfig, loss_config_from_dict
 from hready.train.hr_refine_engine import (
     TrainHyper,
     backward_step,
@@ -66,7 +66,7 @@ def train_main(cfg: dict[str, Any]) -> None:
         recon_rot=float(cfg.get("loss", {}).get("recon_rot", 1.0)),
         physics_scale=float(cfg.get("loss", {}).get("physics", 1.0)),
     )
-    loss_cfg = LossConfig()
+    loss_cfg = loss_config_from_dict(cfg.get("physics_loss"))
     corrupt_cfg = corruption_config_from_dict(cfg.get("corruption"))
     ckpt_dir = repo_root() / cfg.get("checkpoint_dir", "results/A2/hr_refine")
     ckpt_dir.mkdir(parents=True, exist_ok=True)

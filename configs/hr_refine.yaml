@@ -31,4 +31,11 @@ loss:
   recon_rot: 0.1
   physics: 0.001
 
+# Jerk/flight on corrupted inputs can be O(1e8); refine targets contact/penetration/skating first.
+physics_loss:
+  smoothness:
+    enabled: false
+  flight_consistency:
+    enabled: false
+
 checkpoint_dir: results/A2/hr_refine

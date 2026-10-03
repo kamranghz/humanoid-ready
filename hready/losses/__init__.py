@@ -51,6 +51,36 @@ class LossConfig:
     joint_rom: LossTermConfig = field(default_factory=LossTermConfig)
 
 
+def loss_config_from_dict(data: Mapping[str, Any] | None) -> LossConfig:
+    """Build ``LossConfig`` from optional YAML ``physics_loss`` block."""
+    cfg = LossConfig()
+    if not data:
+        return cfg
+    term_names = (
+        "foot_skating",
+        "ground_penetration",
+        "flight_consistency",
+        "balance_com_in_support",
+        "smoothness",
+        "bone_length_consistency",
+        "joint_rom",
+    )
+    for name in term_names:
+        block = data.get(name)
+        if block is None:
+            continue
+        term = getattr(cfg, name)
+        if "enabled" in block:
+            term.enabled = bool(block["enabled"])
+        if "weight" in block:
+            term.weight = float(block["weight"])
+    if "smoothness_accel_weight" in data:
+        cfg.smoothness_accel_weight = float(data["smoothness_accel_weight"])
+    if "smoothness_jerk_weight" in data:
+        cfg.smoothness_jerk_weight = float(data["smoothness_jerk_weight"])
+    return cfg
+
+
 def _compute_losses_impl(inputs: Mapping[str, Any], config: LossConfig) -> dict:
     import torch
 
