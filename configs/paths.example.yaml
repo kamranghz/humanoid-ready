@@ -10,6 +10,10 @@ babel_root: D:/projects/hready_data/datasets/babel/babel_v1.0_release
 gmr_root: D:/projects/third_party/GMR
 gmr_python: C:/Users/kghol072/AppData/Local/anaconda3/envs/hready-gmr/python.exe
 
+# Isaac Lab + Newton (WSL only — item 6C; Windows hready launches via files)
+isaaclab_root: D:/RoboticsResearch/repositories/IsaacLab-Newton
+wsl_python: /mnt/d/RoboticsResearch/environments/isaaclab-newton-beta2/bin/python
+
 # Example resolved paths (not required until loaders are implemented):
 # smplx_locked_head: D:/projects/hready_data/models/smplx/locked_head
 # smplx_v1_1: D:/projects/hready_data/models/smplx/v1_1

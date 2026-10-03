@@ -22,6 +22,9 @@ ml = [
     "scipy",
     "smplx",
 ]
+viz = [
+    "matplotlib>=3.7",
+]
 
 [tool.setuptools.packages.find]
 where = ["."]
@@ -30,3 +33,6 @@ include = ["hready*"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+
+[tool.ruff.lint.per-file-ignores]
+"hready/robot/isaaclab_newton.py" = ["E402", "I001"]

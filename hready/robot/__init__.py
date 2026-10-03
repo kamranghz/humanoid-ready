@@ -23,4 +23,4 @@ def __getattr__(name: str) -> Any:
 
 
 if TYPE_CHECKING:
-    from hready.robot.retarget import GMR_JOINT_NAMES, retarget_clip
+    from hready.robot.retarget import GMR_JOINT_NAMES, retarget_clip  # noqa: F401
