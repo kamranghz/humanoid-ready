@@ -28,7 +28,7 @@ On grounded SMPL-X FK, **pelvis joint height** (metres, floor z=0) splits seated
 - **`sit_floor`:** upright sit gates + `pelvis_h ≤ sit_support_pelvis_h_min` (low pelvis band — floor sitting in joint space).
 - **`sit_support`:** same gates + `pelvis_h` above that threshold (seat-height mode ~0.5–0.6 m in AMASS; includes most KIT chair/wipe tasks).
 
-**Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (policy freeze for mesh pelvis bands; midpoint formula on the sit-gate pool yields **0.402 m** on the current index — see provenance below). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
+**Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (within **0.002 m** of the all-VAL percentile midpoint **0.4321 m**; kept as policy — see provenance below). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
 
 **Floor-work-eligible geometry** (metrics that assume floor support): `sit_floor`, `kneel`, `lie`, `crawl`, `yoga_like`. **`sit_support` is excluded** — reported separately in `cohort_counts.json` → `floor_work_eligible`.
 
@@ -54,8 +54,8 @@ Features: `pelvis_h`, `torso_up_dot` (neck−pelvis vs +Z), `wrist_h`, `head_h`,
 
 | Threshold | Frozen | Previous / removed | Provenance type |
 |-----------|--------|-------------------|-----------------|
-| `crawl_shoulder_h_min` | **0.30** | *(new)* | `percentile_split` (see below) |
-| `lie_shoulder_h_max` | **0.30** | *(new)* | `shared_split` with `crawl_shoulder_h_min` |
+| `crawl_shoulder_h_min` | **0.30** | *(new)* | `policy` (see below) |
+| `lie_shoulder_h_max` | **0.30** | *(new)* | `policy` (same as `crawl_shoulder_h_min`) |
 | `sit_support_pelvis_h_min` | **0.43** | **0.68** | `midpoint_percentiles` (see below) |
 | `crawl_foot_h_max` | — | **removed** | Unsatisfiable on ankle heights |
 | Lie `wrist_h > 0.22` gate | — | **removed** | Excluded supine arms |
@@ -66,9 +66,9 @@ Each threshold has a matching entry in `threshold_provenance`. Thresholds were *
 
 #### Provenance detail (label-free VAL; frozen values unchanged)
 
-**`crawl_shoulder_h_min` / `lie_shoulder_h_max` (0.30 m).** Sample: **all 2223 VAL clips** (sorted `rel_path`), **frame stride 4**, gates `torso_up_dot ≤ 0.45` and `pelvis_h ≤ 0.42` (raw metres) — this is the `derive_geometry_thresholds` shoulder pool (**not** the crawl diagnostic scan, which uses **stride 8** on the same clip list). **n = 828** frames, **27** clips, **7** subjects. **q55(`shoulder_h`) = 0.280 m** (`round(..., 3)` → 0.28); config remains **0.30 m**. Shoulder histogram on this pool (0.05 m bins): [0.15,0.20) **109**; [0.20,0.25) **151**; [0.25,0.30) **279**; [0.30,0.35) **110**; [0.35,0.40) **88**; [0.40,0.45) **62**; [0.45,0.50) **14**; [0.50,0.55) **15** — unimodal below 0.30 with a decaying tail above, **not** a valley at 0.30. Physical rule: within the horizontal low-pelvis band, crawl requires shoulders above the split (arms supporting trunk); lie requires shoulders at or below. SMPL-X `locked_head` neutral FK (zero betas/pose, grounded) is **outside** this band (upright reference only).
+**`crawl_shoulder_h_min` / `lie_shoulder_h_max` (0.30 m).** **Policy value** — not a histogram valley and **no derived physical anchor**. Reference horiz+low-pelvis pool (all VAL clips, frame stride 4): **q55 = 0.280 m**; histogram mode in **[0.25, 0.30)** (279 of 828 frames). This threshold **only** decides **lie vs crawl** within the horizontal low-pelvis band; per-class lie/crawl frame counts and BABEL confirmation of lie/crawl segments **depend on it**; **sensitivity to this value was not measured**.
 
-**`sit_support_pelvis_h_min` (0.43 m).** Sample: **every 3rd VAL clip** (**741** clips in subsample), **frame stride 8**, gates `torso_up_dot ≥ 0.82` and `thigh_up_dot ≥ -0.32` — distinct from the shoulder pool. **n = 598** sit-gate frames, **37** clips, **17** subjects. **floor_tail** (`pelvis_h ≤ 0.35`): **p90 = 0.305 m** (**n = 192**). **seat_band** (`0.45 ≤ pelvis_h ≤ 0.65`): **p10 = 0.499 m** (**n = 308**). Midpoint **(p90 + p10) / 2 = 0.402 m** — **not** a histogram valley. Config **0.43 m** is the **E1 amendment** from **0.68** (mesh pelvis bands); it is **not** equal to the recomputed midpoint on the current index.
+**`sit_support_pelvis_h_min` (0.43 m).** **Primary evidence (all VAL, `stride_clips` 1, frame stride 8):** **1896** sit-gate frames; **floor_tail** (`pelvis_h ≤ 0.35`) **p90 = 0.3334 m** (**n = 389**); **seat_band** (`0.45 ≤ pelvis_h ≤ 0.65`) **p10 = 0.5307 m** (**n = 1162**); midpoint **0.4321 m**. Frozen **0.43 m** is **within 0.002 m** of this all-VAL midpoint and is **kept as policy**. **`derive_geometry_thresholds` code path** (every 3rd VAL clip): **598** frames, **37** clips, **17** subjects; midpoint **0.402 m** (floor_tail p90 **0.305 m**, seat_band p10 **0.499 m**).
 
 ## Floor-work evaluation set
 
