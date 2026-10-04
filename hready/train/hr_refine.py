@@ -16,7 +16,7 @@ from torch.utils.data import DataLoader
 
 from hready.data.refine_corrupt import corruption_config_from_dict
 from hready.data.refine_dataset import HRRefineWindowDataset, collate_windows
-from hready.losses import LossConfig, loss_config_from_dict
+from hready.losses import loss_config_from_dict
 from hready.train.hr_refine_engine import (
     TrainHyper,
     backward_step,
