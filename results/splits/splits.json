@@ -1,0 +1,71 @@
+{
+  "floor_work": {
+    "confirmed_rise_gt_3cm_clips": 1,
+    "confirmed_rise_gt_5cm_clips": 0,
+    "n_babel_proposals": 160,
+    "n_babel_unconfirmed_excluded": 148,
+    "n_disagreements_excluded": 7,
+    "n_geometry_confirmed": 5,
+    "per_category_confirmed": {
+      "lie": 5
+    }
+  },
+  "floor_work_babel_keywords": {
+    "crawl": "crawl",
+    "crouch": "crouch",
+    "kneel": "kneel",
+    "lie": "lie",
+    "sit": "sit",
+    "stretch": "stretch",
+    "yoga": "yoga"
+  },
+  "floor_work_rules": {
+    "geometry": {
+      "crawl": {
+        "pelvis_z_max": 0.5,
+        "wrist_z_max": 0.38
+      },
+      "crouch": {
+        "pelvis_z_max": 0.7,
+        "torso_up_dot_min": 0.4
+      },
+      "kneel": {
+        "pelvis_z_max": 0.62,
+        "torso_up_dot_min": 0.5
+      },
+      "lie": {
+        "pelvis_z_max": 0.55,
+        "torso_up_dot_max": 0.45
+      },
+      "sit": {
+        "pelvis_z_max": 0.88,
+        "pelvis_z_min": 0.28,
+        "torso_up_dot_min": 0.62
+      },
+      "yoga": {
+        "pelvis_z_max": 0.75,
+        "torso_up_dot_min": 0.35
+      }
+    },
+    "min_geometry_fraction": 0.5,
+    "min_segment_duration_s": 1.0
+  },
+  "seed": 0,
+  "split_clip_counts": {
+    "test": 1272,
+    "train": 13860,
+    "val": 2223
+  },
+  "subject_disjoint": {
+    "n_subjects": {
+      "test": 46,
+      "train": 371,
+      "val": 46
+    },
+    "overlap_train_test": 0,
+    "overlap_train_val": 0,
+    "overlap_val_test": 0,
+    "subject_disjoint": true
+  },
+  "version": 1
+}

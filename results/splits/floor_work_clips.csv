@@ -1,0 +1,6 @@
+rel_path,subset,subject,babel_category,babel_keyword,segment_start_s,segment_end_s,ann_source,geometry_dominant,rise_cm,rise_status,skate_flag
+CMU/144/144_32_stageii.npz,CMU,144,lie,lie,10.252,13.294,frame_ann,lie,2.992933988571167,assessable,False
+CMU/144/144_32_stageii.npz,CMU,144,lie,lie,32.211,33.336,frame_ann,lie,2.992933988571167,assessable,False
+CMU/77/77_17_stageii.npz,CMU,77,lie,lie,0.0,2.711,frame_ann,lie,3.6343932151794434,assessable,False
+CMU/77/77_18_stageii.npz,CMU,77,lie,lie,0.0,1.71,frame_ann,lie,,no_near_floor,False
+SFU/0008/0008_Yoga001_stageii.npz,SFU,0008,lie,lie,23.211,28.669,frame_ann,lie,2.7476577758789062,assessable,False

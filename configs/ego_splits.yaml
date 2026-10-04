@@ -1,0 +1,44 @@
+# Track E1: reproducible split summary + floor-work test subset (paths via paths.yaml).
+paths_config: configs/paths.yaml
+
+seed: 0
+fps: 30.0
+
+# BABEL act_cat keywords (matched via hready.data.babel.act_cat_matches_keyword).
+floor_work_babel_keywords:
+  kneel: "kneel"
+  sit: "sit"
+  lie: "lie"
+  crawl: "crawl"
+  yoga: "yoga"
+  crouch: "crouch"
+  stretch: "stretch"
+
+floor_work:
+  min_segment_duration_s: 1.0
+  min_geometry_fraction: 0.5
+  # Pelvis height (m, Z-up grounded clip) and torso upright dot (neck-pelvis vs +Z).
+  geometry:
+    lie:
+      pelvis_z_max: 0.55
+      torso_up_dot_max: 0.45
+    sit:
+      pelvis_z_min: 0.28
+      pelvis_z_max: 0.88
+      torso_up_dot_min: 0.62
+    kneel:
+      pelvis_z_max: 0.62
+      torso_up_dot_min: 0.5
+    crawl:
+      pelvis_z_max: 0.5
+      wrist_z_max: 0.38
+    yoga:
+      pelvis_z_max: 0.75
+      torso_up_dot_min: 0.35
+    crouch:
+      pelvis_z_max: 0.7
+      torso_up_dot_min: 0.4
+
+output:
+  splits_json: results/E/splits.json
+  floor_work_csv: results/E/floor_work_clips.csv
