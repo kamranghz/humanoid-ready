@@ -30,7 +30,9 @@ On grounded SMPL-X FK, **pelvis joint height** (metres, floor z=0) splits seated
 
 **Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (within **0.002 m** of the all-VAL percentile midpoint **0.4321 m**; kept as policy — see provenance below). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
 
-**Floor-work-eligible geometry** (metrics that assume floor support): `sit_floor`, `kneel`, `lie`, `crawl`, `yoga_like`. **`sit_support` is excluded** — reported separately in `cohort_counts.json` → `floor_work_eligible`.
+**Floor-work-eligible geometry** (metrics that assume floor support): **`kneel`, `lie`, `crawl`, `yoga_like` only**. **`sit_floor` and `sit_support` are excluded** — both reported separately in `cohort_counts.json` (confirmed geometry class tables); only the eligible set feeds `floor_work_eligible`.
+
+**Amendment 2026-10-04 (eligibility):** `sit_floor` removed from floor-work-eligible because the class is **impure** for floor-contact metrics. Owner visual check: Eyes_Japan **09-squat_down** is a deep squat (no seat) but is labelled **`sit_floor`** (3 confirmed segments; median `pelvis_h` **0.33–0.34 m**, median hip/thigh mesh **`support_h` ~0.15 m**). Across **17** confirmed `sit_floor` segments, median `support_h` spans **0.048–0.31 m** and median `pelvis_h` **0.21–0.45 m**. **`foot_z_min`**, **`thigh_up_dot`**, and a mesh **`support_h`** gate (hips + left/right up-leg vertices, grounded FK) **do not** separate floor sitting from squats without discarding most of the class (**τ = 0.0495 m** keeps **1/17**; **τ = 0.07 m** keeps **4/17**); confirmed **`sit_support`** segment medians are all **≥ 0.278 m**. Contact-with-floor metrics do not apply to squats. A mesh-based support anchor remains a possible later refinement; **not** adopted in E1 (no tree/threshold change).
 
 ## Height units
 
@@ -86,7 +88,7 @@ Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows
 | sit | 141 | 37 | 95 | 33 |
 | yoga | 5 | 5 | 0 | 0 |
 
-**TEST split:** only **3** `floor_work_eligible` segments (2 subjects, **7.921 s**); VAL holds the other **35** eligible segments (**159.59 s**, 10 subjects).
+**TEST split:** **2** `floor_work_eligible` segments (**1** subject, **4.421 s**); VAL holds the other **19** (**96.382 s**, **7** subjects). Eligible set is **kneel + lie** only.
 
 ### E1 close run (`cohort_counts.json`, VAL ∪ TEST)
 
@@ -101,7 +103,7 @@ Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows
 | sit_floor | 17 | 6 | 66.708 | 0.461 |
 | sit_support | 78 | 30 | 1234.032 | 0.450 |
 
-**`floor_work_eligible` (VAL ∪ TEST):** **38** segments, **167.511 s**, **12** subjects (largest-subject share **0.245**). VAL alone: 35 segments / 159.59 s / 10 subjects; TEST: **3** segments / 7.921 s / 2 subjects.
+**`floor_work_eligible` (kneel + lie):** VAL **19** segments, **11** clips, **7** subjects, **96.382 s** (largest-subject share **0.426**); TEST **2** / **2** / **1** / **4.421 s** (share **1.0**); VAL ∪ TEST **21** / **13** / **8** / **100.803 s** (share **0.408**).
 
 **KIT concentration (confirmed BABEL sit, diagnostic):** on VAL confirmed-sit frames (stride **4**), path-group pelvis p50 shows **KIT** dominates sample count (**8018** of ~10.4k frames); confirmed **`sit_support`** duration is spread across **30** subjects (largest share **~45%**), not a single KIT subject lock-in.
 
@@ -122,6 +124,10 @@ On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the
 ## Foot-height rise
 
 `rise_cm` attached per clip; **not** an exclusion for floor-work cohorts.
+
+## Eyes_Japan floor offset
+
+Some Eyes_Japan clips show a **standing foot height** up to about **0.07 m** above the grounded floor (e.g. **snip_nail** standing feet ~**0.07 m**). The confirmed **kneel** cohort is **all Eyes_Japan** (**3** subjects on VAL ∪ TEST), so kneel floor-contact metrics inherit this offset; do not treat **0.07 m** as a universal AMASS tolerance.
 
 ## Legacy acceptance (joint-index fix)
 

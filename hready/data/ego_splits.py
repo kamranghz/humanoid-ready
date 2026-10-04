@@ -68,7 +68,7 @@ GEOMETRY_CLASSES = (
 )
 
 FLOOR_WORK_ELIGIBLE_GEOMETRY = frozenset(
-    {"sit_floor", "kneel", "lie", "crawl", "yoga_like"}
+    {"kneel", "lie", "crawl", "yoga_like"}
 )
 
 

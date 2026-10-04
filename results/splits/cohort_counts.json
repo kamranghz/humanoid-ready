@@ -90,11 +90,11 @@
     "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "test",
     "floor_work_eligible": {
-      "largest_subject_duration_share": 0.5581,
-      "segments": 3,
-      "total_duration_s": 7.921,
-      "unique_clips": 3,
-      "unique_subjects": 2
+      "largest_subject_duration_share": 1.0,
+      "segments": 2,
+      "total_duration_s": 4.421,
+      "unique_clips": 2,
+      "unique_subjects": 1
     },
     "ordinary_locomotion": {
       "by_category": {
@@ -219,11 +219,11 @@
     "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "val",
     "floor_work_eligible": {
-      "largest_subject_duration_share": 0.2575,
-      "segments": 35,
-      "total_duration_s": 159.59,
-      "unique_clips": 20,
-      "unique_subjects": 10
+      "largest_subject_duration_share": 0.4264,
+      "segments": 19,
+      "total_duration_s": 96.382,
+      "unique_clips": 11,
+      "unique_subjects": 7
     },
     "ordinary_locomotion": {
       "by_category": {
@@ -350,11 +350,11 @@
     "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "val_union_test",
     "floor_work_eligible": {
-      "largest_subject_duration_share": 0.2453,
-      "segments": 38,
-      "total_duration_s": 167.511,
-      "unique_clips": 23,
-      "unique_subjects": 12
+      "largest_subject_duration_share": 0.4077,
+      "segments": 21,
+      "total_duration_s": 100.803,
+      "unique_clips": 13,
+      "unique_subjects": 8
     },
     "ordinary_locomotion": {
       "by_category": {

@@ -44,8 +44,8 @@
         "type": "anchor"
       },
       "crawl_shoulder_h_min": {
-        "note": "VAL horiz+low-pelvis shoulder_h q55 trunk support split",
-        "type": "valley"
+        "note": "Policy value (not a valley; no derived physical anchor). Reference label-free horiz+low-pelvis pool (all VAL, stride 4): q55=0.280 m; mode in [0.25, 0.30). Only splits lie vs crawl in the horizontal band; lie/crawl counts and BABEL lie/crawl confirmation depend on it; sensitivity not measured.",
+        "type": "policy"
       },
       "crawl_wrist_h_max": {
         "note": "hands near floor",
@@ -64,12 +64,12 @@
         "type": "anchor"
       },
       "lie_shoulder_h_max": {
-        "note": "trunk on floor at or below crawl_shoulder split",
-        "type": "valley"
+        "note": "same policy value as crawl_shoulder_h_min (lie trunk at or below split)",
+        "type": "policy"
       },
       "sit_support_pelvis_h_min": {
-        "note": "VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-04)",
-        "type": "valley"
+        "note": "Primary (all VAL, stride_clips 1, frame stride 8): n=1896 sit-gate frames; floor_tail p90=0.3334 m (n=389); seat_band p10=0.5307 m (n=1162); midpoint=0.4321 m. Frozen 0.43 m is within 0.002 m of this midpoint and kept as policy. derive_geometry_thresholds subsample (every 3rd clip): n=598; midpoint=0.402 m.",
+        "type": "midpoint_percentiles"
       },
       "sit_thigh_up_min": {
         "note": "thigh axis nearer horizontal",
