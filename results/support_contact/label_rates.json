@@ -1,0 +1,1813 @@
+{
+  "frozen_date": "2026-10-04",
+  "production_thresholds": {
+    "source": "hready.data.contact",
+    "h_on_m": 0.05,
+    "h_off_m": 0.06,
+    "v_on_m_s": 0.2,
+    "v_off_m_s": 0.25,
+    "min_run": 3
+  },
+  "loco_sample": {
+    "seed": 0,
+    "frame_stride": 4,
+    "n_segments": 200,
+    "n_clips": 159,
+    "n_subjects": 25
+  },
+  "cohorts": {
+    "floor_work_eligible": {
+      "n_segments_processed": 21,
+      "attrition": {
+        "unique_clips": 13,
+        "exclude_contact": 0,
+        "exclude_physical_eval": 0
+      },
+      "floor_uncertain_clips": 0,
+      "mean_contact_fraction_per_region": {
+        "shins": 0.5050197307988935,
+        "thighs": 0.606827901167062,
+        "pelvis_seat": 0.2737936750172441,
+        "back_torso": 0.29087831433794176,
+        "head": 0.0,
+        "forearms": 0.09268798541398812,
+        "wrists": 0.08130233833468714,
+        "hands": 0.19376629034197612,
+        "feet": 0.339861492447016
+      }
+    },
+    "sit_floor": {
+      "n_segments_processed": 17,
+      "attrition": {
+        "unique_clips": 11,
+        "exclude_contact": 0,
+        "exclude_physical_eval": 0
+      },
+      "floor_uncertain_clips": 2,
+      "mean_contact_fraction_per_region": {
+        "shins": 0.11485494933267425,
+        "thighs": 0.1147405975010679,
+        "pelvis_seat": 0.21732134974660977,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.16256538303021065,
+        "feet": 0.4410143733047946
+      }
+    },
+    "sit_support": {
+      "n_segments_processed": 77,
+      "attrition": {
+        "unique_clips": 68,
+        "exclude_contact": 1,
+        "exclude_physical_eval": 1
+      },
+      "floor_uncertain_clips": 2,
+      "mean_contact_fraction_per_region": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.8701686048003672
+      },
+      "floor_assuming_metrics": "excluded \u2014 no seat channel"
+    },
+    "ordinary_locomotion": {
+      "n_segments_processed": 192,
+      "attrition": {
+        "unique_clips": 159,
+        "exclude_contact": 8,
+        "exclude_physical_eval": 8
+      },
+      "floor_uncertain_clips": 4,
+      "mean_contact_fraction_per_region": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6036270902274378
+      }
+    },
+    "crawl": {
+      "n_confirmed_segments": 0,
+      "not_evaluable": true
+    },
+    "yoga_like": {
+      "n_confirmed_segments": 0,
+      "not_evaluable": true
+    }
+  },
+  "sensitivity_validation_clips": [
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.6578947368421053,
+        "thighs": 0.2894736842105263,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.5855263157894737
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.3157894736842105,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.2894736842105263
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.6710526315789473,
+        "thighs": 0.618421052631579,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.5855263157894737
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.6447368421052632,
+        "thighs": 0.13157894736842105,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.2894736842105263
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.6842105263157895,
+        "thighs": 0.6447368421052632,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.5855263157894737
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.6710526315789473,
+        "thighs": 0.618421052631579,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.2894736842105263
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.631578947368421,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.9175257731958762,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.7474226804123711
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.9896907216494846,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.7474226804123711
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.9896907216494846,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.7474226804123711
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.9896907216494846,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "cohort": "kneel",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.9278350515463918,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.4345991561181435,
+        "wrists": 0.7341772151898734,
+        "hands": 0.7721518987341772,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.5063291139240507,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.4345991561181435,
+        "wrists": 0.8565400843881856,
+        "hands": 0.7721518987341772,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.6624472573839663,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 1.0,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.6708860759493671,
+        "wrists": 0.8565400843881856,
+        "hands": 0.7721518987341772,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.4641350210970464,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.4345991561181435,
+        "wrists": 0.8565400843881856,
+        "hands": 0.7721518987341772,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9113924050632911,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.569620253164557,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.8846153846153846,
+        "pelvis_seat": 0.9358974358974359,
+        "back_torso": 0.8717948717948718,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.9487179487179487,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.9487179487179487,
+        "pelvis_seat": 0.9615384615384616,
+        "back_torso": 0.9743589743589743,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 1.0,
+        "hands": 0.9487179487179487,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.8974358974358975,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.9358974358974359,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.9615384615384616,
+        "pelvis_seat": 0.9615384615384616,
+        "back_torso": 0.9871794871794872,
+        "head": 0.0,
+        "forearms": 1.0,
+        "wrists": 1.0,
+        "hands": 0.9487179487179487,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.9358974358974359,
+        "pelvis_seat": 0.9615384615384616,
+        "back_torso": 0.9615384615384616,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 1.0,
+        "hands": 0.9487179487179487,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "cohort": "lie",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.6923076923076923,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.959349593495935,
+        "pelvis_seat": 0.959349593495935,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.5934959349593496,
+        "thighs": 0.991869918699187,
+        "pelvis_seat": 0.959349593495935,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.926829268292683,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.975609756097561,
+        "thighs": 0.991869918699187,
+        "pelvis_seat": 0.959349593495935,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.056910569105691054,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.991869918699187,
+        "pelvis_seat": 0.959349593495935,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.7886178861788617,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6064516129032258
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.3629032258064516
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6064516129032258
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.3629032258064516
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.10967741935483871,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6064516129032258
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.3629032258064516
+      }
+    },
+    {
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "cohort": "sit_floor",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.75
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.75
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.9142857142857143,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.75
+      }
+    },
+    {
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.045454545454545456
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.045454545454545456
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 1.0
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.045454545454545456
+      }
+    },
+    {
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "cohort": "sit_support",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.8028391167192429
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6096214511041009
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.8028391167192429
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6096214511041009
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.14195583596214512,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.8028391167192429
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.6096214511041009
+      }
+    },
+    {
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.38666666666666666
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.07
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.05,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.38666666666666666
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.07
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.07,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.0,
+      "contact_fraction": {
+        "shins": 0.12,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.38666666666666666
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.035,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.07
+      }
+    },
+    {
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "cohort": "walk",
+      "h_on_m": 0.1,
+      "z_shift_m": 0.07,
+      "contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0,
+        "feet": 0.0
+      }
+    }
+  ],
+  "validation_summaries": [
+    {
+      "cohort": "kneel",
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
+      "start_s": 3.116,
+      "end_s": 5.608,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.6578947368421053,
+        "thighs": 0.2894736842105263,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "kneel",
+      "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+      "start_s": 4.28,
+      "end_s": 7.472,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.9896907216494846,
+        "thighs": 0.9175257731958762,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "lie",
+      "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+      "start_s": 0.0,
+      "end_s": 7.9,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.919831223628692,
+        "pelvis_seat": 0.9620253164556962,
+        "back_torso": 0.9915611814345991,
+        "head": 0.0,
+        "forearms": 0.4345991561181435,
+        "wrists": 0.7341772151898734,
+        "hands": 0.7721518987341772
+      }
+    },
+    {
+      "cohort": "lie",
+      "rel_path": "ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz",
+      "start_s": 3.877,
+      "end_s": 6.467,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.8846153846153846,
+        "pelvis_seat": 0.9358974358974359,
+        "back_torso": 0.8717948717948718,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.9487179487179487
+      }
+    },
+    {
+      "cohort": "sit_floor",
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz",
+      "start_s": 6.065,
+      "end_s": 10.125,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.959349593495935,
+        "pelvis_seat": 0.959349593495935,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.06504065040650407
+      }
+    },
+    {
+      "cohort": "sit_floor",
+      "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+      "start_s": 3.334,
+      "end_s": 8.474,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "sit_support",
+      "rel_path": "BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz",
+      "start_s": 5.648,
+      "end_s": 6.773,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "sit_support",
+      "rel_path": "BMLrub/rub002/0012_sitting2_stageii.npz",
+      "start_s": 1.968,
+      "end_s": 3.044,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "walk",
+      "rel_path": "CMU/132/132_35_stageii.npz",
+      "start_s": 0.0,
+      "end_s": 10.533333333333333,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    },
+    {
+      "cohort": "walk",
+      "rel_path": "CMU/05/05_01_stageii.npz",
+      "start_s": 0.0,
+      "end_s": 4.966666666666667,
+      "hand_pose_non_default": true,
+      "frozen_threshold_contact_fraction": {
+        "shins": 0.0,
+        "thighs": 0.0,
+        "pelvis_seat": 0.0,
+        "back_torso": 0.0,
+        "head": 0.0,
+        "forearms": 0.0,
+        "wrists": 0.0,
+        "hands": 0.0
+      }
+    }
+  ]
+}
