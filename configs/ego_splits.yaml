@@ -1,11 +1,48 @@
-# Track E1: reproducible split summary + floor-work test subset (paths via paths.yaml).
+# Track E1: reproducible split summary + floor-work evaluation (paths via paths.yaml).
 paths_config: configs/paths.yaml
 
 seed: 0
 fps: 30.0
 
-# BABEL act_cat keywords (matched via hready.data.babel.act_cat_matches_keyword).
-floor_work_babel_keywords:
+cohorts:
+  floor_work_babel_keywords:
+    kneel: "kneel"
+    sit: "sit"
+    lie: "lie"
+    crawl: "crawl"
+    yoga: "yoga"
+  ordinary_locomotion_babel_keywords:
+    walk: "walk"
+    run: "run"
+    stand: "stand"
+    turn: "turn"
+  other_labelled_babel_keywords:
+    crouch: "crouch"
+    stretch: "stretch"
+
+# Oct 2026 overlapping rules (wrong joint indices in P1); used only for acceptance recount.
+legacy_geometry:
+  lie:
+    pelvis_z_max: 0.55
+    torso_up_dot_max: 0.45
+  sit:
+    pelvis_z_min: 0.28
+    pelvis_z_max: 0.88
+    torso_up_dot_min: 0.62
+  kneel:
+    pelvis_z_max: 0.62
+    torso_up_dot_min: 0.5
+  crawl:
+    pelvis_z_max: 0.5
+    wrist_z_max: 0.38
+  yoga:
+    pelvis_z_max: 0.75
+    torso_up_dot_min: 0.35
+  crouch:
+    pelvis_z_max: 0.7
+    torso_up_dot_min: 0.4
+
+legacy_acceptance_keywords:
   kneel: "kneel"
   sit: "sit"
   lie: "lie"
@@ -17,28 +54,68 @@ floor_work_babel_keywords:
 floor_work:
   min_segment_duration_s: 1.0
   min_geometry_fraction: 0.5
-  # Pelvis height (m, Z-up grounded clip) and torso upright dot (neck-pelvis vs +Z).
-  geometry:
-    lie:
-      pelvis_z_max: 0.55
-      torso_up_dot_max: 0.45
-    sit:
-      pelvis_z_min: 0.28
-      pelvis_z_max: 0.88
-      torso_up_dot_min: 0.62
-    kneel:
-      pelvis_z_max: 0.62
-      torso_up_dot_min: 0.5
-    crawl:
-      pelvis_z_max: 0.5
-      wrist_z_max: 0.38
-    yoga:
-      pelvis_z_max: 0.75
-      torso_up_dot_min: 0.35
-    crouch:
-      pelvis_z_max: 0.7
-      torso_up_dot_min: 0.4
+  geometry_tree:
+    frozen_date: "2026-10-04"
+    use_normalized_height: false
+    height_unit: metres
+    cv_ordinary_loco_pelvis_raw: 0.089
+    cv_ordinary_loco_pelvis_norm: 0.112
+    thresholds:
+      torso_horizontal_max: 0.45
+      torso_upright_min: 0.82
+      crawl_pelvis_h_max: 0.42
+      crawl_wrist_h_max: 0.22
+      crawl_foot_h_max: 0.06
+      lie_pelvis_h_max: 0.38
+      kneel_thigh_up_max: -0.42
+      kneel_pelvis_h_max: 0.58
+      sit_thigh_up_min: -0.32
+      sit_support_pelvis_h_min: 0.68
+      yoga_pelvis_h_max: 0.55
+      yoga_torso_up_min: 0.30
+    threshold_provenance:
+      torso_horizontal_max:
+        type: anchor
+        note: torso angle ~63 deg from +Z
+      torso_upright_min:
+        type: anchor
+        note: upright trunk for sit/kneel
+      crawl_pelvis_h_max:
+        type: anchor
+        note: low pelvis metres grounded clip
+      crawl_wrist_h_max:
+        type: anchor
+        note: hands near floor
+      crawl_foot_h_max:
+        type: valley
+        note: VAL label-free foot_z_min q30 capped at 0.08 m
+      lie_pelvis_h_max:
+        type: anchor
+        note: supine pelvis height band
+      kneel_thigh_up_max:
+        type: anchor
+        note: thigh axis nearer vertical than sit
+      kneel_pelvis_h_max:
+        type: anchor
+        note: low pelvis knees down
+      sit_thigh_up_min:
+        type: anchor
+        note: thigh axis nearer horizontal
+      sit_support_pelvis_h_min:
+        type: anchor
+        note: chair-like pelvis above floor-sit
+      yoga_pelvis_h_max:
+        type: anchor
+        note: low non-upright residual
+      yoga_torso_up_min:
+        type: anchor
+        note: between lie and upright
+
+tune:
+  seed: 0
+  fraction: 0.05
 
 output:
   splits_json: results/E/splits.json
   floor_work_csv: results/E/floor_work_clips.csv
+  cohort_counts_json: results/E/cohort_counts.json

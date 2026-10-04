@@ -1,35 +1,61 @@
-# Track E1 — splits and floor-work test subset
+# Track E1 — splits, cohorts, floor-work evaluation
 
-**Command:** `python -m hready.data.ego_splits --config configs/ego_splits.yaml`  
-**Outputs:** `results/E/splits.json`, `results/E/floor_work_clips.csv` (byte-stable across reruns; SHA256 logged in mission report).
+**Command:** `python -m hready.data.ego_splits --config configs/ego_splits.yaml --splits val,test`  
+**Outputs:** `results/E/splits.json`, `results/E/floor_work_clips.csv`, `results/E/cohort_counts.json`
+
+**Frozen:** geometry thresholds in `configs/ego_splits.yaml` (`floor_work.geometry_tree`, dated **2026-10-04**) before any E3 result.
 
 ## Subject split
 
-Uses existing `assign_split` on the AMASS index (`hready/data/amass.py`). Disjointness is checked on **`{subset}/{subject}`** folder IDs (371 / 46 / 46 subjects in train / val / test; pairwise overlaps **0** on Oct 4 run). Beta-group leakage is separately guarded by `assert_no_subject_leakage` (split groups, not printed here).
+Uses existing `assign_split` on the AMASS index. Disjointness on `{subset}/{subject}` (pairwise overlaps **0**). Train/val/test clip lists are unchanged by tune subjects; `splits.json` records SHA256 of sorted `rel_path` lists before/after adding tune metadata.
 
-## Floor-work rules (test split only)
+## Cohorts (BABEL proposals)
 
-1. **BABEL candidates:** segment `act_cat` matches a keyword in `configs/ego_splits.yaml` (`kneel`, `sit`, `lie`, `crawl`, `yoga`, `crouch`, `stretch` via `act_cat_matches_keyword`).
-2. **Duration:** segment length ≥ `min_segment_duration_s` (1.0 s).
-3. **Geometry confirm:** SMPL-X FK (`load_body` + `smpl_forward_bt`) on grounded clips; per-frame rules on pelvis height and torso upright dot (neck−pelvis vs +Z); category must match BABEL label on ≥ `min_geometry_fraction` (0.5) of segment frames.
-4. **Disagreement:** BABEL category and dominant geometry category differ → **excluded**, counted in `n_disagreements_excluded`.
-5. **Foot-height rise:** `amass_foot_height_rise.json` values attached per clip (`rise_cm`); **not** an exclusion criterion for this subset.
+| Cohort | Keywords | Geometry |
+|--------|----------|----------|
+| `floor_work` | lie, crawl, kneel, sit, yoga | Decision tree → `lie`, `crawl`, `kneel`, `sit_floor`, `sit_support`, `yoga_like`, `none` |
+| `ordinary_locomotion` | walk, run, stand, turn | Listed for transparency (no floor geometry gate in E1) |
+| `other_labelled` | crouch, stretch | Never floor-work proposals |
 
-## Oct 4, 2026 counts (computed)
+**BABEL → accepted geometry:** `sit` → `{sit_floor, sit_support}`; `yoga` → `yoga_like`; others map 1:1. Confirmed if ≥ `min_geometry_fraction` (0.5) of segment frames match the accepted set. **Geometry is authoritative;** disagreements excluded and counted.
 
-| Metric | Value |
-|--------|------:|
-| BABEL proposals (test) | 160 |
-| Geometry confirmed | 5 |
-| Disagreements excluded | 7 |
-| BABEL unconfirmed excluded | 148 |
-| Per-category confirmed | lie: 5 |
-| Confirmed clips with rise >3 cm | 1 |
-| Confirmed clips with rise >5 cm | 0 |
+## Height units
 
-**Caveat:** Confirmed floor-work set is **too small** for strong test claims (only **lie**, 5 segments). Geometry thresholds are strict on upright sit/kneel vs AMASS grounding. **Proposal (not applied):** include **val**-split subjects for floor-work **reporting only**, or relax sit/kneel pelvis bounds after visual QC on `results/checks/` clips.
+Ordinary-locomotion VAL frames: pelvis height CV raw vs normalized-by-standing-pelvis (zero pose, clip betas). **Use metres** when normalization does not reduce spread (`use_normalized_height: false` in frozen config).
 
-## Hashes (two consecutive runs)
+## Geometry decision tree (mutually exclusive)
 
-- `splits.json`: `2C2DF09EF2A6E12A53FC3A4C0432A7779A4517B8EE09DB1D9378497E5593E77E`
-- `floor_work_clips.csv`: `FAC437FB428C4A3A6694A3CC5ADBB41031889232620BF2FB6789EC73187259C3`
+Order: **crawl** → **lie** → **kneel** → **sit_floor** / **sit_support** → **yoga_like** → **none**.  
+Features: `pelvis_h`, `torso_up_dot` (neck−pelvis vs +Z), `wrist_h`, `head_h`, `knee_h`, `foot_z_min` (ankles/feet), `thigh_up_dot` (mean hip→knee vs +Z).
+
+Each threshold in `geometry_tree.thresholds` has provenance in `threshold_provenance` (physical **anchor** or label-free VAL **valley** where noted). Thresholds were **not** tuned to maximize BABEL agreement.
+
+## Floor-work evaluation set
+
+**VAL ∪ TEST** (`--splits val,test`). Per category: segments, unique clips, unique subjects, confirmed / disagreement / unconfirmed, split by `ann_source` (`frame_ann` / `seq_ann`). Whole-file `seq_ann` segments require geometry on the same `[start_t, end_t]` range.
+
+**Indicative, N small** (fewer than 10 unique subjects): TEST `kneel` (1), `crawl` (3), `yoga` (2); see `cohort_counts.json`.
+
+## Tune set
+
+`seed=0`, `fraction=0.05` → **19** train `{subset}/{subject}` ids in `splits.json` (`tune.subject_ids`), disjoint from val/test and from other train subjects.
+
+## Foot-height rise
+
+`rise_cm` attached per clip; **not** an exclusion for floor-work cohorts.
+
+## Oct 4, 2026 run (P1b v2)
+
+| Metric | VAL∪TEST floor_work proposals |
+|--------|------------------------------|
+| Proposals (no stretch/crouch) | 197 |
+| Geometry confirmed | 107 |
+| Disagreements | 10 |
+| Unconfirmed | 80 |
+| Per-category confirmed | sit: 95, kneel: 12 |
+
+Legacy overlapping yaml on **160** TEST proposals (with stretch): wrong indices 5/7/148; correct indices 52/61/47. New tree on VAL BABEL sit frames: sit→kneel **3** vs legacy **3745** (frame counts).
+
+## Hashes (re-run `ego_splits` twice to verify)
+
+Record SHA256 of `splits.json`, `floor_work_clips.csv`, `cohort_counts.json` after each mission run.

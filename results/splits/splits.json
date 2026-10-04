@@ -1,60 +1,123 @@
 {
-  "floor_work": {
-    "confirmed_rise_gt_3cm_clips": 1,
-    "confirmed_rise_gt_5cm_clips": 0,
-    "n_babel_proposals": 160,
-    "n_babel_unconfirmed_excluded": 148,
-    "n_disagreements_excluded": 7,
-    "n_geometry_confirmed": 5,
-    "per_category_confirmed": {
-      "lie": 5
+  "cohorts": {
+    "floor_work": {
+      "crawl": "crawl",
+      "kneel": "kneel",
+      "lie": "lie",
+      "sit": "sit",
+      "yoga": "yoga"
+    },
+    "ordinary_locomotion": {
+      "run": "run",
+      "stand": "stand",
+      "turn": "turn",
+      "walk": "walk"
+    },
+    "other_labelled": {
+      "crouch": "crouch",
+      "stretch": "stretch"
     }
   },
-  "floor_work_babel_keywords": {
-    "crawl": "crawl",
-    "crouch": "crouch",
-    "kneel": "kneel",
-    "lie": "lie",
-    "sit": "sit",
-    "stretch": "stretch",
-    "yoga": "yoga"
+  "floor_work": {
+    "n_babel_proposals": 197,
+    "n_babel_unconfirmed_excluded": 80,
+    "n_disagreements_excluded": 10,
+    "n_geometry_confirmed": 107,
+    "per_category_confirmed": {
+      "kneel": 12,
+      "sit": 95
+    }
   },
-  "floor_work_rules": {
-    "geometry": {
-      "crawl": {
-        "pelvis_z_max": 0.5,
-        "wrist_z_max": 0.38
+  "floor_work_eval_splits": [
+    "val",
+    "test"
+  ],
+  "floor_work_geometry_tree": {
+    "cv_ordinary_loco_pelvis_norm": 0.0,
+    "cv_ordinary_loco_pelvis_raw": 0.0,
+    "frozen_date": "2026-10-04",
+    "height_unit": "metres",
+    "threshold_provenance": {
+      "crawl_foot_h_max": {
+        "note": "VAL label-free foot_z_min q30 capped at 0.08 m",
+        "type": "valley"
       },
-      "crouch": {
-        "pelvis_z_max": 0.7,
-        "torso_up_dot_min": 0.4
+      "crawl_pelvis_h_max": {
+        "note": "low pelvis metres grounded clip",
+        "type": "anchor"
       },
-      "kneel": {
-        "pelvis_z_max": 0.62,
-        "torso_up_dot_min": 0.5
+      "crawl_wrist_h_max": {
+        "note": "hands near floor",
+        "type": "anchor"
       },
-      "lie": {
-        "pelvis_z_max": 0.55,
-        "torso_up_dot_max": 0.45
+      "kneel_pelvis_h_max": {
+        "note": "low pelvis knees down",
+        "type": "anchor"
       },
-      "sit": {
-        "pelvis_z_max": 0.88,
-        "pelvis_z_min": 0.28,
-        "torso_up_dot_min": 0.62
+      "kneel_thigh_up_max": {
+        "note": "thigh axis nearer vertical than sit",
+        "type": "anchor"
       },
-      "yoga": {
-        "pelvis_z_max": 0.75,
-        "torso_up_dot_min": 0.35
+      "lie_pelvis_h_max": {
+        "note": "supine pelvis height band",
+        "type": "anchor"
+      },
+      "sit_support_pelvis_h_min": {
+        "note": "chair-like pelvis above floor-sit",
+        "type": "anchor"
+      },
+      "sit_thigh_up_min": {
+        "note": "thigh axis nearer horizontal",
+        "type": "anchor"
+      },
+      "torso_horizontal_max": {
+        "note": "torso angle ~63 deg from +Z",
+        "type": "anchor"
+      },
+      "torso_upright_min": {
+        "note": "upright trunk for sit/kneel",
+        "type": "anchor"
+      },
+      "yoga_pelvis_h_max": {
+        "note": "low non-upright residual",
+        "type": "anchor"
+      },
+      "yoga_torso_up_min": {
+        "note": "between lie and upright",
+        "type": "anchor"
       }
     },
-    "min_geometry_fraction": 0.5,
-    "min_segment_duration_s": 1.0
+    "thresholds": {
+      "crawl_foot_h_max": 0.06,
+      "crawl_pelvis_h_max": 0.42,
+      "crawl_wrist_h_max": 0.22,
+      "kneel_pelvis_h_max": 0.58,
+      "kneel_thigh_up_max": -0.42,
+      "lie_pelvis_h_max": 0.38,
+      "sit_support_pelvis_h_min": 0.68,
+      "sit_thigh_up_min": -0.32,
+      "torso_horizontal_max": 0.45,
+      "torso_upright_min": 0.82,
+      "yoga_pelvis_h_max": 0.55,
+      "yoga_torso_up_min": 0.3
+    },
+    "use_normalized_height": false
   },
   "seed": 0,
   "split_clip_counts": {
     "test": 1272,
     "train": 13860,
     "val": 2223
+  },
+  "split_clip_list_sha256_after_tune": {
+    "test": "0ebd29fb002793b491d0d122c88e5171e8e96bf99961d2271a98a049f9f32832",
+    "train": "a3621dfbe0863558f0c1ed0ebd7b8c5af96533963ce3c9e80b9052093b459657",
+    "val": "19d97bd7cd23d2168627a17825721e102565394faf4616b5fcd2465ec4c7e957"
+  },
+  "split_clip_list_sha256_before_tune": {
+    "test": "0ebd29fb002793b491d0d122c88e5171e8e96bf99961d2271a98a049f9f32832",
+    "train": "a3621dfbe0863558f0c1ed0ebd7b8c5af96533963ce3c9e80b9052093b459657",
+    "val": "19d97bd7cd23d2168627a17825721e102565394faf4616b5fcd2465ec4c7e957"
   },
   "subject_disjoint": {
     "n_subjects": {
@@ -67,5 +130,32 @@
     "overlap_val_test": 0,
     "subject_disjoint": true
   },
-  "version": 1
+  "tune": {
+    "fraction": 0.05,
+    "n_subjects": 19,
+    "seed": 0,
+    "subject_ids": [
+      "BMLmovi/Subject_21_F_MoSh",
+      "BMLmovi/Subject_50_F_MoSh",
+      "BMLmovi/Subject_74_F_MoSh",
+      "BMLrub/rub027",
+      "BMLrub/rub048",
+      "BMLrub/rub054",
+      "BMLrub/rub066",
+      "BMLrub/rub077",
+      "BMLrub/rub113",
+      "CMU/113",
+      "CMU/13",
+      "CMU/141",
+      "CMU/76",
+      "CMU/82",
+      "CNRS/283",
+      "DFaust/50004",
+      "Eyes_Japan_Dataset/ichige",
+      "KIT/1747",
+      "KIT/575"
+    ],
+    "subject_list_sha256": "99cbd9c5e9f3b588f2da4c44880f7987cce1ea06d9d91bfa0bb44a1b7df9f1d9"
+  },
+  "version": 2
 }

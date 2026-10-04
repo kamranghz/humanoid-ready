@@ -1,0 +1,265 @@
+{
+  "test": {
+    "categories": {
+      "crawl": {
+        "by_label_source": {
+          "disagreements_frame_ann": 1,
+          "unconfirmed_frame_ann": 2
+        },
+        "confirmed": 0,
+        "disagreements": 1,
+        "segments": 3,
+        "unconfirmed": 2,
+        "unique_clips": 3,
+        "unique_subjects": 3
+      },
+      "kneel": {
+        "by_label_source": {
+          "unconfirmed_frame_ann": 2
+        },
+        "confirmed": 0,
+        "disagreements": 0,
+        "segments": 2,
+        "unconfirmed": 2,
+        "unique_clips": 1,
+        "unique_subjects": 1
+      },
+      "lie": {
+        "by_label_source": {
+          "disagreements_frame_ann": 3,
+          "unconfirmed_frame_ann": 6
+        },
+        "confirmed": 0,
+        "disagreements": 3,
+        "segments": 9,
+        "unconfirmed": 6,
+        "unique_clips": 5,
+        "unique_subjects": 4
+      },
+      "sit": {
+        "by_label_source": {
+          "confirmed_frame_ann": 52,
+          "confirmed_seq_ann": 1,
+          "unconfirmed_frame_ann": 15,
+          "unconfirmed_seq_ann": 1
+        },
+        "confirmed": 53,
+        "disagreements": 0,
+        "segments": 69,
+        "unconfirmed": 16,
+        "unique_clips": 55,
+        "unique_subjects": 21
+      },
+      "yoga": {
+        "by_label_source": {
+          "unconfirmed_frame_ann": 2
+        },
+        "confirmed": 0,
+        "disagreements": 0,
+        "segments": 2,
+        "unconfirmed": 2,
+        "unique_clips": 2,
+        "unique_subjects": 2
+      }
+    },
+    "eval_split": "test",
+    "ordinary_locomotion": {
+      "by_category": {
+        "run": 33,
+        "stand": 228,
+        "turn": 128,
+        "walk": 450
+      },
+      "segments": 839,
+      "unique_clips": 407,
+      "unique_subjects": 42
+    },
+    "other_labelled": {
+      "by_category": {
+        "crouch": 10,
+        "stretch": 64
+      },
+      "segments": 74,
+      "unique_clips": 43,
+      "unique_subjects": 20
+    }
+  },
+  "val": {
+    "categories": {
+      "crawl": {
+        "by_label_source": {
+          "disagreements_frame_ann": 1,
+          "unconfirmed_frame_ann": 8
+        },
+        "confirmed": 0,
+        "disagreements": 1,
+        "segments": 9,
+        "unconfirmed": 8,
+        "unique_clips": 8,
+        "unique_subjects": 8
+      },
+      "kneel": {
+        "by_label_source": {
+          "confirmed_frame_ann": 12,
+          "disagreements_frame_ann": 3,
+          "unconfirmed_frame_ann": 2
+        },
+        "confirmed": 12,
+        "disagreements": 3,
+        "segments": 17,
+        "unconfirmed": 2,
+        "unique_clips": 8,
+        "unique_subjects": 4
+      },
+      "lie": {
+        "by_label_source": {
+          "unconfirmed_frame_ann": 10,
+          "unconfirmed_seq_ann": 1
+        },
+        "confirmed": 0,
+        "disagreements": 0,
+        "segments": 11,
+        "unconfirmed": 11,
+        "unique_clips": 8,
+        "unique_subjects": 5
+      },
+      "sit": {
+        "by_label_source": {
+          "confirmed_frame_ann": 42,
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 25,
+          "unconfirmed_seq_ann": 3
+        },
+        "confirmed": 42,
+        "disagreements": 2,
+        "segments": 72,
+        "unconfirmed": 28,
+        "unique_clips": 44,
+        "unique_subjects": 16
+      },
+      "yoga": {
+        "by_label_source": {
+          "unconfirmed_frame_ann": 1,
+          "unconfirmed_seq_ann": 2
+        },
+        "confirmed": 0,
+        "disagreements": 0,
+        "segments": 3,
+        "unconfirmed": 3,
+        "unique_clips": 3,
+        "unique_subjects": 3
+      }
+    },
+    "eval_split": "val",
+    "ordinary_locomotion": {
+      "by_category": {
+        "run": 88,
+        "stand": 380,
+        "turn": 335,
+        "walk": 815
+      },
+      "segments": 1618,
+      "unique_clips": 695,
+      "unique_subjects": 41
+    },
+    "other_labelled": {
+      "by_category": {
+        "crouch": 3,
+        "stretch": 61
+      },
+      "segments": 64,
+      "unique_clips": 28,
+      "unique_subjects": 14
+    }
+  },
+  "val_union_test": {
+    "categories": {
+      "crawl": {
+        "by_label_source": {
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 10
+        },
+        "confirmed": 0,
+        "disagreements": 2,
+        "segments": 12,
+        "unconfirmed": 10,
+        "unique_clips": 11,
+        "unique_subjects": 11
+      },
+      "kneel": {
+        "by_label_source": {
+          "confirmed_frame_ann": 12,
+          "disagreements_frame_ann": 3,
+          "unconfirmed_frame_ann": 4
+        },
+        "confirmed": 12,
+        "disagreements": 3,
+        "segments": 19,
+        "unconfirmed": 4,
+        "unique_clips": 9,
+        "unique_subjects": 5
+      },
+      "lie": {
+        "by_label_source": {
+          "disagreements_frame_ann": 3,
+          "unconfirmed_frame_ann": 16,
+          "unconfirmed_seq_ann": 1
+        },
+        "confirmed": 0,
+        "disagreements": 3,
+        "segments": 20,
+        "unconfirmed": 17,
+        "unique_clips": 13,
+        "unique_subjects": 9
+      },
+      "sit": {
+        "by_label_source": {
+          "confirmed_frame_ann": 94,
+          "confirmed_seq_ann": 1,
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 40,
+          "unconfirmed_seq_ann": 4
+        },
+        "confirmed": 95,
+        "disagreements": 2,
+        "segments": 141,
+        "unconfirmed": 44,
+        "unique_clips": 99,
+        "unique_subjects": 37
+      },
+      "yoga": {
+        "by_label_source": {
+          "unconfirmed_frame_ann": 3,
+          "unconfirmed_seq_ann": 2
+        },
+        "confirmed": 0,
+        "disagreements": 0,
+        "segments": 5,
+        "unconfirmed": 5,
+        "unique_clips": 5,
+        "unique_subjects": 5
+      }
+    },
+    "eval_split": "val_union_test",
+    "ordinary_locomotion": {
+      "by_category": {
+        "run": 121,
+        "stand": 608,
+        "turn": 463,
+        "walk": 1265
+      },
+      "segments": 2457,
+      "unique_clips": 1102,
+      "unique_subjects": 83
+    },
+    "other_labelled": {
+      "by_category": {
+        "crouch": 13,
+        "stretch": 125
+      },
+      "segments": 138,
+      "unique_clips": 71,
+      "unique_subjects": 34
+    }
+  }
+}
