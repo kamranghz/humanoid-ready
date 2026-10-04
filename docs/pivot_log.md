@@ -13,5 +13,5 @@
 | 2026-10-03 | Pelvis 6D pin / assist wrench for item 6 | **Dropped** after 6B: no stable floating pin; contact force readback N/A | **Assist wrench not reported**; `kin_root` + `free` PD tracking only |
 | 2026-10-03 | Why `kin_root` mode | Separates retarget feasibility from balance: root kinematics injected, joints track under default G1 PD | Primary smoke metric alongside free-root time-to-fall |
 | 2026-10-03 | 6C waist “saturation” | Logged PD demand can exceed effort_limit on ImplicitActuator waist; Isaac `applied_torque` clamps at limit | Per-group `pd_demand_*` vs `actuator_clamped_*`; archive `tau_applied_gmr` |
-| 2026-10-05 | E1 close: stopped P1c `ego_splits.py` diff | Full patch saved outside repo before merge | `D:\projects\hready_data\wip\p1c_ego_splits_2026-10-05.patch` |
 | 2026-10-03 | 5c-2 foot-height rise | `amass_foot_height_rise.json` over 17,355 `foot_traj`; ACCAD C20 ~6.9 cm rise | Contact empty after landing plateau; not flight |
+| 2026-10-04 | E1 close: stopped P1c `ego_splits.py` diff | Full patch saved outside repo before merge | `D:\projects\hready_data\wip\p1c_ego_splits_2026-10-04.patch` |

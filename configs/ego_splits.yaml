@@ -55,7 +55,7 @@ floor_work:
   min_segment_duration_s: 1.0
   min_geometry_fraction: 0.5
   geometry_tree:
-    frozen_date: "2026-10-05"
+    frozen_date: "2026-10-04"
     use_normalized_height: false
     height_unit: metres
     cv_ordinary_loco_pelvis_raw: 0.089
@@ -107,7 +107,7 @@ floor_work:
         note: thigh axis nearer horizontal
       sit_support_pelvis_h_min:
         type: valley
-        note: VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-05)
+        note: VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-04)
       yoga_pelvis_h_max:
         type: anchor
         note: low non-upright residual

@@ -743,7 +743,7 @@ def derive_geometry_thresholds(
         "cv_ordinary_loco_pelvis_norm": cv_norm,
         "thresholds": th,
         "threshold_provenance": prov,
-        "frozen_date": "2026-10-05",
+        "frozen_date": "2026-10-04",
     }
 
 
@@ -1500,7 +1500,7 @@ def _print_threshold_provenance(
     print(
         "  crawl_shoulder_h_min=0.30 lie_shoulder_h_max=0.30 valley; "
         "VAL horiz+low-pelvis shoulder_h (stride 8, every 3rd clip) "
-        "see amendment 2026-10-05 in docs/ego_splits.md"
+        "see amendment 2026-10-04 in docs/ego_splits.md"
     )
     print(
         "  sit_support_pelvis_h_min=0.43 valley; VAL sit-gate pelvis_h "

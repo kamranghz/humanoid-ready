@@ -36,7 +36,7 @@
   "floor_work_geometry_tree": {
     "cv_ordinary_loco_pelvis_norm": 0.112,
     "cv_ordinary_loco_pelvis_raw": 0.089,
-    "frozen_date": "2026-10-05",
+    "frozen_date": "2026-10-04",
     "height_unit": "metres",
     "threshold_provenance": {
       "crawl_pelvis_h_max": {
@@ -68,7 +68,7 @@
         "type": "valley"
       },
       "sit_support_pelvis_h_min": {
-        "note": "VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-05)",
+        "note": "VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-04)",
         "type": "valley"
       },
       "sit_thigh_up_min": {
