@@ -6,36 +6,59 @@
 
 ## Purpose
 
-Foot contact (`hready.data.contact`) is foot-standing biased. v2 adds **support-region** contact bits from LBS-region lowest-vertex height/speed with the **same hysteresis as feet**. Labels are **rule-defined targets** for E3/E5 — **not** instrumented GT; **recall on kneel/lie is not validated** against hardware.
+Foot contact (`hready.data.contact`) is foot-standing biased. v2 adds **support-region** contact bits from LBS-region lowest-vertex height/speed with the **same hysteresis as feet**. Labels are **rule-defined targets** for E3/E5 — **not** instrumented GT; **recall on kneel/lie is not validated** against hardware or force plates.
 
 ## Regions
 
 Each region = vertices whose **max LBS weight** is on the listed joint index (same rule as foot channels). Names: `shins` (4,5), `thighs` (1,2), `pelvis_seat` (0), `back_torso` (3,6,9), `head` (12,15), `forearms` (18,19), `wrists` (20,21), `hands` (25–54). Feet stay the four `contact.py` channels.
 
+### Knee border (shins vs thighs)
+
+Vertices around the knee are **split by max-LBS assignment**: joint **4–5** → `shins`, joints **1–2** → `thighs`. There is no anatomical knee cap region. In kneel, the lowest points on the lower leg often sit on knee-joint-weighted geometry, so **shin vs thigh contact mostly reflects contact near the knee**, not independent shin and thigh surfaces.
+
 ## Thresholds (frozen)
 
 **All non-foot regions use foot constants:** `h_on=0.05 m`, `h_off=0.06 m`, `v_on=0.2 m/s`, `v_off=0.25 m/s`, `min_run=3`. Heights are **lowest-vertex world z** after clip `floor_offset` (pipeline floor **z=0**). No extra free parameter.
 
-**Rationale:** Standing-foot residual on reliably grounded subsets is small (e.g. Eyes_Japan stand-segment medians p95 ~0.021 m, max ~0.030 m; BMLrub ~0.026 m; MoSh ~0.005 m). Using **0.07 m** would risk labelling **body-on-body** support (e.g. thigh on calves in kneel, lowest thigh vertex ~0.06 m) as floor contact.
+**Rationale:** Standing-foot residual on reliably grounded VAL clips is small on many subsets (ACCAD/BMLmovi/MoSh medians often &lt; 0.01 m). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
+
+## Floor calibration sensitivity
+
+Validation kneel clips (frozen production thresholds except grid overrides): **mean shin contact** at `h_on=0.05 m` is about **0.82** at `z_shift=0`, **0.16** at `+0.035 m`, and **0** at `+0.07 m` (see `sensitivity_validation_clips` in the rates JSON). **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
+
+Synthetic negative shifts are report-only; production uses `z_shift=0`.
 
 ## Standing-foot characterisation (not a gate)
 
-Per **VAL** clip: median of per-frame **min foot-channel z** over BABEL **`stand`** segment frames only, excluding segments whose labels include stand-up / transition-style act_cats. Reported distributions overall and per subset. Clips with per-clip median **> 0.07 m** are flagged **`floor_uncertain`** for reporting/slicing only (no removal unless already excluded by E1 `exclude_contact`).
+Per **VAL** clip: median of per-frame **min foot-channel z** over BABEL **`stand`** segment frames only, excluding segments whose labels include stand-up / transition-style act_cats. Clips with per-clip median **> 0.07 m** are flagged **`floor_uncertain`** for reporting/slicing only (counts per cohort in rates JSON; no automatic removal beyond E1 `exclude_contact`).
 
-High residuals on some subsets (e.g. KIT ~0.80 m, CMU ~0.58 m on worst clips) are listed for inspection; cause **unexplained** without further evidence.
+**Eyes_Japan / 0.07 m premise:** A blanket “0.07 m standing residual on Eyes_Japan” is **not** supported by the VAL stand-segment characterisation in the frozen config. On **ordinary-locomotion VAL** clips with usable stand segments, per-clip stand-foot medians on Eyes_Japan are **at most ~0.030 m** in this run (worst listed Eyes_Japan stand clip in `standing_foot_characterisation_val`). High residuals on some other subsets (e.g. KIT, CMU on worst clips) remain **unexplained** without further evidence.
 
 ## Anti-circularity
 
-Floor-work eval kneel/lie segments are **not** used to set thresholds. Ordinary-locomotion **rates** and the **negative envelope** use BABEL locomotion **segment** ranges (`>= 1 s`), same keyword map as `ego_splits` (`walk`, `run`, `stand`, `turn`), seeded segment sample (see config).
+Floor-work eval kneel/lie segments are **not** used to set thresholds. Ordinary-locomotion **rates** and the **negative envelope** use BABEL locomotion **segment** ranges (`>= 1 s`), same keyword map as `ego_splits` (`walk`, `run`, `stand`, `turn`), seeded segment sample (see config). Segments on clips with `exclude_contact` are **skipped** in cohort means (sample size 200 → **192** processed for ordinary locomotion when eight sampled clips are excluded).
 
-## Cohorts
+## Cohorts (rates JSON)
 
 | Cohort | Role |
 |--------|------|
-| `floor_work_eligible` | kneel + lie segments from `floor_work_clips.csv` |
-| `sit_floor` / `sit_support` | descriptive; `sit_support` excluded from floor-assuming metrics (no seat mesh) |
-| `ordinary_locomotion` | seeded BABEL loco segments on VAL |
+| `kneel` / `lie` | Separate geometry classes from `floor_work_clips.csv` |
+| `floor_work_eligible` | Pooled kneel + lie (E1 metrics set) |
+| `sit_floor` / `sit_support` | Descriptive; `sit_support` excluded from floor-assuming metrics (no seat mesh) |
+| `ordinary_locomotion` | Seeded BABEL loco segments on VAL (`loco_frame_stride=4`) |
 | `crawl`, `yoga_like` | 0 confirmed — not evaluable |
+
+**Mean contact fraction:** per-segment **unweighted** mean of each segment’s **per-frame** contact fraction (documented in JSON as `mean_contact_fraction_definition`).
+
+**Duration:** `total_s` in the rates JSON sums **discretised frame windows** at 30 fps (`floor(start*fps)` … `ceil(end*fps)`). E1 `cohort_counts.json` uses `end_s - start_s` per row (e.g. floor_work_eligible **100.803 s** vs rates **100.700 s**).
+
+## Lie: head and shins contact
+
+On all **9** lie segments (production thresholds), **mean segment contact fraction is 0** for `head` and `shins` (see cohort `lie` in rates JSON). Per-frame lowest-height distributions over lie segment frames are in `lie_head_shin_heights` (min / p10 / p50). In this run, **head** heights are **above `h_on`** (min ≈ 0.11 m); **shins** minima are **below `h_on` on some frames** but hysteresis/speed/`min_run` yield **zero** segment-mean shin contact.
+
+## Speed gate (characterisation only)
+
+`speed_gate_characterisation` in the rates JSON quantifies frames with `h < h_on`, contact off, that would be on if speed did not gate (`v_on`/`v_off` disabled, same `min_run`). **Production definition unchanged.**
 
 ## Sensitivity (report only)
 
@@ -49,8 +72,8 @@ python -m hready.data.support_contact_v2 --derive-config
 python -m hready.data.support_contact_v2 --report
 ```
 
-Per-frame validation detail prints to **stdout**; JSON is summary-only.
+Validation per-frame lines use **full-segment** hysteresis masks sliced per frame (stdout). JSON validation entries include contact **runs** on the segment window.
 
 ## Regression
 
-`contact.py` unchanged; `contact_mism=0` vs `27cc2da` on 300 `foot_traj` clips (seed 0).
+`contact.py` unchanged; `contact_mism=0` vs `27cc2da` on 300 `foot_traj` clips (seed 0), recorded in rates JSON when `--report` runs.

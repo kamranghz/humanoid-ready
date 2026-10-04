@@ -242,6 +242,11 @@ def _forward_grounded_vertices(
     return np.concatenate(parts, axis=0)
 
 
+def lowest_vertex_argmin_indices(verts: np.ndarray, region_ids: np.ndarray) -> np.ndarray:
+    sub = verts[:, region_ids, :]
+    return sub[:, :, 2].argmin(axis=1).astype(np.int64)
+
+
 def lowest_vertex_height_speed(
     verts: np.ndarray, region_ids: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray]:
@@ -258,6 +263,49 @@ def lowest_vertex_height_speed(
         speed[1:] = np.linalg.norm(np.diff(xy, axis=0), axis=1) / dt
         speed[0] = speed[1]
     return h, speed
+
+
+def segment_duration_s(n_frames: int, start_s: float, end_s: float) -> float:
+    sl = _frame_range(n_frames, _TARGET_FPS, start_s, end_s)
+    return float(sl.stop - sl.start) / _TARGET_FPS
+
+
+def contact_runs_inclusive(mask: np.ndarray) -> list[tuple[int, int]]:
+    """Inclusive frame index ranges where ``mask`` is True."""
+    m = np.asarray(mask, dtype=bool)
+    runs: list[tuple[int, int]] = []
+    i = 0
+    while i < m.size:
+        if not m[i]:
+            i += 1
+            continue
+        j = i + 1
+        while j < m.size and m[j]:
+            j += 1
+        runs.append((i, j - 1))
+        i = j
+    return runs
+
+
+def _contact_mask_no_speed_gate(
+    height: np.ndarray,
+    speed: np.ndarray,
+    *,
+    h_on: float,
+    h_off: float,
+    min_run: int,
+) -> np.ndarray:
+    """Same hysteresis/min_run as production, but speed never blocks ON/OFF."""
+    big = 1.0e9
+    return region_contact_mask(
+        height,
+        speed,
+        h_on=h_on,
+        h_off=h_off,
+        v_on=big,
+        v_off=big,
+        min_run=min_run,
+    )
 
 
 def region_contact_mask(
@@ -512,6 +560,253 @@ def _cohort_for_geometry(gc: str) -> str:
     return gc
 
 
+def build_report_cohort_segments(
+    floor_segments: list[SegmentRow], loco_segments: list[SegmentRow]
+) -> dict[str, list[SegmentRow]]:
+    cohorts: dict[str, list[SegmentRow]] = defaultdict(list)
+    for seg in floor_segments:
+        if seg.geometry_class in ("kneel", "lie"):
+            cohorts[seg.geometry_class].append(seg)
+            cohorts["floor_work_eligible"].append(seg)
+        elif seg.geometry_class in ("sit_floor", "sit_support"):
+            cohorts[seg.geometry_class].append(seg)
+    cohorts["ordinary_locomotion"] = list(loco_segments)
+    return cohorts
+
+
+_MEAN_FRAC_DEF = (
+    "Per-segment unweighted mean of each segment's per-frame contact fraction "
+    "(ordinary_locomotion uses loco_frame_stride on segment frames)."
+)
+
+
+def aggregate_cohort_rates(
+    cohort: str,
+    segs: list[SegmentRow],
+    cfg: dict[str, Any],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+    uncertain_map: dict[str, bool],
+    *,
+    frame_stride: int,
+) -> dict[str, Any]:
+    rels = {s.rel_path for s in segs}
+    attr = attrition_counts(rels)
+    fu = sum(1 for r in rels if uncertain_map.get(r, False))
+    region_sums: dict[str, list[float]] = {n: [] for n in ALL_REGION_NAMES}
+    subjects: set[str] = set()
+    clips: set[str] = set()
+    total_s = 0.0
+    n_proc = 0
+    stride = frame_stride if cohort == "ordinary_locomotion" else 1
+    for seg in segs:
+        entry = _entry_by_rel(load_index(), seg.rel_path)
+        if clip_flags(entry).get("exclude_contact"):
+            continue
+        verts_full = fk.grounded_vertices(entry)
+        total_s += segment_duration_s(verts_full.shape[0], seg.start_s, seg.end_s)
+        subjects.add(entry.subject)
+        clips.add(seg.rel_path)
+        fr = compute_segment_region_fractions_cached(
+            seg, cfg, region_sets, fk, frame_stride=stride
+        )
+        for k, v in fr.items():
+            if np.isfinite(v):
+                region_sums[k].append(v)
+        n_proc += 1
+    out: dict[str, Any] = {
+        "n_seg": n_proc,
+        "n_clip": len(clips),
+        "n_subj": len(subjects),
+        "total_s": round(total_s, 3),
+        "n_segments_processed": n_proc,
+        "attrition": attr,
+        "floor_uncertain_clips": fu,
+        "mean_contact_fraction_per_region": {
+            k: float(np.mean(v)) if v else None for k, v in region_sums.items()
+        },
+    }
+    if cohort == "sit_support":
+        out["floor_assuming_metrics"] = "excluded — no seat channel"
+    return out
+
+
+def accumulate_speed_gate_stats(
+    seg: SegmentRow,
+    cfg: dict[str, Any],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+    *,
+    frame_stride: int,
+) -> dict[str, dict[str, int]]:
+    """Per-region frame counts for speed-gate characterisation (report only)."""
+    entry = _entry_by_rel(load_index(), seg.rel_path)
+    verts_full = fk.grounded_vertices(entry)
+    sl = _frame_range(verts_full.shape[0], _TARGET_FPS, seg.start_s, seg.end_s)
+    verts = verts_full[sl]
+    if frame_stride > 1:
+        verts = verts[::frame_stride]
+    counts: dict[str, dict[str, int]] = {
+        n: {
+            "n_frames": 0,
+            "n_low_h": 0,
+            "n_low_h_no_contact": 0,
+            "n_low_h_no_contact_speed": 0,
+            "n_speed_block_argmin_changed": 0,
+        }
+        for n in NON_FOOT_REGION_NAMES
+    }
+    for name, ids in region_sets.items():
+        if ids.size == 0:
+            continue
+        th = _region_thresholds(cfg, name)
+        h, sp = lowest_vertex_height_speed(verts, ids)
+        argmin = lowest_vertex_argmin_indices(verts, ids)
+        mask = region_contact_mask(
+            h,
+            sp,
+            h_on=th["h_on"],
+            h_off=th["h_off"],
+            v_on=th["v_on"],
+            v_off=th["v_off"],
+            min_run=th["min_run"],
+        )
+        mask_ns = _contact_mask_no_speed_gate(
+            h,
+            sp,
+            h_on=th["h_on"],
+            h_off=th["h_off"],
+            min_run=th["min_run"],
+        )
+        low_h = h < th["h_on"]
+        no_c = ~mask
+        speed_block = low_h & no_c & mask_ns
+        c = counts[name]
+        c["n_frames"] += int(h.size)
+        c["n_low_h"] += int(low_h.sum())
+        c["n_low_h_no_contact"] += int((low_h & no_c).sum())
+        c["n_low_h_no_contact_speed"] += int(speed_block.sum())
+        if speed_block.any():
+            idx = np.where(speed_block)[0]
+            changed = np.zeros(idx.size, dtype=bool)
+            changed[idx > 0] = argmin[idx[idx > 0]] != argmin[idx[idx > 0] - 1]
+            c["n_speed_block_argmin_changed"] += int(changed.sum())
+    return counts
+
+
+def merge_speed_gate_counts(
+    acc: dict[str, dict[str, int]], part: dict[str, dict[str, int]]
+) -> None:
+    for name, c in part.items():
+        for k, v in c.items():
+            acc[name][k] += v
+
+
+def speed_gate_report_row(
+    counts: dict[str, dict[str, int]],
+) -> dict[str, dict[str, Optional[float]]]:
+    out: dict[str, dict[str, Optional[float]]] = {}
+    for name, c in counts.items():
+        nf = c["n_frames"]
+        n_low = c["n_low_h"]
+        n_lh_nc = c["n_low_h_no_contact"]
+        n_sp = c["n_low_h_no_contact_speed"]
+        n_chg = c["n_speed_block_argmin_changed"]
+        out[name] = {
+            "frac_low_h_no_contact_due_to_speed": (
+                float(n_sp / n_low) if n_low else None
+            ),
+            "frac_low_h_no_contact_due_to_speed_of_no_contact": (
+                float(n_sp / n_lh_nc) if n_lh_nc else None
+            ),
+            "frac_speed_block_argmin_changed": (
+                float(n_chg / n_sp) if n_sp else None
+            ),
+            "n_frames": nf,
+            "n_low_h": n_low,
+            "n_low_h_no_contact_speed": n_sp,
+        }
+    return out
+
+
+def lie_head_shin_height_distribution(
+    lie_segments: list[SegmentRow],
+    cfg: dict[str, Any],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+) -> dict[str, Any]:
+    h_on = float(cfg["foot"]["h_on_m"])
+    pools: dict[str, list[float]] = {"head": [], "shins": []}
+    for seg in lie_segments:
+        entry = _entry_by_rel(load_index(), seg.rel_path)
+        if clip_flags(entry).get("exclude_contact"):
+            continue
+        verts_full = fk.grounded_vertices(entry)
+        sl = _frame_range(verts_full.shape[0], _TARGET_FPS, seg.start_s, seg.end_s)
+        verts = verts_full[sl]
+        for name in ("head", "shins"):
+            ids = region_sets[name]
+            h, _ = lowest_vertex_height_speed(verts, ids)
+            pools[name].extend(float(x) for x in h)
+    report: dict[str, Any] = {"h_on_m": h_on, "n_lie_segments": len(lie_segments)}
+    for name, vals in pools.items():
+        if not vals:
+            report[name] = {"n_frames": 0}
+            continue
+        a = np.asarray(vals, dtype=np.float64)
+        report[name] = {
+            "n_frames": int(a.size),
+            "min_m": float(a.min()),
+            "p10_m": float(np.quantile(a, 0.10)),
+            "p50_m": float(np.quantile(a, 0.50)),
+            "frac_below_h_on": float(np.mean(a < h_on)),
+            "mean_contact_fraction_segments": None,
+        }
+    return report
+
+
+def validation_clip_summary(
+    verts: np.ndarray,
+    cfg: dict[str, Any],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+    entry: AmassIndexEntry,
+    sl: slice,
+) -> dict[str, Any]:
+    region_stats: dict[str, Any] = {}
+    pos = fk.foot_positions(entry)
+    for name, ids in region_sets.items():
+        th = _region_thresholds(cfg, name)
+        h, sp = lowest_vertex_height_speed(verts, ids)
+        mask = region_contact_mask(
+            h,
+            sp,
+            h_on=th["h_on"],
+            h_off=th["h_off"],
+            v_on=th["v_on"],
+            v_off=th["v_off"],
+            min_run=th["min_run"],
+        )
+        region_stats[name] = {
+            "lowest_height_min_m": float(h.min()) if h.size else None,
+            "lowest_height_median_m": float(np.median(h)) if h.size else None,
+            "contact_fraction": float(mask.mean()) if mask.size else 0.0,
+            "contact_runs_inclusive": contact_runs_inclusive(mask),
+        }
+    foot_frac = 0.0
+    foot_runs: list[tuple[int, int]] = []
+    if pos is not None:
+        foot = foot_contact_mask(pos[sl])
+        foot_1d = np.asarray(foot).any(axis=-1) if foot.ndim > 1 else foot
+        foot_frac = float(foot_1d.mean()) if foot_1d.size else 0.0
+        foot_runs = contact_runs_inclusive(foot_1d)
+    region_stats["feet"] = {
+        "contact_fraction": foot_frac,
+        "contact_runs_inclusive": foot_runs,
+    }
+    return region_stats
+
+
 def _region_thresholds(cfg: dict[str, Any], name: str) -> dict[str, float]:
     reg = cfg["regions"][name]
     return {
@@ -646,37 +941,43 @@ def print_validation_frames(
                 sl = _frame_range(n, _TARGET_FPS, t0, t1)
             verts = verts_full[sl]
             hand_nd = hand_pose_non_default(entry)
+            region_masks: dict[str, np.ndarray] = {}
+            region_heights: dict[str, np.ndarray] = {}
+            for name, ids in region_sets.items():
+                th = _region_thresholds(cfg, name)
+                h, sp = lowest_vertex_height_speed(verts, ids)
+                region_heights[name] = h
+                region_masks[name] = region_contact_mask(
+                    h,
+                    sp,
+                    h_on=th["h_on"],
+                    h_off=th["h_off"],
+                    v_on=th["v_on"],
+                    v_off=th["v_off"],
+                    min_run=th["min_run"],
+                )
+            pos = fk.foot_positions(entry)
+            foot_mask: Optional[np.ndarray] = None
+            if pos is not None:
+                foot_raw = foot_contact_mask(pos[sl])
+                foot_mask = (
+                    np.asarray(foot_raw).any(axis=-1)
+                    if np.asarray(foot_raw).ndim > 1
+                    else foot_raw
+                )
             print(
                 f"\nVALIDATION_CLIP [{cohort}] {rel} t=[{t0:.3f},{t1:.3f}] "
                 f"hand_pose_non_default={hand_nd}"
             )
-            region_contact_rates: dict[str, float] = {}
             for fi in range(verts.shape[0]):
-                frame = verts[fi : fi + 1]
                 parts: list[str] = [f"fi={fi}"]
-                for name, ids in region_sets.items():
-                    th = _region_thresholds(cfg, name)
-                    h, sp = lowest_vertex_height_speed(frame, ids)
-                    mask = region_contact_mask(
-                        h,
-                        sp,
-                        h_on=th["h_on"],
-                        h_off=th["h_off"],
-                        v_on=th["v_on"],
-                        v_off=th["v_off"],
-                        min_run=th["min_run"],
-                    )
-                    parts.append(f"{name}_h={h[0]:.4f}")
-                    parts.append(f"{name}_c={int(mask[0])}")
+                for name in region_sets:
+                    parts.append(f"{name}_h={region_heights[name][fi]:.4f}")
+                    parts.append(f"{name}_c={int(region_masks[name][fi])}")
+                if foot_mask is not None:
+                    parts.append(f"feet_c={int(np.asarray(foot_mask[fi]).any())}")
                 print("  " + " ".join(parts))
-            for name in region_sets:
-                th = _region_thresholds(cfg, name)
-                h, sp = lowest_vertex_height_speed(verts, region_sets[name])
-                m = region_contact_mask(
-                    h, sp, h_on=th["h_on"], h_off=th["h_off"], v_on=th["v_on"],
-                    v_off=th["v_off"], min_run=th["min_run"],
-                )
-                region_contact_rates[name] = float(m.mean())
+            vsum = validation_clip_summary(verts, cfg, region_sets, fk, entry, sl)
             summaries.append(
                 {
                     "cohort": cohort,
@@ -684,7 +985,7 @@ def print_validation_frames(
                     "start_s": t0,
                     "end_s": t1,
                     "hand_pose_non_default": hand_nd,
-                    "frozen_threshold_contact_fraction": region_contact_rates,
+                    "regions": vsum,
                 }
             )
     return summaries
@@ -772,12 +1073,8 @@ def main(argv: Optional[list[str]] = None) -> None:
     uncertain_map = _floor_uncertain_by_rel(standing_char)
 
     segments = load_floor_work_segments(csv_path)
-    cohort_segments: dict[str, list[SegmentRow]] = defaultdict(list)
-    for seg in segments:
-        cohort_segments[_cohort_for_geometry(seg.geometry_class)].append(seg)
-
     loco_segments = collect_loco_val_segments(cfg, exclude_rels=exclude_eval)
-    cohort_segments["ordinary_locomotion"] = loco_segments
+    cohort_segments = build_report_cohort_segments(segments, loco_segments)
     anti = cfg.get("anti_circularity") or {}
     loco_stride = int(anti.get("loco_frame_stride", 4))
     loco_subjects = {
@@ -788,44 +1085,84 @@ def main(argv: Optional[list[str]] = None) -> None:
     rates: dict[str, Any] = {
         "frozen_date": cfg.get("frozen_date"),
         "production_thresholds": cfg["foot"],
+        "mean_contact_fraction_definition": _MEAN_FRAC_DEF,
+        "total_duration_s_note": (
+            "total_s sums segment frame-window lengths "
+            "(floor(start_s*fps)..ceil(end_s*fps) at 30 fps), not raw end-start; "
+            "E1 cohort_counts uses end-start only (e.g. floor_work_eligible 100.803 vs 100.700)."
+        ),
         "loco_sample": {
             "seed": anti.get("loco_sample_seed"),
             "frame_stride": loco_stride,
+            "n_segments_sampled": len(loco_segments),
             "n_segments": len(loco_segments),
             "n_clips": len(loco_clips),
             "n_subjects": len(loco_subjects),
+            "segment_skip": "segments on clips with exclude_contact are omitted from rates",
         },
         "cohorts": {},
+        "speed_gate_characterisation": {},
+        "lie_head_shin_heights": {},
     }
 
-    for cohort, segs in cohort_segments.items():
-        rels = {s.rel_path for s in segs}
-        attr = attrition_counts(rels)
-        fu = sum(1 for r in rels if uncertain_map.get(r, False))
-        region_sums: dict[str, list[float]] = {n: [] for n in ALL_REGION_NAMES}
-        n_proc = 0
-        stride = loco_stride if cohort == "ordinary_locomotion" else 1
-        for seg in segs:
+    cohort_order = (
+        "kneel",
+        "lie",
+        "floor_work_eligible",
+        "sit_floor",
+        "sit_support",
+        "ordinary_locomotion",
+    )
+    speed_gate_cohorts = ("kneel", "lie", "sit_floor", "ordinary_locomotion")
+    for cohort in cohort_order:
+        segs = cohort_segments.get(cohort, [])
+        rates["cohorts"][cohort] = aggregate_cohort_rates(
+            cohort,
+            segs,
+            cfg,
+            region_sets,
+            fk,
+            uncertain_map,
+            frame_stride=loco_stride,
+        )
+        if cohort in speed_gate_cohorts:
+            acc = {
+                n: {
+                    "n_frames": 0,
+                    "n_low_h": 0,
+                    "n_low_h_no_contact": 0,
+                    "n_low_h_no_contact_speed": 0,
+                    "n_speed_block_argmin_changed": 0,
+                }
+                for n in NON_FOOT_REGION_NAMES
+            }
+            stride = loco_stride if cohort == "ordinary_locomotion" else 1
+            for seg in segs:
+                entry = _entry_by_rel(load_index(), seg.rel_path)
+                if clip_flags(entry).get("exclude_contact"):
+                    continue
+                merge_speed_gate_counts(
+                    acc, accumulate_speed_gate_stats(
+                        seg, cfg, region_sets, fk, frame_stride=stride
+                    )
+                )
+            rates["speed_gate_characterisation"][cohort] = speed_gate_report_row(acc)
+
+    lie_segs = cohort_segments.get("lie", [])
+    lie_dist = lie_head_shin_height_distribution(lie_segs, cfg, region_sets, fk)
+    for name in ("head", "shins"):
+        fracs = []
+        for seg in lie_segs:
             entry = _entry_by_rel(load_index(), seg.rel_path)
             if clip_flags(entry).get("exclude_contact"):
                 continue
             fr = compute_segment_region_fractions_cached(
-                seg, cfg, region_sets, fk, frame_stride=stride
+                seg, cfg, region_sets, fk, frame_stride=1
             )
-            for k, v in fr.items():
-                if np.isfinite(v):
-                    region_sums[k].append(v)
-            n_proc += 1
-        rates["cohorts"][cohort] = {
-            "n_segments_processed": n_proc,
-            "attrition": attr,
-            "floor_uncertain_clips": fu,
-            "mean_contact_fraction_per_region": {
-                k: float(np.mean(v)) if v else None for k, v in region_sums.items()
-            },
-        }
-        if cohort == "sit_support":
-            rates["cohorts"][cohort]["floor_assuming_metrics"] = "excluded — no seat channel"
+            fracs.append(fr[name])
+        if fracs and name in lie_dist:
+            lie_dist[name]["mean_contact_fraction_segments"] = float(np.mean(fracs))
+    rates["lie_head_shin_heights"] = lie_dist
 
     rates["cohorts"]["crawl"] = {"n_confirmed_segments": 0, "not_evaluable": True}
     rates["cohorts"]["yoga_like"] = {"n_confirmed_segments": 0, "not_evaluable": True}
@@ -868,6 +1205,10 @@ def main(argv: Optional[list[str]] = None) -> None:
                     )
     rates["sensitivity_validation_clips"] = sens
     rates["validation_summaries"] = print_validation_frames(cfg, region_sets, fk)
+
+    mism = run_foot_regression_27cc2da()
+    rates["foot_regression_contact_mism_27cc2da"] = mism
+    print(f"FOOT_REGRESSION contact_mism={mism} (27cc2da, seed=0, n=300)")
 
     out_path = (repo_root / cfg["output_json"]).resolve()
     out_path.parent.mkdir(parents=True, exist_ok=True)
