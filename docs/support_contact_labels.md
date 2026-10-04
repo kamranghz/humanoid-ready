@@ -18,9 +18,17 @@ Vertices around the knee are **split by max-LBS assignment**: joint **4–5** �
 
 ## Thresholds (frozen)
 
-**All non-foot regions use foot constants:** `h_on=0.05 m`, `h_off=0.06 m`, `v_on=0.2 m/s`, `v_off=0.25 m/s`, `min_run=3`. Heights are **lowest-vertex world z** after clip `floor_offset` (pipeline floor **z=0**). No extra free parameter.
+**All non-foot regions use foot constants:** `h_on=0.05 m`, `h_off=0.06 m`, `v_on=0.2 m/s`, `v_off=0.25 m/s`, `min_run=3`. Heights are **lowest-vertex world z** after clip `floor_offset` (pipeline floor **z=0**). Thresholds were **not** changed on 2026-10-04.
 
 **Rationale:** Standing-foot residual on reliably grounded VAL clips is small on many subsets (ACCAD/BMLmovi/MoSh medians often &lt; 0.01 m). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
+
+### Amendment 2026-10-04 — non-foot speed only (feet unchanged)
+
+**Reason:** Legacy speed followed the **argmin lowest vertex**; when that index switched frame-to-frame, horizontal speed spiked and opened spurious contact gaps (e.g. lie A9 thighs at 0.02–0.03 m with many short OFF runs; pelvis at ~0.005 m with ~0.27 s gaps).
+
+**Config (two keys only):** `speed_definition: patch_median_same_vertex`, `patch_band_m: 0.02` (design constant fixed at amendment time; not tuned on cohort rates). **Non-foot** speed at frame `t`: patch `P_t = {v : z_{t,v} ≤ min_z_t + patch_band_m}`; `speed_t = median_{v∈P_t} ‖xy_{t,v} − xy_{t−1,v}‖ × fps`; `speed_0 = speed_1`. Heights unchanged (lowest vertex). Feet still use `contact.py` / foot channels only.
+
+**Before/after evidence:** `results/E/support_contact_v2_rates.json` → `amendment_2026_10_04_non_foot_speed` (per cohort × region: mean contact fraction and `frac_low_h_no_contact_due_to_speed`). Example lie cohort means: thighs **0.550 → 0.613**, pelvis_seat **0.639 → 0.700**, back_torso **0.679 → 0.732**; lie `frac_low_h_no_contact_due_to_speed` on thighs **0.057 → 0.009**. `ordinary_locomotion` and `sit_support`: **no** non-foot mean-contact changes (all non-foot regions remain **0**). `patch_band_m` sensitivity **report-only** at 0.01 / 0.03 m (lie speed-gate only). Validation `squat_down`: shins/thighs/pelvis **0 before and after**.
 
 ## Floor calibration sensitivity
 

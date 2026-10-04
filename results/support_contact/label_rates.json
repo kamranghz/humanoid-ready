@@ -33,8 +33,8 @@
       },
       "floor_uncertain_clips": 0,
       "mean_contact_fraction_per_region": {
-        "shins": 0.8837845288980636,
-        "thighs": 0.6496958498387794,
+        "shins": 0.9107485747483427,
+        "thighs": 0.6703158432892065,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -58,13 +58,13 @@
       "floor_uncertain_clips": 0,
       "mean_contact_fraction_per_region": {
         "shins": 0.0,
-        "thighs": 0.549670636271439,
-        "pelvis_seat": 0.6388519083735695,
-        "back_torso": 0.6787160667885308,
+        "thighs": 0.612987283718991,
+        "pelvis_seat": 0.6547015591522833,
+        "back_torso": 0.7683674814854079,
         "head": 0.0,
-        "forearms": 0.21627196596597228,
-        "wrists": 0.18970545611427,
-        "hands": 0.45212134413127764,
+        "forearms": 0.24373005709435158,
+        "wrists": 0.19251839563607026,
+        "hands": 0.4785330915808518,
         "feet": 0.017276422764227643
       }
     },
@@ -81,14 +81,14 @@
       },
       "floor_uncertain_clips": 0,
       "mean_contact_fraction_per_region": {
-        "shins": 0.5050197307988935,
-        "thighs": 0.606827901167062,
-        "pelvis_seat": 0.2737936750172441,
-        "back_torso": 0.29087831433794176,
+        "shins": 0.520427756999053,
+        "thighs": 0.6457464606162571,
+        "pelvis_seat": 0.2805863824938357,
+        "back_torso": 0.3293003492080319,
         "head": 0.0,
-        "forearms": 0.09268798541398812,
-        "wrists": 0.08130233833468714,
-        "hands": 0.19376629034197612,
+        "forearms": 0.10445573875472211,
+        "wrists": 0.08250788384403011,
+        "hands": 0.2050856106775079,
         "feet": 0.339861492447016
       }
     },
@@ -105,14 +105,14 @@
       },
       "floor_uncertain_clips": 2,
       "mean_contact_fraction_per_region": {
-        "shins": 0.11485494933267425,
-        "thighs": 0.1147405975010679,
-        "pelvis_seat": 0.21732134974660977,
+        "shins": 0.11764705882352941,
+        "thighs": 0.1181896000868066,
+        "pelvis_seat": 0.2350841934666755,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.16256538303021065,
+        "hands": 0.17979234208728445,
         "feet": 0.4410143733047946
       }
     },
@@ -177,20 +177,20 @@
   "speed_gate_characterisation": {
     "kneel": {
       "shins": {
-        "frac_low_h_no_contact_due_to_speed": 0.03256513026052104,
+        "frac_low_h_no_contact_due_to_speed": 0.0035070140280561123,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.7076923076923077,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 2135,
         "n_low_h": 1996,
-        "n_low_h_no_contact_speed": 65
+        "n_low_h_no_contact_speed": 7
       },
       "thighs": {
-        "frac_low_h_no_contact_due_to_speed": 0.006589785831960461,
-        "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.75,
+        "frac_low_h_no_contact_due_to_speed": 0.0,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
         "n_frames": 2135,
         "n_low_h": 1214,
-        "n_low_h_no_contact_speed": 8
+        "n_low_h_no_contact_speed": 0
       },
       "pelvis_seat": {
         "frac_low_h_no_contact_due_to_speed": null,
@@ -251,28 +251,28 @@
         "n_low_h_no_contact_speed": 0
       },
       "thighs": {
-        "frac_low_h_no_contact_due_to_speed": 0.05689277899343545,
+        "frac_low_h_no_contact_due_to_speed": 0.0087527352297593,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.7692307692307693,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 457,
-        "n_low_h_no_contact_speed": 26
+        "n_low_h_no_contact_speed": 4
       },
       "pelvis_seat": {
-        "frac_low_h_no_contact_due_to_speed": 0.040740740740740744,
+        "frac_low_h_no_contact_due_to_speed": 0.012962962962962963,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.6363636363636364,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 540,
-        "n_low_h_no_contact_speed": 22
+        "n_low_h_no_contact_speed": 7
       },
       "back_torso": {
-        "frac_low_h_no_contact_due_to_speed": 0.07658959537572255,
+        "frac_low_h_no_contact_due_to_speed": 0.002890173410404624,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.5849056603773585,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 692,
-        "n_low_h_no_contact_speed": 53
+        "n_low_h_no_contact_speed": 2
       },
       "head": {
         "frac_low_h_no_contact_due_to_speed": null,
@@ -283,54 +283,54 @@
         "n_low_h_no_contact_speed": 0
       },
       "forearms": {
-        "frac_low_h_no_contact_due_to_speed": 0.11610486891385768,
+        "frac_low_h_no_contact_due_to_speed": 0.00749063670411985,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.8709677419354839,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 267,
-        "n_low_h_no_contact_speed": 31
+        "n_low_h_no_contact_speed": 2
       },
       "wrists": {
-        "frac_low_h_no_contact_due_to_speed": 0.07453416149068323,
+        "frac_low_h_no_contact_due_to_speed": 0.043478260869565216,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.3333333333333333,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 161,
-        "n_low_h_no_contact_speed": 12
+        "n_low_h_no_contact_speed": 7
       },
       "hands": {
-        "frac_low_h_no_contact_due_to_speed": 0.19444444444444445,
-        "frac_low_h_no_contact_due_to_speed_of_no_contact": 0.98989898989899,
-        "frac_speed_block_argmin_changed": 0.3469387755102041,
+        "frac_low_h_no_contact_due_to_speed": 0.12896825396825398,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": 0.9848484848484849,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 905,
         "n_low_h": 504,
-        "n_low_h_no_contact_speed": 98
+        "n_low_h_no_contact_speed": 65
       }
     },
     "sit_floor": {
       "shins": {
-        "frac_low_h_no_contact_due_to_speed": 0.024291497975708502,
-        "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.8333333333333334,
+        "frac_low_h_no_contact_due_to_speed": 0.0,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
         "n_frames": 2016,
         "n_low_h": 247,
-        "n_low_h_no_contact_speed": 6
+        "n_low_h_no_contact_speed": 0
       },
       "thighs": {
-        "frac_low_h_no_contact_due_to_speed": 0.021551724137931036,
-        "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.4,
+        "frac_low_h_no_contact_due_to_speed": 0.0,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
         "n_frames": 2016,
         "n_low_h": 232,
-        "n_low_h_no_contact_speed": 5
+        "n_low_h_no_contact_speed": 0
       },
       "pelvis_seat": {
-        "frac_low_h_no_contact_due_to_speed": 0.08935361216730038,
+        "frac_low_h_no_contact_due_to_speed": 0.039923954372623575,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.6170212765957447,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 2016,
         "n_low_h": 526,
-        "n_low_h_no_contact_speed": 47
+        "n_low_h_no_contact_speed": 21
       },
       "back_torso": {
         "frac_low_h_no_contact_due_to_speed": null,
@@ -365,12 +365,78 @@
         "n_low_h_no_contact_speed": 0
       },
       "hands": {
-        "frac_low_h_no_contact_due_to_speed": 0.1417910447761194,
+        "frac_low_h_no_contact_due_to_speed": 0.0945273631840796,
         "frac_low_h_no_contact_due_to_speed_of_no_contact": 1.0,
-        "frac_speed_block_argmin_changed": 0.3684210526315789,
+        "frac_speed_block_argmin_changed": 0.0,
         "n_frames": 2016,
         "n_low_h": 402,
-        "n_low_h_no_contact_speed": 57
+        "n_low_h_no_contact_speed": 38
+      }
+    },
+    "sit_support": {
+      "shins": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "thighs": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "pelvis_seat": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "back_torso": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "head": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "forearms": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "wrists": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
+      },
+      "hands": {
+        "frac_low_h_no_contact_due_to_speed": null,
+        "frac_low_h_no_contact_due_to_speed_of_no_contact": null,
+        "frac_speed_block_argmin_changed": null,
+        "n_frames": 37026,
+        "n_low_h": 0,
+        "n_low_h_no_contact_speed": 0
       }
     },
     "ordinary_locomotion": {
@@ -460,6 +526,581 @@
       "mean_contact_fraction_segments": 0.0
     }
   },
+  "amendment_2026_10_04_non_foot_speed": {
+    "date": "2026-10-04",
+    "reason": "Argmin-vertex horizontal speed spiked when the lowest vertex index switched (lie A9 thighs/pelvis gaps despite h << h_on). Non-foot speed only; feet unchanged.",
+    "before_non_foot_speed": "argmin_vertex_horiz_speed",
+    "after_non_foot_speed": "patch_median_same_vertex",
+    "patch_band_m": 0.02,
+    "patch_band_m_sensitivity_lie_speed_gate_only": {
+      "0.01": {
+        "shins": null,
+        "thighs": 0.0087527352297593,
+        "pelvis_seat": 0.012962962962962963,
+        "back_torso": 0.002890173410404624,
+        "head": null,
+        "forearms": 0.0,
+        "wrists": 0.043478260869565216,
+        "hands": 0.13690476190476192
+      },
+      "0.03": {
+        "shins": null,
+        "thighs": 0.0087527352297593,
+        "pelvis_seat": 0.012962962962962963,
+        "back_torso": 0.002890173410404624,
+        "head": null,
+        "forearms": 0.00749063670411985,
+        "wrists": 0.043478260869565216,
+        "hands": 0.12698412698412698
+      }
+    },
+    "cohorts": {
+      "kneel": {
+        "regions": {
+          "shins": {
+            "mean_contact_fraction": {
+              "before": 0.8837845288980636,
+              "after": 0.9107485747483427
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.03256513026052104,
+              "after": 0.0035070140280561123
+            }
+          },
+          "thighs": {
+            "mean_contact_fraction": {
+              "before": 0.6496958498387794,
+              "after": 0.6703158432892065
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.006589785831960461,
+              "after": 0.0
+            }
+          },
+          "pelvis_seat": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "back_torso": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "head": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "forearms": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "wrists": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "hands": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "feet": {
+            "mean_contact_fraction": {
+              "before": 0.5818002947091073,
+              "after": 0.5818002947091073
+            }
+          }
+        },
+        "non_foot_mean_contact_changes": [
+          {
+            "region": "shins",
+            "before": 0.8837845288980636,
+            "after": 0.9107485747483427,
+            "delta": 0.026964045850279117
+          },
+          {
+            "region": "thighs",
+            "before": 0.6496958498387794,
+            "after": 0.6703158432892065,
+            "delta": 0.020619993450427088
+          }
+        ]
+      },
+      "lie": {
+        "regions": {
+          "shins": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "thighs": {
+            "mean_contact_fraction": {
+              "before": 0.549670636271439,
+              "after": 0.612987283718991
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.05689277899343545,
+              "after": 0.0087527352297593
+            }
+          },
+          "pelvis_seat": {
+            "mean_contact_fraction": {
+              "before": 0.6388519083735695,
+              "after": 0.6547015591522833
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.040740740740740744,
+              "after": 0.012962962962962963
+            }
+          },
+          "back_torso": {
+            "mean_contact_fraction": {
+              "before": 0.6787160667885308,
+              "after": 0.7683674814854079
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.07658959537572255,
+              "after": 0.002890173410404624
+            }
+          },
+          "head": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "forearms": {
+            "mean_contact_fraction": {
+              "before": 0.21627196596597228,
+              "after": 0.24373005709435158
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.11610486891385768,
+              "after": 0.00749063670411985
+            }
+          },
+          "wrists": {
+            "mean_contact_fraction": {
+              "before": 0.18970545611427,
+              "after": 0.19251839563607026
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.07453416149068323,
+              "after": 0.043478260869565216
+            }
+          },
+          "hands": {
+            "mean_contact_fraction": {
+              "before": 0.45212134413127764,
+              "after": 0.4785330915808518
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.19444444444444445,
+              "after": 0.12896825396825398
+            }
+          },
+          "feet": {
+            "mean_contact_fraction": {
+              "before": 0.017276422764227643,
+              "after": 0.017276422764227643
+            }
+          }
+        },
+        "non_foot_mean_contact_changes": [
+          {
+            "region": "thighs",
+            "before": 0.549670636271439,
+            "after": 0.612987283718991,
+            "delta": 0.06331664744755205
+          },
+          {
+            "region": "pelvis_seat",
+            "before": 0.6388519083735695,
+            "after": 0.6547015591522833,
+            "delta": 0.01584965077871381
+          },
+          {
+            "region": "back_torso",
+            "before": 0.6787160667885308,
+            "after": 0.7683674814854079,
+            "delta": 0.0896514146968771
+          },
+          {
+            "region": "forearms",
+            "before": 0.21627196596597228,
+            "after": 0.24373005709435158,
+            "delta": 0.027458091128379297
+          },
+          {
+            "region": "wrists",
+            "before": 0.18970545611427,
+            "after": 0.19251839563607026,
+            "delta": 0.002812939521800256
+          },
+          {
+            "region": "hands",
+            "before": 0.45212134413127764,
+            "after": 0.4785330915808518,
+            "delta": 0.02641174744957414
+          }
+        ]
+      },
+      "sit_floor": {
+        "regions": {
+          "shins": {
+            "mean_contact_fraction": {
+              "before": 0.11485494933267425,
+              "after": 0.11764705882352941
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.024291497975708502,
+              "after": 0.0
+            }
+          },
+          "thighs": {
+            "mean_contact_fraction": {
+              "before": 0.1147405975010679,
+              "after": 0.1181896000868066
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.021551724137931036,
+              "after": 0.0
+            }
+          },
+          "pelvis_seat": {
+            "mean_contact_fraction": {
+              "before": 0.21732134974660977,
+              "after": 0.2350841934666755
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.08935361216730038,
+              "after": 0.039923954372623575
+            }
+          },
+          "back_torso": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "head": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "forearms": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "wrists": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "hands": {
+            "mean_contact_fraction": {
+              "before": 0.16256538303021065,
+              "after": 0.17979234208728445
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.1417910447761194,
+              "after": 0.0945273631840796
+            }
+          },
+          "feet": {
+            "mean_contact_fraction": {
+              "before": 0.4410143733047946,
+              "after": 0.4410143733047946
+            }
+          }
+        },
+        "non_foot_mean_contact_changes": [
+          {
+            "region": "shins",
+            "before": 0.11485494933267425,
+            "after": 0.11764705882352941,
+            "delta": 0.002792109490855163
+          },
+          {
+            "region": "thighs",
+            "before": 0.1147405975010679,
+            "after": 0.1181896000868066,
+            "delta": 0.0034490025857387002
+          },
+          {
+            "region": "pelvis_seat",
+            "before": 0.21732134974660977,
+            "after": 0.2350841934666755,
+            "delta": 0.01776284372006573
+          },
+          {
+            "region": "hands",
+            "before": 0.16256538303021065,
+            "after": 0.17979234208728445,
+            "delta": 0.017226959057073804
+          }
+        ]
+      },
+      "sit_support": {
+        "regions": {
+          "shins": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "thighs": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "pelvis_seat": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "back_torso": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "head": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "forearms": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "wrists": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "hands": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "feet": {
+            "mean_contact_fraction": {
+              "before": 0.8701686048003672,
+              "after": 0.8701686048003672
+            }
+          }
+        },
+        "non_foot_mean_contact_changes": []
+      },
+      "ordinary_locomotion": {
+        "regions": {
+          "shins": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "thighs": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "pelvis_seat": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "back_torso": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "head": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "forearms": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "wrists": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": null,
+              "after": null
+            }
+          },
+          "hands": {
+            "mean_contact_fraction": {
+              "before": 0.0,
+              "after": 0.0
+            },
+            "frac_low_h_no_contact_due_to_speed": {
+              "before": 0.0,
+              "after": 0.0
+            }
+          },
+          "feet": {
+            "mean_contact_fraction": {
+              "before": 0.6036270902274378,
+              "after": 0.6036270902274378
+            }
+          }
+        },
+        "non_foot_mean_contact_changes": []
+      }
+    },
+    "validation_squat_down_non_foot": {
+      "shins": {
+        "before": 0.0,
+        "after": 0.0
+      },
+      "thighs": {
+        "before": 0.0,
+        "after": 0.0
+      },
+      "pelvis_seat": {
+        "before": 0.0,
+        "after": 0.0
+      }
+    }
+  },
   "sensitivity_validation_clips": [
     {
       "rel_path": "Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz",
@@ -467,8 +1108,8 @@
       "h_on_m": 0.05,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.6578947368421053,
-        "thighs": 0.2894736842105263,
+        "shins": 0.6710526315789473,
+        "thighs": 0.3026315789473684,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -484,7 +1125,7 @@
       "h_on_m": 0.05,
       "z_shift_m": 0.035,
       "contact_fraction": {
-        "shins": 0.3157894736842105,
+        "shins": 0.32894736842105265,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -518,8 +1159,8 @@
       "h_on_m": 0.07,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.6710526315789473,
-        "thighs": 0.618421052631579,
+        "shins": 0.6842105263157895,
+        "thighs": 0.6447368421052632,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -535,7 +1176,7 @@
       "h_on_m": 0.07,
       "z_shift_m": 0.035,
       "contact_fraction": {
-        "shins": 0.6447368421052632,
+        "shins": 0.6578947368421053,
         "thighs": 0.13157894736842105,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -569,8 +1210,8 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.6842105263157895,
-        "thighs": 0.6447368421052632,
+        "shins": 0.7105263157894737,
+        "thighs": 0.6710526315789473,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -586,8 +1227,8 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.035,
       "contact_fraction": {
-        "shins": 0.6710526315789473,
-        "thighs": 0.618421052631579,
+        "shins": 0.6842105263157895,
+        "thighs": 0.6447368421052632,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -603,7 +1244,7 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.07,
       "contact_fraction": {
-        "shins": 0.631578947368421,
+        "shins": 0.6447368421052632,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -620,8 +1261,8 @@
       "h_on_m": 0.05,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.9896907216494846,
-        "thighs": 0.9175257731958762,
+        "shins": 1.0,
+        "thighs": 0.9278350515463918,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -671,8 +1312,8 @@
       "h_on_m": 0.07,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.9896907216494846,
-        "thighs": 0.9896907216494846,
+        "shins": 1.0,
+        "thighs": 1.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -688,7 +1329,7 @@
       "h_on_m": 0.07,
       "z_shift_m": 0.035,
       "contact_fraction": {
-        "shins": 0.9896907216494846,
+        "shins": 1.0,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -722,8 +1363,8 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.9896907216494846,
-        "thighs": 0.9896907216494846,
+        "shins": 1.0,
+        "thighs": 1.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -739,8 +1380,8 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.035,
       "contact_fraction": {
-        "shins": 0.9896907216494846,
-        "thighs": 0.9896907216494846,
+        "shins": 1.0,
+        "thighs": 1.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
         "head": 0.0,
@@ -774,13 +1415,13 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9915611814345991,
         "head": 0.0,
-        "forearms": 0.4345991561181435,
-        "wrists": 0.7341772151898734,
-        "hands": 0.7721518987341772,
+        "forearms": 0.5443037974683544,
+        "wrists": 0.759493670886076,
+        "hands": 0.8860759493670886,
         "feet": 0.0
       }
     },
@@ -792,7 +1433,7 @@
       "contact_fraction": {
         "shins": 0.0,
         "thighs": 0.0,
-        "pelvis_seat": 0.9620253164556962,
+        "pelvis_seat": 1.0,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
@@ -825,13 +1466,13 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.5063291139240507,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9915611814345991,
         "head": 0.0,
-        "forearms": 0.4345991561181435,
-        "wrists": 0.8565400843881856,
-        "hands": 0.7721518987341772,
+        "forearms": 0.5485232067510548,
+        "wrists": 0.9156118143459916,
+        "hands": 0.8860759493670886,
         "feet": 0.0
       }
     },
@@ -842,13 +1483,13 @@
       "z_shift_m": 0.035,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9915611814345991,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.6624472573839663,
+        "hands": 0.7552742616033755,
         "feet": 0.0
       }
     },
@@ -876,13 +1517,13 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 1.0,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9915611814345991,
         "head": 0.0,
-        "forearms": 0.6708860759493671,
-        "wrists": 0.8565400843881856,
-        "hands": 0.7721518987341772,
+        "forearms": 0.9240506329113924,
+        "wrists": 0.9156118143459916,
+        "hands": 0.8860759493670886,
         "feet": 0.0
       }
     },
@@ -893,13 +1534,13 @@
       "z_shift_m": 0.035,
       "contact_fraction": {
         "shins": 0.4641350210970464,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9915611814345991,
         "head": 0.0,
-        "forearms": 0.4345991561181435,
-        "wrists": 0.8565400843881856,
-        "hands": 0.7721518987341772,
+        "forearms": 0.5485232067510548,
+        "wrists": 0.9156118143459916,
+        "hands": 0.8860759493670886,
         "feet": 0.0
       }
     },
@@ -910,13 +1551,13 @@
       "z_shift_m": 0.07,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.919831223628692,
-        "pelvis_seat": 0.9620253164556962,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.9113924050632911,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.569620253164557,
+        "hands": 0.7341772151898734,
         "feet": 0.0
       }
     },
@@ -927,8 +1568,8 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.8846153846153846,
-        "pelvis_seat": 0.9358974358974359,
+        "thighs": 0.9230769230769231,
+        "pelvis_seat": 0.9743589743589743,
         "back_torso": 0.8717948717948718,
         "head": 0.0,
         "forearms": 0.0,
@@ -978,9 +1619,9 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.9487179487179487,
-        "pelvis_seat": 0.9615384615384616,
-        "back_torso": 0.9743589743589743,
+        "thighs": 0.9871794871794872,
+        "pelvis_seat": 1.0,
+        "back_torso": 0.9871794871794872,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 1.0,
@@ -996,7 +1637,7 @@
       "contact_fraction": {
         "shins": 0.0,
         "thighs": 0.0,
-        "pelvis_seat": 0.8974358974358975,
+        "pelvis_seat": 0.9358974358974359,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
@@ -1029,9 +1670,9 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.9615384615384616,
-        "pelvis_seat": 0.9615384615384616,
-        "back_torso": 0.9871794871794872,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
+        "back_torso": 1.0,
         "head": 0.0,
         "forearms": 1.0,
         "wrists": 1.0,
@@ -1046,9 +1687,9 @@
       "z_shift_m": 0.035,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.9358974358974359,
-        "pelvis_seat": 0.9615384615384616,
-        "back_torso": 0.9615384615384616,
+        "thighs": 0.9743589743589743,
+        "pelvis_seat": 1.0,
+        "back_torso": 0.9743589743589743,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 1.0,
@@ -1064,7 +1705,7 @@
       "contact_fraction": {
         "shins": 0.0,
         "thighs": 0.0,
-        "pelvis_seat": 0.6923076923076923,
+        "pelvis_seat": 0.717948717948718,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
@@ -1080,13 +1721,13 @@
       "z_shift_m": 0.0,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.959349593495935,
-        "pelvis_seat": 0.959349593495935,
+        "thighs": 0.975609756097561,
+        "pelvis_seat": 1.0,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1130,14 +1771,14 @@
       "h_on_m": 0.07,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.5934959349593496,
-        "thighs": 0.991869918699187,
-        "pelvis_seat": 0.959349593495935,
+        "shins": 0.959349593495935,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1149,12 +1790,12 @@
       "contact_fraction": {
         "shins": 0.0,
         "thighs": 0.0,
-        "pelvis_seat": 0.926829268292683,
+        "pelvis_seat": 0.967479674796748,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1181,14 +1822,14 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.975609756097561,
-        "thighs": 0.991869918699187,
-        "pelvis_seat": 0.959349593495935,
+        "shins": 1.0,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.056910569105691054,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1199,13 +1840,13 @@
       "z_shift_m": 0.035,
       "contact_fraction": {
         "shins": 0.0,
-        "thighs": 0.991869918699187,
-        "pelvis_seat": 0.959349593495935,
+        "thighs": 1.0,
+        "pelvis_seat": 1.0,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1217,12 +1858,12 @@
       "contact_fraction": {
         "shins": 0.0,
         "thighs": 0.0,
-        "pelvis_seat": 0.7886178861788617,
+        "pelvis_seat": 0.8211382113821138,
         "back_torso": 0.0,
         "head": 0.0,
         "forearms": 0.0,
         "wrists": 0.0,
-        "hands": 0.06504065040650407,
+        "hands": 0.08130081300813008,
         "feet": 0.0
       }
     },
@@ -1334,7 +1975,7 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.10967741935483871,
+        "shins": 0.1935483870967742,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -1487,7 +2128,7 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.9142857142857143,
+        "shins": 1.0,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -1793,7 +2434,7 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.14195583596214512,
+        "shins": 0.5331230283911672,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -1946,7 +2587,7 @@
       "h_on_m": 0.1,
       "z_shift_m": 0.0,
       "contact_fraction": {
-        "shins": 0.12,
+        "shins": 0.15333333333333332,
         "thighs": 0.0,
         "pelvis_seat": 0.0,
         "back_torso": 0.0,
@@ -2003,14 +2644,10 @@
         "shins": {
           "lowest_height_min_m": 0.006492156535387039,
           "lowest_height_median_m": 0.01735374704003334,
-          "contact_fraction": 0.6578947368421053,
+          "contact_fraction": 0.6710526315789473,
           "contact_runs_inclusive": [
             [
               25,
-              58
-            ],
-            [
-              60,
               75
             ]
           ]
@@ -2018,14 +2655,10 @@
         "thighs": {
           "lowest_height_min_m": 0.0325174517929554,
           "lowest_height_median_m": 0.06058650091290474,
-          "contact_fraction": 0.2894736842105263,
+          "contact_fraction": 0.3026315789473684,
           "contact_runs_inclusive": [
             [
               53,
-              59
-            ],
-            [
-              61,
               75
             ]
           ]
@@ -2087,14 +2720,10 @@
         "shins": {
           "lowest_height_min_m": 0.024876093491911888,
           "lowest_height_median_m": 0.02629265747964382,
-          "contact_fraction": 0.9896907216494846,
+          "contact_fraction": 1.0,
           "contact_runs_inclusive": [
             [
               0,
-              3
-            ],
-            [
-              5,
               96
             ]
           ]
@@ -2102,14 +2731,10 @@
         "thighs": {
           "lowest_height_min_m": 0.04327896982431412,
           "lowest_height_median_m": 0.04511324316263199,
-          "contact_fraction": 0.9175257731958762,
+          "contact_fraction": 0.9278350515463918,
           "contact_runs_inclusive": [
             [
               7,
-              92
-            ],
-            [
-              94,
               96
             ]
           ]
@@ -2177,50 +2802,10 @@
         "thighs": {
           "lowest_height_min_m": 0.02178247645497322,
           "lowest_height_median_m": 0.026158932596445084,
-          "contact_fraction": 0.919831223628692,
+          "contact_fraction": 1.0,
           "contact_runs_inclusive": [
             [
               0,
-              76
-            ],
-            [
-              78,
-              85
-            ],
-            [
-              87,
-              93
-            ],
-            [
-              95,
-              109
-            ],
-            [
-              114,
-              126
-            ],
-            [
-              128,
-              144
-            ],
-            [
-              146,
-              164
-            ],
-            [
-              166,
-              201
-            ],
-            [
-              204,
-              213
-            ],
-            [
-              218,
-              220
-            ],
-            [
-              224,
               236
             ]
           ]
@@ -2228,18 +2813,10 @@
         "pelvis_seat": {
           "lowest_height_min_m": 0.003743201494216919,
           "lowest_height_median_m": 0.007609788328409195,
-          "contact_fraction": 0.9620253164556962,
+          "contact_fraction": 1.0,
           "contact_runs_inclusive": [
             [
               0,
-              2
-            ],
-            [
-              4,
-              86
-            ],
-            [
-              95,
               236
             ]
           ]
@@ -2272,38 +2849,10 @@
         "forearms": {
           "lowest_height_min_m": 0.041964683681726456,
           "lowest_height_median_m": 0.04675266519188881,
-          "contact_fraction": 0.4345991561181435,
+          "contact_fraction": 0.5443037974683544,
           "contact_runs_inclusive": [
             [
-              109,
-              121
-            ],
-            [
-              124,
-              136
-            ],
-            [
-              138,
-              175
-            ],
-            [
-              185,
-              188
-            ],
-            [
-              193,
-              197
-            ],
-            [
-              203,
-              217
-            ],
-            [
-              220,
-              231
-            ],
-            [
-              234,
+              108,
               236
             ]
           ]
@@ -2311,15 +2860,11 @@
         "wrists": {
           "lowest_height_min_m": 0.011323187500238419,
           "lowest_height_median_m": 0.05047587677836418,
-          "contact_fraction": 0.7341772151898734,
+          "contact_fraction": 0.759493670886076,
           "contact_runs_inclusive": [
             [
-              6,
-              73
-            ],
-            [
-              75,
-              86
+              3,
+              88
             ],
             [
               143,
@@ -2330,14 +2875,10 @@
         "hands": {
           "lowest_height_min_m": -0.02965867891907692,
           "lowest_height_median_m": 0.03457959368824959,
-          "contact_fraction": 0.7721518987341772,
+          "contact_fraction": 0.8860759493670886,
           "contact_runs_inclusive": [
             [
-              5,
-              71
-            ],
-            [
-              73,
+              3,
               86
             ],
             [
@@ -2345,27 +2886,7 @@
               108
             ],
             [
-              117,
-              119
-            ],
-            [
-              121,
-              123
-            ],
-            [
-              134,
-              137
-            ],
-            [
-              140,
-              199
-            ],
-            [
-              203,
-              228
-            ],
-            [
-              234,
+              114,
               236
             ]
           ]
@@ -2392,22 +2913,10 @@
         "thighs": {
           "lowest_height_min_m": 0.04239397495985031,
           "lowest_height_median_m": 0.043678514659404755,
-          "contact_fraction": 0.8846153846153846,
+          "contact_fraction": 0.9230769230769231,
           "contact_runs_inclusive": [
             [
               6,
-              10
-            ],
-            [
-              12,
-              15
-            ],
-            [
-              17,
-              24
-            ],
-            [
-              26,
               77
             ]
           ]
@@ -2415,22 +2924,10 @@
         "pelvis_seat": {
           "lowest_height_min_m": 0.020201891660690308,
           "lowest_height_median_m": 0.025499477982521057,
-          "contact_fraction": 0.9358974358974359,
+          "contact_fraction": 0.9743589743589743,
           "contact_runs_inclusive": [
             [
               2,
-              11
-            ],
-            [
-              13,
-              17
-            ],
-            [
-              19,
-              22
-            ],
-            [
-              24,
               77
             ]
           ]
@@ -2501,10 +2998,10 @@
         "thighs": {
           "lowest_height_min_m": 0.036882102489471436,
           "lowest_height_median_m": 0.04185793548822403,
-          "contact_fraction": 0.959349593495935,
+          "contact_fraction": 0.975609756097561,
           "contact_runs_inclusive": [
             [
-              5,
+              3,
               122
             ]
           ]
@@ -2512,18 +3009,10 @@
         "pelvis_seat": {
           "lowest_height_min_m": 0.022901639342308044,
           "lowest_height_median_m": 0.02759222686290741,
-          "contact_fraction": 0.959349593495935,
+          "contact_fraction": 1.0,
           "contact_runs_inclusive": [
             [
               0,
-              3
-            ],
-            [
-              5,
-              77
-            ],
-            [
-              82,
               122
             ]
           ]
@@ -2555,11 +3044,11 @@
         "hands": {
           "lowest_height_min_m": 0.021434620022773743,
           "lowest_height_median_m": 0.17459861934185028,
-          "contact_fraction": 0.06504065040650407,
+          "contact_fraction": 0.08130081300813008,
           "contact_runs_inclusive": [
             [
               0,
-              7
+              9
             ]
           ]
         },

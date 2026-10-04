@@ -247,9 +247,13 @@ def lowest_vertex_argmin_indices(verts: np.ndarray, region_ids: np.ndarray) -> n
     return sub[:, :, 2].argmin(axis=1).astype(np.int64)
 
 
+_LEGACY_NON_FOOT_SPEED = "argmin_vertex_horiz_speed"
+
+
 def lowest_vertex_height_speed(
     verts: np.ndarray, region_ids: np.ndarray
 ) -> tuple[np.ndarray, np.ndarray]:
+    """Legacy non-foot speed: horizontal speed of the lowest vertex (argmin switches)."""
     sub = verts[:, region_ids, :]
     z = sub[:, :, 2]
     j = z.argmin(axis=1)
@@ -263,6 +267,44 @@ def lowest_vertex_height_speed(
         speed[1:] = np.linalg.norm(np.diff(xy, axis=0), axis=1) / dt
         speed[0] = speed[1]
     return h, speed
+
+
+def lowest_vertex_height_patch_median_speed(
+    verts: np.ndarray, region_ids: np.ndarray, patch_band_m: float
+) -> tuple[np.ndarray, np.ndarray]:
+    """Lowest-vertex height; speed = median same-vertex horiz speed over near-floor patch."""
+    sub = verts[:, region_ids, :]
+    z = sub[:, :, 2]
+    z_min = z.min(axis=1)
+    h = z_min.astype(np.float64, copy=True)
+    in_patch = z <= (z_min[:, None] + patch_band_m)
+    xy = sub[:, :, :2]
+    t_len = verts.shape[0]
+    speed = np.zeros(t_len, dtype=np.float64)
+    if t_len > 1:
+        disp = np.linalg.norm(np.diff(xy, axis=0), axis=2) * _TARGET_FPS
+        for t in range(1, t_len):
+            mask = in_patch[t]
+            if mask.any():
+                speed[t] = float(np.median(disp[t - 1, mask]))
+        speed[0] = speed[1]
+    return h, speed
+
+
+def region_height_speed(
+    verts: np.ndarray,
+    region_ids: np.ndarray,
+    cfg: dict[str, Any],
+    *,
+    speed_mode: Optional[str] = None,
+) -> tuple[np.ndarray, np.ndarray]:
+    mode = speed_mode if speed_mode is not None else str(
+        cfg.get("speed_definition", _LEGACY_NON_FOOT_SPEED)
+    )
+    if mode == "patch_median_same_vertex":
+        band = float(cfg.get("patch_band_m", 0.02))
+        return lowest_vertex_height_patch_median_speed(verts, region_ids, band)
+    return lowest_vertex_height_speed(verts, region_ids)
 
 
 def segment_duration_s(n_frames: int, start_s: float, end_s: float) -> float:
@@ -589,6 +631,7 @@ def aggregate_cohort_rates(
     uncertain_map: dict[str, bool],
     *,
     frame_stride: int,
+    non_foot_speed_mode: Optional[str] = None,
 ) -> dict[str, Any]:
     rels = {s.rel_path for s in segs}
     attr = attrition_counts(rels)
@@ -608,7 +651,12 @@ def aggregate_cohort_rates(
         subjects.add(entry.subject)
         clips.add(seg.rel_path)
         fr = compute_segment_region_fractions_cached(
-            seg, cfg, region_sets, fk, frame_stride=stride
+            seg,
+            cfg,
+            region_sets,
+            fk,
+            frame_stride=stride,
+            non_foot_speed_mode=non_foot_speed_mode,
         )
         for k, v in fr.items():
             if np.isfinite(v):
@@ -638,6 +686,7 @@ def accumulate_speed_gate_stats(
     fk: FkClipCache,
     *,
     frame_stride: int,
+    non_foot_speed_mode: Optional[str] = None,
 ) -> dict[str, dict[str, int]]:
     """Per-region frame counts for speed-gate characterisation (report only)."""
     entry = _entry_by_rel(load_index(), seg.rel_path)
@@ -660,8 +709,7 @@ def accumulate_speed_gate_stats(
         if ids.size == 0:
             continue
         th = _region_thresholds(cfg, name)
-        h, sp = lowest_vertex_height_speed(verts, ids)
-        argmin = lowest_vertex_argmin_indices(verts, ids)
+        h, sp = region_height_speed(verts, ids, cfg, speed_mode=non_foot_speed_mode)
         mask = region_contact_mask(
             h,
             sp,
@@ -686,11 +734,6 @@ def accumulate_speed_gate_stats(
         c["n_low_h"] += int(low_h.sum())
         c["n_low_h_no_contact"] += int((low_h & no_c).sum())
         c["n_low_h_no_contact_speed"] += int(speed_block.sum())
-        if speed_block.any():
-            idx = np.where(speed_block)[0]
-            changed = np.zeros(idx.size, dtype=bool)
-            changed[idx > 0] = argmin[idx[idx > 0]] != argmin[idx[idx > 0] - 1]
-            c["n_speed_block_argmin_changed"] += int(changed.sum())
     return counts
 
 
@@ -777,7 +820,7 @@ def validation_clip_summary(
     pos = fk.foot_positions(entry)
     for name, ids in region_sets.items():
         th = _region_thresholds(cfg, name)
-        h, sp = lowest_vertex_height_speed(verts, ids)
+        h, sp = region_height_speed(verts, ids, cfg)
         mask = region_contact_mask(
             h,
             sp,
@@ -827,6 +870,7 @@ def compute_segment_region_fractions_cached(
     z_shift_m: float = 0.0,
     h_on_override: Optional[float] = None,
     frame_stride: int = 1,
+    non_foot_speed_mode: Optional[str] = None,
 ) -> dict[str, float]:
     entry = _entry_by_rel(load_index(), seg.rel_path)
     verts_full = fk.grounded_vertices(entry)
@@ -842,7 +886,7 @@ def compute_segment_region_fractions_cached(
         th = _region_thresholds(cfg, name)
         h_on = float(h_on_override if h_on_override is not None else th["h_on"])
         h_off = float(th["h_off"] if h_on_override is None else h_on + 0.01)
-        h, sp = lowest_vertex_height_speed(verts, ids)
+        h, sp = region_height_speed(verts, ids, cfg, speed_mode=non_foot_speed_mode)
         mask = region_contact_mask(
             h,
             sp,
@@ -895,6 +939,166 @@ def hand_pose_non_default(entry: AmassIndexEntry) -> bool:
         return bool(np.max(np.abs(ph)) > 1e-6)
 
 
+def _aggregate_cohort_speed_gate(
+    cohort: str,
+    segs: list[SegmentRow],
+    cfg: dict[str, Any],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+    *,
+    loco_stride: int,
+    non_foot_speed_mode: Optional[str] = None,
+) -> dict[str, dict[str, Optional[float]]]:
+    acc = {
+        n: {
+            "n_frames": 0,
+            "n_low_h": 0,
+            "n_low_h_no_contact": 0,
+            "n_low_h_no_contact_speed": 0,
+            "n_speed_block_argmin_changed": 0,
+        }
+        for n in NON_FOOT_REGION_NAMES
+    }
+    stride = loco_stride if cohort == "ordinary_locomotion" else 1
+    for seg in segs:
+        entry = _entry_by_rel(load_index(), seg.rel_path)
+        if clip_flags(entry).get("exclude_contact"):
+            continue
+        merge_speed_gate_counts(
+            acc,
+            accumulate_speed_gate_stats(
+                seg,
+                cfg,
+                region_sets,
+                fk,
+                frame_stride=stride,
+                non_foot_speed_mode=non_foot_speed_mode,
+            ),
+        )
+    return speed_gate_report_row(acc)
+
+
+def _non_foot_mean_contact_changes(
+    before: dict[str, Optional[float]], after: dict[str, Optional[float]]
+) -> list[dict[str, float]]:
+    rows: list[dict[str, float]] = []
+    for name in NON_FOOT_REGION_NAMES:
+        b = float(before.get(name) or 0.0)
+        a = float(after.get(name) or 0.0)
+        if abs(a - b) > 1e-12:
+            rows.append({"region": name, "before": b, "after": a, "delta": a - b})
+    return rows
+
+
+def build_speed_amendment_2026_10_04(
+    cfg: dict[str, Any],
+    cohort_segments: dict[str, list[SegmentRow]],
+    region_sets: dict[str, np.ndarray],
+    fk: FkClipCache,
+    uncertain_map: dict[str, bool],
+    loco_stride: int,
+    after_cohorts: dict[str, Any],
+    after_speed_gate: dict[str, Any],
+) -> dict[str, Any]:
+    """Before/after tables: legacy argmin speed vs patch-median (production)."""
+    ba = ("kneel", "lie", "sit_floor", "sit_support", "ordinary_locomotion")
+    cohort_tables: dict[str, Any] = {}
+    for cohort in ba:
+        segs = cohort_segments.get(cohort, [])
+        before_rates = aggregate_cohort_rates(
+            cohort,
+            segs,
+            cfg,
+            region_sets,
+            fk,
+            uncertain_map,
+            frame_stride=loco_stride,
+            non_foot_speed_mode=_LEGACY_NON_FOOT_SPEED,
+        )
+        before_sg = _aggregate_cohort_speed_gate(
+            cohort,
+            segs,
+            cfg,
+            region_sets,
+            fk,
+            loco_stride=loco_stride,
+            non_foot_speed_mode=_LEGACY_NON_FOOT_SPEED,
+        )
+        after_sg = after_speed_gate.get(cohort)
+        if after_sg is None:
+            after_sg = _aggregate_cohort_speed_gate(
+                cohort, segs, cfg, region_sets, fk, loco_stride=loco_stride
+            )
+        after_means = after_cohorts[cohort]["mean_contact_fraction_per_region"]
+        before_means = before_rates["mean_contact_fraction_per_region"]
+        regions: dict[str, Any] = {}
+        for name in ALL_REGION_NAMES:
+            rec: dict[str, Any] = {
+                "mean_contact_fraction": {
+                    "before": before_means.get(name),
+                    "after": after_means.get(name),
+                }
+            }
+            if name in NON_FOOT_REGION_NAMES:
+                rec["frac_low_h_no_contact_due_to_speed"] = {
+                    "before": before_sg[name]["frac_low_h_no_contact_due_to_speed"],
+                    "after": after_sg[name]["frac_low_h_no_contact_due_to_speed"],
+                }
+            regions[name] = rec
+        cohort_tables[cohort] = {
+            "regions": regions,
+            "non_foot_mean_contact_changes": _non_foot_mean_contact_changes(
+                {k: before_means.get(k) for k in NON_FOOT_REGION_NAMES},
+                {k: after_means.get(k) for k in NON_FOOT_REGION_NAMES},
+            ),
+        }
+
+    squat_seg = SegmentRow(
+        "Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz",
+        "",
+        "sit_floor",
+        3.334,
+        8.474,
+    )
+    squat_before = compute_segment_region_fractions_cached(
+        squat_seg,
+        cfg,
+        region_sets,
+        fk,
+        non_foot_speed_mode=_LEGACY_NON_FOOT_SPEED,
+    )
+    squat_after = compute_segment_region_fractions_cached(squat_seg, cfg, region_sets, fk)
+    squat_non_foot = {
+        n: {"before": squat_before[n], "after": squat_after[n]}
+        for n in ("shins", "thighs", "pelvis_seat")
+    }
+
+    lie_segs = cohort_segments.get("lie", [])
+    band_sens: dict[str, Any] = {}
+    for band in (0.01, 0.03):
+        cfg_band = {**cfg, "patch_band_m": band}
+        sg = _aggregate_cohort_speed_gate(
+            "lie", lie_segs, cfg_band, region_sets, fk, loco_stride=1
+        )
+        band_sens[str(band)] = {
+            n: sg[n]["frac_low_h_no_contact_due_to_speed"] for n in NON_FOOT_REGION_NAMES
+        }
+
+    return {
+        "date": "2026-10-04",
+        "reason": (
+            "Argmin-vertex horizontal speed spiked when the lowest vertex index switched "
+            "(lie A9 thighs/pelvis gaps despite h << h_on). Non-foot speed only; feet unchanged."
+        ),
+        "before_non_foot_speed": _LEGACY_NON_FOOT_SPEED,
+        "after_non_foot_speed": cfg.get("speed_definition"),
+        "patch_band_m": cfg.get("patch_band_m"),
+        "patch_band_m_sensitivity_lie_speed_gate_only": band_sens,
+        "cohorts": cohort_tables,
+        "validation_squat_down_non_foot": squat_non_foot,
+    }
+
+
 def run_foot_regression_27cc2da(seed: int = 0, n_babel: int = 300) -> int:
     from hready.data.contact import foot_traj_build_clip_list
 
@@ -945,7 +1149,7 @@ def print_validation_frames(
             region_heights: dict[str, np.ndarray] = {}
             for name, ids in region_sets.items():
                 th = _region_thresholds(cfg, name)
-                h, sp = lowest_vertex_height_speed(verts, ids)
+                h, sp = region_height_speed(verts, ids, cfg)
                 region_heights[name] = h
                 region_masks[name] = region_contact_mask(
                     h,
@@ -1113,7 +1317,13 @@ def main(argv: Optional[list[str]] = None) -> None:
         "sit_support",
         "ordinary_locomotion",
     )
-    speed_gate_cohorts = ("kneel", "lie", "sit_floor", "ordinary_locomotion")
+    speed_gate_cohorts = (
+        "kneel",
+        "lie",
+        "sit_floor",
+        "sit_support",
+        "ordinary_locomotion",
+    )
     for cohort in cohort_order:
         segs = cohort_segments.get(cohort, [])
         rates["cohorts"][cohort] = aggregate_cohort_rates(
@@ -1147,6 +1357,17 @@ def main(argv: Optional[list[str]] = None) -> None:
                     )
                 )
             rates["speed_gate_characterisation"][cohort] = speed_gate_report_row(acc)
+
+    rates["amendment_2026_10_04_non_foot_speed"] = build_speed_amendment_2026_10_04(
+        cfg,
+        cohort_segments,
+        region_sets,
+        fk,
+        uncertain_map,
+        loco_stride,
+        rates["cohorts"],
+        rates["speed_gate_characterisation"],
+    )
 
     lie_segs = cohort_segments.get("lie", [])
     lie_dist = lie_head_shin_height_distribution(lie_segs, cfg, region_sets, fk)
