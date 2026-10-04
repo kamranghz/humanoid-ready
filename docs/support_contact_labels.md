@@ -54,7 +54,7 @@ Floor-work eval kneel/lie segments are **not** used to set thresholds. Ordinary-
 
 ## Lie: head and shins contact
 
-On all **9** lie segments (production thresholds), **mean segment contact fraction is 0** for `head` and `shins` (see cohort `lie` in rates JSON). Per-frame lowest-height distributions over lie segment frames are in `lie_head_shin_heights` (min / p10 / p50). In this run, **head** heights are **above `h_on`** (min ≈ 0.11 m); **shins** minima are **below `h_on` on some frames** but hysteresis/speed/`min_run` yield **zero** segment-mean shin contact.
+On all **9** lie segments (production thresholds), **mean segment contact fraction is 0** for `head` and `shins` (see cohort `lie` in rates JSON). Per-frame lowest-height distributions over lie segment frames are in `lie_head_shin_heights` (min / p10 / p50). In this run, **both** regions stay **at or above `h_on`** on every lie-segment frame (head min ≈ **0.073 m**, shins min ≈ **0.065 m** vs `h_on=0.05 m`), so shin/head contact is **0 from height**, not from speed gating alone.
 
 ## Speed gate (characterisation only)
 
