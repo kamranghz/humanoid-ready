@@ -8,6 +8,11 @@
 - **WSL2 only as fallback**, per baseline, if a public HMR method (GVHMR, WHAM, TRAM) does not install on Windows (Linux-only CUDA extensions). Log every such case in `docs/pivot_log.md`.
 - DDP on Windows uses the `gloo` backend (no NCCL); multi-GPU NCCL runs happen on Kaggle (Linux). `torch.compile` is optional on Windows.
 
+### HR-Refine item 7 / item 8 physics losses (Oct 2026)
+
+- **Disabled by default in `configs/hr_refine.yaml` `physics_loss`:** `smoothness` and `flight_consistency`. On corrupted AMASS windows, jerk/flight penalties on joint trajectories reach **O(1e8)** and dominate the batch loss (NaN within a few Adam steps). Foot skating, ground penetration, balance, bone length, and joint ROM stay enabled for ablation item 8.
+- **B6 smoke regression (item 7 acceptance):** 300 train steps with `shuffle=True`, `corrupt_step=step`, dropout **0.1**, and only **50/200** val windows evaluated left val MPJPE **worse than corrupt** (~116 mm vs ~36 mm). Root cause: **under-trained** model plus **train/eval corruption mismatch** (not zero-init: residual heads verified at **max |Δtransl| < 1e-5** at init). Item 8 gate uses **reconstruction-only**, **dropout 0**, longer training, and fixed **200**-window eval.
+
 ### Item 6C — G1 Newton smoke (Oct 2026)
 
 - **Isaac Lab + Newton** run only in **WSL** (`hready/robot/isaaclab_newton.py`); Windows `hready` orchestrates via `run_smoke.py` (retarget → run `.npz` → metrics → MuJoCo replay mp4).
