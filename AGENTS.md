@@ -276,8 +276,8 @@ torque and robot clauses; 12–13 cover from-scratch vision; 14–19 complete th
 ### Track E checklist (work in order; one item at a time)
 | # | Item | Done when | ☐/☑ |
 |---|---|---|---|
-| E0 | Audit section appended to this file: what exists, what is reused, what conflicts | written, reviewed by user | ☐ |
-| E1 | Subject split + floor-work subset, one command | reproducible, documented | ☐ |
+| E0 | Audit section appended to this file: what exists, what is reused, what conflicts | written, reviewed by user | ☑ evidence: `docs/e0_audit.md` |
+| E1 | Subject split + floor-work subset, one command | reproducible, documented | ☑ evidence: `results/E/splits.json`, `results/E/cohort_counts.json`, `results/E/floor_work_clips.csv`, `docs/ego_splits.md` |
 | E2 | Ego observation synthesis, seeded + configurable | docs/ego_observation_model.md | ☐ |
 | E3 | Baselines (heuristic, regression) on identical splits | results table | ☐ |
 | E4 | Generative prior trains end to end from one command | logs/ckpts under hready_data | ☐ |

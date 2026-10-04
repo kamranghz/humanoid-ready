@@ -26,13 +26,14 @@
       },
       "lie": {
         "by_label_source": {
-          "disagreements_frame_ann": 3,
-          "unconfirmed_frame_ann": 6
+          "confirmed_frame_ann": 2,
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 5
         },
-        "confirmed": 0,
-        "disagreements": 3,
+        "confirmed": 2,
+        "disagreements": 2,
         "segments": 9,
-        "unconfirmed": 6,
+        "unconfirmed": 5,
         "unique_clips": 5,
         "unique_subjects": 4
       },
@@ -62,7 +63,39 @@
         "unique_subjects": 2
       }
     },
+    "confirmed_geometry_classes": {
+      "lie": {
+        "largest_subject_duration_share": 1.0,
+        "segments": 2,
+        "total_duration_s": 4.421,
+        "unique_clips": 2,
+        "unique_subjects": 1
+      },
+      "sit_floor": {
+        "largest_subject_duration_share": 1.0,
+        "segments": 1,
+        "total_duration_s": 3.5,
+        "unique_clips": 1,
+        "unique_subjects": 1
+      },
+      "sit_support": {
+        "largest_subject_duration_share": 0.4904,
+        "segments": 52,
+        "total_duration_s": 1132.102,
+        "unique_clips": 46,
+        "unique_subjects": 16
+      }
+    },
+    "cv_ordinary_loco_pelvis_norm": 0.112,
+    "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "test",
+    "floor_work_eligible": {
+      "largest_subject_duration_share": 0.5581,
+      "segments": 3,
+      "total_duration_s": 7.921,
+      "unique_clips": 3,
+      "unique_subjects": 2
+    },
     "ordinary_locomotion": {
       "by_category": {
         "run": 33,
@@ -82,19 +115,20 @@
       "segments": 74,
       "unique_clips": 43,
       "unique_subjects": 20
-    }
+    },
+    "use_normalized_height": false
   },
   "val": {
     "categories": {
       "crawl": {
         "by_label_source": {
-          "disagreements_frame_ann": 1,
-          "unconfirmed_frame_ann": 8
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 7
         },
         "confirmed": 0,
-        "disagreements": 1,
+        "disagreements": 2,
         "segments": 9,
-        "unconfirmed": 8,
+        "unconfirmed": 7,
         "unique_clips": 8,
         "unique_subjects": 8
       },
@@ -113,13 +147,14 @@
       },
       "lie": {
         "by_label_source": {
-          "unconfirmed_frame_ann": 10,
-          "unconfirmed_seq_ann": 1
+          "confirmed_frame_ann": 6,
+          "confirmed_seq_ann": 1,
+          "unconfirmed_frame_ann": 4
         },
-        "confirmed": 0,
+        "confirmed": 7,
         "disagreements": 0,
         "segments": 11,
-        "unconfirmed": 11,
+        "unconfirmed": 4,
         "unique_clips": 8,
         "unique_subjects": 5
       },
@@ -150,7 +185,46 @@
         "unique_subjects": 3
       }
     },
+    "confirmed_geometry_classes": {
+      "kneel": {
+        "largest_subject_duration_share": 0.5805,
+        "segments": 12,
+        "total_duration_s": 70.792,
+        "unique_clips": 5,
+        "unique_subjects": 3
+      },
+      "lie": {
+        "largest_subject_duration_share": 0.5254,
+        "segments": 7,
+        "total_duration_s": 25.59,
+        "unique_clips": 6,
+        "unique_subjects": 4
+      },
+      "sit_floor": {
+        "largest_subject_duration_share": 0.486,
+        "segments": 16,
+        "total_duration_s": 63.208,
+        "unique_clips": 10,
+        "unique_subjects": 5
+      },
+      "sit_support": {
+        "largest_subject_duration_share": 0.3963,
+        "segments": 26,
+        "total_duration_s": 101.93,
+        "unique_clips": 22,
+        "unique_subjects": 14
+      }
+    },
+    "cv_ordinary_loco_pelvis_norm": 0.112,
+    "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "val",
+    "floor_work_eligible": {
+      "largest_subject_duration_share": 0.2575,
+      "segments": 35,
+      "total_duration_s": 159.59,
+      "unique_clips": 20,
+      "unique_subjects": 10
+    },
     "ordinary_locomotion": {
       "by_category": {
         "run": 88,
@@ -170,19 +244,20 @@
       "segments": 64,
       "unique_clips": 28,
       "unique_subjects": 14
-    }
+    },
+    "use_normalized_height": false
   },
   "val_union_test": {
     "categories": {
       "crawl": {
         "by_label_source": {
-          "disagreements_frame_ann": 2,
-          "unconfirmed_frame_ann": 10
+          "disagreements_frame_ann": 3,
+          "unconfirmed_frame_ann": 9
         },
         "confirmed": 0,
-        "disagreements": 2,
+        "disagreements": 3,
         "segments": 12,
-        "unconfirmed": 10,
+        "unconfirmed": 9,
         "unique_clips": 11,
         "unique_subjects": 11
       },
@@ -201,14 +276,15 @@
       },
       "lie": {
         "by_label_source": {
-          "disagreements_frame_ann": 3,
-          "unconfirmed_frame_ann": 16,
-          "unconfirmed_seq_ann": 1
+          "confirmed_frame_ann": 8,
+          "confirmed_seq_ann": 1,
+          "disagreements_frame_ann": 2,
+          "unconfirmed_frame_ann": 9
         },
-        "confirmed": 0,
-        "disagreements": 3,
+        "confirmed": 9,
+        "disagreements": 2,
         "segments": 20,
-        "unconfirmed": 17,
+        "unconfirmed": 9,
         "unique_clips": 13,
         "unique_subjects": 9
       },
@@ -240,7 +316,46 @@
         "unique_subjects": 5
       }
     },
+    "confirmed_geometry_classes": {
+      "kneel": {
+        "largest_subject_duration_share": 0.5805,
+        "segments": 12,
+        "total_duration_s": 70.792,
+        "unique_clips": 5,
+        "unique_subjects": 3
+      },
+      "lie": {
+        "largest_subject_duration_share": 0.448,
+        "segments": 9,
+        "total_duration_s": 30.011,
+        "unique_clips": 8,
+        "unique_subjects": 5
+      },
+      "sit_floor": {
+        "largest_subject_duration_share": 0.4605,
+        "segments": 17,
+        "total_duration_s": 66.708,
+        "unique_clips": 11,
+        "unique_subjects": 6
+      },
+      "sit_support": {
+        "largest_subject_duration_share": 0.4499,
+        "segments": 78,
+        "total_duration_s": 1234.032,
+        "unique_clips": 68,
+        "unique_subjects": 30
+      }
+    },
+    "cv_ordinary_loco_pelvis_norm": 0.112,
+    "cv_ordinary_loco_pelvis_raw": 0.089,
     "eval_split": "val_union_test",
+    "floor_work_eligible": {
+      "largest_subject_duration_share": 0.2453,
+      "segments": 38,
+      "total_duration_s": 167.511,
+      "unique_clips": 23,
+      "unique_subjects": 12
+    },
     "ordinary_locomotion": {
       "by_category": {
         "run": 121,
@@ -260,6 +375,7 @@
       "segments": 138,
       "unique_clips": 71,
       "unique_subjects": 34
-    }
+    },
+    "use_normalized_height": false
   }
 }

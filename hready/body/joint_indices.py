@@ -43,6 +43,8 @@ LEFT_HIP = JOINT_INDEX["left_hip"]
 RIGHT_HIP = JOINT_INDEX["right_hip"]
 LEFT_KNEE = JOINT_INDEX["left_knee"]
 RIGHT_KNEE = JOINT_INDEX["right_knee"]
+LEFT_SHOULDER = JOINT_INDEX["left_shoulder"]
+RIGHT_SHOULDER = JOINT_INDEX["right_shoulder"]
 
 UPPER_BODY_JOINTS: tuple[int, ...] = (3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
 LOWER_BODY_JOINTS: tuple[int, ...] = (1, 2, 4, 5, 7, 8, 10, 11)

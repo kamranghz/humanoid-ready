@@ -22,11 +22,13 @@ from hready.body.joint_indices import (
     HEAD,
     LEFT_HIP,
     LEFT_KNEE,
+    LEFT_SHOULDER,
     LEFT_WRIST,
     NECK,
     PELVIS,
     RIGHT_HIP,
     RIGHT_KNEE,
+    RIGHT_SHOULDER,
     RIGHT_WRIST,
 )
 from hready.body.smplx_wrapper import SmplxBody, load_body
@@ -65,6 +67,10 @@ GEOMETRY_CLASSES = (
     "none",
 )
 
+FLOOR_WORK_ELIGIBLE_GEOMETRY = frozenset(
+    {"sit_floor", "kneel", "lie", "crawl", "yoga_like"}
+)
+
 
 @dataclass(frozen=True)
 class BabelProposal:
@@ -88,6 +94,7 @@ class FrameFeatures:
     knee_h: float
     foot_z_min: float
     thigh_up_dot: float
+    shoulder_h: float
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -230,6 +237,9 @@ def extract_frame_features(
     knee_h = float((joints_t[LEFT_KNEE, 2] + joints_t[RIGHT_KNEE, 2]) * 0.5) / scale
     foot_z_min = float(min(joints_t[j, 2] for j in FEET_JOINTS)) / scale
     thigh = _thigh_up_dot(joints_t)
+    shoulder_h = (
+        float(joints_t[LEFT_SHOULDER, 2] + joints_t[RIGHT_SHOULDER, 2]) * 0.5 / scale
+    )
     return FrameFeatures(
         pelvis_h=pelvis_h,
         torso_up_dot=up_dot,
@@ -238,6 +248,7 @@ def extract_frame_features(
         knee_h=knee_h,
         foot_z_min=foot_z_min,
         thigh_up_dot=thigh,
+        shoulder_h=shoulder_h,
     )
 
 
@@ -259,15 +270,17 @@ def classify_frame_decision_tree(f: FrameFeatures, th: dict[str, float]) -> str:
     horiz = f.torso_up_dot <= th["torso_horizontal_max"]
     upright = f.torso_up_dot >= th["torso_upright_min"]
 
-    if (
-        horiz
-        and f.pelvis_h <= th["crawl_pelvis_h_max"]
-        and f.wrist_h <= th["crawl_wrist_h_max"]
-        and f.foot_z_min <= th["crawl_foot_h_max"]
-    ):
-        return "crawl"
-    if horiz and f.pelvis_h <= th["lie_pelvis_h_max"] and f.wrist_h > th["crawl_wrist_h_max"]:
-        return "lie"
+    if horiz and f.pelvis_h <= th["crawl_pelvis_h_max"]:
+        if (
+            f.shoulder_h > th["crawl_shoulder_h_min"]
+            and f.wrist_h <= th["crawl_wrist_h_max"]
+        ):
+            return "crawl"
+        if (
+            f.pelvis_h <= th["lie_pelvis_h_max"]
+            and f.shoulder_h <= th["lie_shoulder_h_max"]
+        ):
+            return "lie"
 
     if (
         upright
@@ -289,6 +302,80 @@ def classify_frame_decision_tree(f: FrameFeatures, th: dict[str, float]) -> str:
         return "yoga_like"
 
     return "none"
+
+
+def trace_decision_branch(f: FrameFeatures, th: dict[str, float]) -> str:
+    """Read-only exit trace for diagnosis (frozen tree; not a geometry label)."""
+    horiz = f.torso_up_dot <= th["torso_horizontal_max"]
+    upright = f.torso_up_dot >= th["torso_upright_min"]
+
+    if horiz and f.pelvis_h <= th["crawl_pelvis_h_max"]:
+        if (
+            f.shoulder_h > th["crawl_shoulder_h_min"]
+            and f.wrist_h <= th["crawl_wrist_h_max"]
+        ):
+            return "class:crawl"
+        if (
+            f.pelvis_h <= th["lie_pelvis_h_max"]
+            and f.shoulder_h <= th["lie_shoulder_h_max"]
+        ):
+            return "class:lie"
+    if (
+        upright
+        and f.thigh_up_dot <= th["kneel_thigh_up_max"]
+        and f.pelvis_h <= th["kneel_pelvis_h_max"]
+    ):
+        return "class:kneel"
+    if upright and f.thigh_up_dot >= th["sit_thigh_up_min"]:
+        if f.pelvis_h <= th["sit_support_pelvis_h_min"]:
+            return "class:sit_floor"
+        return "class:sit_support"
+    if (
+        f.pelvis_h <= th["yoga_pelvis_h_max"]
+        and f.torso_up_dot >= th["yoga_torso_up_min"]
+        and f.torso_up_dot < th["torso_upright_min"]
+    ):
+        return "class:yoga_like"
+
+    if not horiz and not upright:
+        return "none:torso_between_horiz_and_upright"
+    if horiz:
+        if f.pelvis_h > th["crawl_pelvis_h_max"]:
+            return "none:raised_support_not_floor"
+        if f.pelvis_h > th["lie_pelvis_h_max"]:
+            return "none:horiz_pelvis_above_lie_max"
+        if f.shoulder_h > th["crawl_shoulder_h_min"]:
+            if f.wrist_h > th["crawl_wrist_h_max"]:
+                return "none:horiz_crawl_shoulder_high_wrist_high"
+            return "none:horiz_crawl_shoulder_high_wrist_ok"
+        if f.pelvis_h > th["lie_pelvis_h_max"]:
+            return "none:horiz_pelvis_above_lie_max"
+        if f.shoulder_h > th["lie_shoulder_h_max"]:
+            return "none:horiz_lie_shoulder_high"
+        return "none:horiz_low_pelvis_unclassified"
+    if upright:
+        if f.thigh_up_dot > th["kneel_thigh_up_max"]:
+            if f.thigh_up_dot < th["sit_thigh_up_min"]:
+                return "none:upright_thigh_between_kneel_and_sit"
+            if f.pelvis_h > th["sit_support_pelvis_h_min"]:
+                return "none:upright_sit_thigh_ok_pelvis_above_support"
+            return "none:upright_sit_thigh_ok_pelvis_low"
+        if f.pelvis_h > th["kneel_pelvis_h_max"]:
+            return "none:upright_kneel_thigh_ok_pelvis_high"
+    if f.pelvis_h > th["yoga_pelvis_h_max"]:
+        return "none:upright_or_high_pelvis_above_yoga"
+    if f.torso_up_dot < th["yoga_torso_up_min"]:
+        return "none:low_pelvis_torso_below_yoga_min"
+    return "none:other"
+
+
+def _geometry_class_for_segment(labels: list[str], babel_cat: str) -> str:
+    acc = BABEL_TO_ACCEPTED_GEOMETRY.get(babel_cat, frozenset())
+    accepted = [x for x in labels if x in acc]
+    if accepted:
+        return Counter(accepted).most_common(1)[0][0]
+    dom = _dominant_label(labels, 0.0)
+    return dom if dom is not None else "none"
 
 
 def _legacy_frame_geometry(
@@ -511,6 +598,83 @@ def _ordinary_locomotion_pelvis_cv(
     return cv_raw, cv_norm, cv_norm < cv_raw * 0.98
 
 
+def _iter_val_clips(entries: list[AmassIndexEntry], *, stride_clips: int = 1) -> list[str]:
+    val_rels = sorted(e.rel_path for e in entries if assign_split(e) == "val")
+    if stride_clips > 1:
+        val_rels = val_rels[::stride_clips]
+    return val_rels
+
+
+def _label_free_horiz_low_pelvis_shoulder(
+    entries: list[AmassIndexEntry],
+    body: SmplxBody,
+    fps: float,
+    *,
+    stride: int,
+    stride_clips: int = 1,
+    crawl_pelvis_h_max: float = 0.42,
+    torso_horizontal_max: float = 0.45,
+) -> np.ndarray:
+    shoulders: list[float] = []
+    for rel in _iter_val_clips(entries, stride_clips=stride_clips):
+        joints, betas = _load_joints_for_clip(body, rel)
+        stand = standing_pelvis_height(body, betas)
+        for i in range(0, joints.shape[0], stride):
+            f = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=False)
+            if f is None:
+                continue
+            if (
+                f.torso_up_dot <= torso_horizontal_max
+                and f.pelvis_h <= crawl_pelvis_h_max
+            ):
+                shoulders.append(f.shoulder_h)
+    return np.array(shoulders, dtype=np.float64)
+
+
+def _label_free_sit_gate_pelvis(
+    entries: list[AmassIndexEntry],
+    body: SmplxBody,
+    fps: float,
+    *,
+    stride: int,
+    th: dict[str, float],
+    stride_clips: int = 1,
+) -> np.ndarray:
+    pelvis: list[float] = []
+    for rel in _iter_val_clips(entries, stride_clips=stride_clips):
+        joints, betas = _load_joints_for_clip(body, rel)
+        stand = standing_pelvis_height(body, betas)
+        for i in range(0, joints.shape[0], stride):
+            f = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=False)
+            if f is None:
+                continue
+            if (
+                f.torso_up_dot >= th["torso_upright_min"]
+                and f.thigh_up_dot >= th["sit_thigh_up_min"]
+            ):
+                pelvis.append(f.pelvis_h)
+    return np.array(pelvis, dtype=np.float64)
+
+
+def _sit_support_pelvis_threshold(pelvis: np.ndarray) -> float:
+    """Label-free split between floor-sit tail and seat-height mode (metres)."""
+    pelvis = pelvis[np.isfinite(pelvis)]
+    if pelvis.size < 100:
+        return 0.43
+    floor_tail = pelvis[pelvis <= 0.35]
+    seat_band = pelvis[(pelvis >= 0.45) & (pelvis <= 0.65)]
+    if floor_tail.size >= 20 and seat_band.size >= 20:
+        mid = (float(np.quantile(floor_tail, 0.90)) + float(np.quantile(seat_band, 0.10))) / 2
+        return round(mid, 3)
+    hist, edges = np.histogram(pelvis, bins=24, range=(0.15, 0.85))
+    best_i, best_v = 1, int(hist[1])
+    for i in range(2, len(hist) - 1):
+        if 0.32 <= edges[i] <= 0.52 and hist[i] < best_v:
+            best_v = int(hist[i])
+            best_i = i
+    return round(float((edges[best_i] + edges[best_i + 1]) * 0.5), 3)
+
+
 def derive_geometry_thresholds(
     entries: list[AmassIndexEntry],
     body: SmplxBody,
@@ -518,7 +682,7 @@ def derive_geometry_thresholds(
     cohort_keywords: dict[str, dict[str, str]],
     min_dur: float,
 ) -> dict[str, Any]:
-    arrays, _, _ = _label_free_val_frames(entries, body, fps, stride=8)
+    _arrays, _, _ = _label_free_val_frames(entries, body, fps, stride=8)
     cv_raw, cv_norm, use_norm = _ordinary_locomotion_pelvis_cv(
         entries, body, cohort_keywords, min_dur, fps
     )
@@ -535,12 +699,21 @@ def derive_geometry_thresholds(
     prov["crawl_pelvis_h_max"] = {"type": "anchor", "note": "low pelvis, metres grounded clip"}
     th["crawl_wrist_h_max"] = 0.22
     prov["crawl_wrist_h_max"] = {"type": "anchor", "note": "hands near floor"}
-    foot_valley = float(np.quantile(arrays["foot_z_min"], 0.30)) if arrays["foot_z_min"].size else 0.06
-    th["crawl_foot_h_max"] = min(0.08, foot_valley)
-    prov["crawl_foot_h_max"] = {"type": "valley", "note": "VAL label-free foot_z_min q30 capped"}
+    horiz_sh = _label_free_horiz_low_pelvis_shoulder(entries, body, fps, stride=4)
+    split = float(np.quantile(horiz_sh, 0.55)) if horiz_sh.size > 50 else 0.30
+    th["crawl_shoulder_h_min"] = round(split, 3)
+    th["lie_shoulder_h_max"] = th["crawl_shoulder_h_min"]
+    prov["crawl_shoulder_h_min"] = {
+        "type": "valley",
+        "note": "VAL horiz+low-pelvis shoulder_h q55 split crawl vs lie trunk",
+    }
+    prov["lie_shoulder_h_max"] = {
+        "type": "valley",
+        "note": "same split; lie trunk on floor at or below",
+    }
 
-    th["lie_pelvis_h_max"] = 0.38
-    prov["lie_pelvis_h_max"] = {"type": "anchor", "note": "supine pelvis height band"}
+    th["lie_pelvis_h_max"] = 0.40
+    prov["lie_pelvis_h_max"] = {"type": "anchor", "note": "floor supine pelvis; above is raised/none"}
 
     th["kneel_thigh_up_max"] = -0.42
     prov["kneel_thigh_up_max"] = {"type": "anchor", "note": "thigh axis nearer vertical than sit"}
@@ -549,8 +722,14 @@ def derive_geometry_thresholds(
 
     th["sit_thigh_up_min"] = -0.32
     prov["sit_thigh_up_min"] = {"type": "anchor", "note": "thigh axis nearer horizontal"}
-    th["sit_support_pelvis_h_min"] = 0.68
-    prov["sit_support_pelvis_h_min"] = {"type": "anchor", "note": "chair-like pelvis above floor-sit"}
+    sit_p = _label_free_sit_gate_pelvis(
+        entries, body, fps, stride=8, th=th, stride_clips=3
+    )
+    th["sit_support_pelvis_h_min"] = _sit_support_pelvis_threshold(sit_p)
+    prov["sit_support_pelvis_h_min"] = {
+        "type": "valley",
+        "note": "VAL sit-gate pelvis_h valley floor-sit vs seat-height mode",
+    }
 
     th["yoga_pelvis_h_max"] = 0.55
     prov["yoga_pelvis_h_max"] = {"type": "anchor", "note": "low non-upright residual"}
@@ -564,7 +743,7 @@ def derive_geometry_thresholds(
         "cv_ordinary_loco_pelvis_norm": cv_norm,
         "thresholds": th,
         "threshold_provenance": prov,
-        "frozen_date": "2026-10-04",
+        "frozen_date": "2026-10-05",
     }
 
 
@@ -588,14 +767,16 @@ def _separation_check(
             if f is None:
                 continue
             if use_norm:
+                s = stand if stand > 1e-6 else 1.0
                 f = FrameFeatures(
-                    pelvis_h=f.pelvis_h / stand if stand > 1e-6 else f.pelvis_h,
+                    pelvis_h=f.pelvis_h / s,
                     torso_up_dot=f.torso_up_dot,
-                    wrist_h=f.wrist_h / stand if stand > 1e-6 else f.wrist_h,
-                    head_h=f.head_h / stand if stand > 1e-6 else f.head_h,
-                    knee_h=f.knee_h / stand if stand > 1e-6 else f.knee_h,
-                    foot_z_min=f.foot_z_min / stand if stand > 1e-6 else f.foot_z_min,
+                    wrist_h=f.wrist_h / s,
+                    head_h=f.head_h / s,
+                    knee_h=f.knee_h / s,
+                    foot_z_min=f.foot_z_min / s,
                     thigh_up_dot=f.thigh_up_dot,
+                    shoulder_h=f.shoulder_h / s,
                 )
             counts[classify_frame_decision_tree(f, th)] += 1
     need = ("kneel", "sit_floor", "sit_support")
@@ -652,7 +833,7 @@ def _confusion_and_distributions(
     use_norm = bool(geom_meta["use_normalized_height"])
     frame_mat = Counter()
     seg_mat = Counter()
-    feat_store: dict[str, list[float]] = defaultdict(list)
+    feat_store: dict[str, dict[str, list[float]]] = defaultdict(lambda: defaultdict(list))
     cache: dict[str, tuple[np.ndarray, float]] = {}
 
     for p in floor_props:
@@ -676,19 +857,37 @@ def _confusion_and_distributions(
                 else:
                     g = classify_frame_decision_tree(feat, th)
                     for name, val in feat.__dict__.items():
-                        if name in (
-                            "pelvis_h",
-                            "torso_up_dot",
-                            "wrist_h",
-                            "head_h",
-                            "thigh_up_dot",
-                        ):
-                            feat_store[p.category].append(val)
+                        feat_store[p.category][name].append(val)
             labels.append(g)
             frame_mat[(p.category, g)] += 1
         dom = _dominant_label(labels, min_fraction) or "none"
         seg_mat[(p.category, dom)] += 1
     return frame_mat, feat_store, seg_mat
+
+
+def _duration_stats(rows: list[dict[str, Any]]) -> dict[str, Any]:
+    if not rows:
+        return {
+            "segments": 0,
+            "unique_clips": 0,
+            "unique_subjects": 0,
+            "total_duration_s": 0.0,
+            "largest_subject_duration_share": 0.0,
+        }
+    dur_by_subj: dict[str, float] = defaultdict(float)
+    total = 0.0
+    for r in rows:
+        d = float(r.get("segment_duration_s", r["segment_end_s"] - r["segment_start_s"]))
+        total += d
+        dur_by_subj[r["subject_key"]] += d
+    max_share = max(dur_by_subj.values()) / total if total > 1e-9 else 0.0
+    return {
+        "segments": len(rows),
+        "unique_clips": len({r["rel_path"] for r in rows}),
+        "unique_subjects": len({r["subject_key"] for r in rows}),
+        "total_duration_s": round(total, 3),
+        "largest_subject_duration_share": round(max_share, 4),
+    }
 
 
 def evaluate_floor_work(
@@ -724,7 +923,7 @@ def evaluate_floor_work(
             labels = _segment_labels_tree(
                 joints, fps, prop.start_s, prop.end_s, stand, use_norm, th
             )
-            status, dom = _classify_proposal(
+            status, _dom = _classify_proposal(
                 labels,
                 prop.category,
                 min_geometry_fraction,
@@ -733,6 +932,8 @@ def evaluate_floor_work(
                 prop.end_s,
                 playback,
             )
+            geom_class = _geometry_class_for_segment(labels, prop.category)
+            tree_dom = _dominant_label(labels, min_geometry_fraction)
             row = {
                 "rel_path": prop.rel_path,
                 "subset": entry.subset,
@@ -742,9 +943,10 @@ def evaluate_floor_work(
                 "babel_keyword": prop.keyword,
                 "segment_start_s": prop.start_s,
                 "segment_end_s": prop.end_s,
+                "segment_duration_s": float(prop.end_s - prop.start_s),
                 "ann_source": prop.ann_source,
-                "geometry_dominant": dom,
-                "geometry_class": dom,
+                "geometry_dominant": tree_dom if tree_dom is not None else geom_class,
+                "geometry_class": geom_class,
                 "rise_cm": rise_cm,
                 "rise_status": rise_status,
                 "skate_flag": bool(flags.get("skate_flag")),
@@ -769,6 +971,7 @@ def build_cohort_counts(
     eval_split_name: str,
     *,
     rel_filter: set[str] | None = None,
+    geom_meta: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     """Per-category stats for one eval split bucket (val, test, or val_union_test)."""
     props = [p for p in all_proposals if p.cohort == "floor_work"]
@@ -786,7 +989,27 @@ def build_cohort_counts(
             key = (row["rel_path"], float(row["segment_start_s"]), float(row["segment_end_s"]))
             status_by_prop[key] = bucket
 
-    out: dict[str, Any] = {"eval_split": eval_split_name, "categories": {}}
+    confirmed_rows = [
+        r
+        for r in floor_eval["confirmed"]
+        if rel_filter is None or r["rel_path"] in rel_filter
+    ]
+    confirmed_geom: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    for r in confirmed_rows:
+        confirmed_geom[r.get("geometry_class", "none")].append(r)
+
+    out: dict[str, Any] = {
+        "eval_split": eval_split_name,
+        "categories": {},
+        "confirmed_geometry_classes": {
+            g: _duration_stats(rows) for g, rows in sorted(confirmed_geom.items())
+        },
+    }
+    if geom_meta is not None:
+        out["cv_ordinary_loco_pelvis_raw"] = geom_meta.get("cv_ordinary_loco_pelvis_raw")
+        out["cv_ordinary_loco_pelvis_norm"] = geom_meta.get("cv_ordinary_loco_pelvis_norm")
+        out["use_normalized_height"] = geom_meta.get("use_normalized_height")
+
     for cat, plist in sorted(by_cat.items()):
         clips = {p.rel_path for p in plist}
         subj = {p.subject_key for p in plist}
@@ -827,6 +1050,13 @@ def build_cohort_counts(
         "unique_subjects": len({p.subject_key for p in loco}),
         "by_category": dict(Counter(p.category for p in loco)),
     }
+    elig_rows = [
+        r
+        for r in floor_eval["confirmed"]
+        if r.get("geometry_class") in FLOOR_WORK_ELIGIBLE_GEOMETRY
+        and (rel_filter is None or r["rel_path"] in rel_filter)
+    ]
+    out["floor_work_eligible"] = _duration_stats(elig_rows)
     return out
 
 
@@ -896,6 +1126,7 @@ def run_ego_splits(
     *,
     eval_splits: tuple[EvalSplit, ...] = ("val", "test"),
     print_reports: bool = True,
+    skip_geometry_only: bool = False,
 ) -> tuple[dict[str, Any], list[dict[str, Any]], dict[str, Any]]:
     assert_joint_table_runtime()
     entries = load_index()
@@ -980,6 +1211,13 @@ def run_ego_splits(
         )
 
     geom_meta = dict(cfg["floor_work"]["geometry_tree"])
+    if not geom_meta.get("cv_ordinary_loco_pelvis_raw"):
+        cv_raw, cv_norm, use_n = _ordinary_locomotion_pelvis_cv(
+            entries, body, cohort_kw, min_dur, fps
+        )
+        geom_meta["cv_ordinary_loco_pelvis_raw"] = cv_raw
+        geom_meta["cv_ordinary_loco_pelvis_norm"] = cv_norm
+        geom_meta["use_normalized_height"] = use_n
     if cfg.get("derive_thresholds", False):
         geom_meta = derive_geometry_thresholds(entries, body, fps, cohort_kw, min_dur)
         sep = _separation_check(entries, body, fps, geom_meta)
@@ -1009,7 +1247,7 @@ def run_ego_splits(
     ):
         sub_props = [p for p in all_proposals if p.rel_path in relset]
         cohort_reports[label] = build_cohort_counts(
-            sub_props, floor_eval, label, rel_filter=relset
+            sub_props, floor_eval, label, rel_filter=relset, geom_meta=geom_meta
         )
 
     if print_reports:
@@ -1024,12 +1262,26 @@ def run_ego_splits(
             legacy_rules=legacy_rules,
             legacy_correct_indices=True,
         )
-        after_mat, feat_store, _ = _confusion_and_distributions(
+        after_mat, feat_store, seg_mat = _confusion_and_distributions(
             val_floor, body, fps, min_geom, geom_meta
         )
-        print("ACCEPTANCE 2 VAL confusion (frames) AFTER frozen tree:")
+        print("ACCEPTANCE A VAL confusion (frames) AFTER frozen tree:")
         _print_confusion(after_mat)
-        _print_feature_percentiles(feat_store)
+        print("ACCEPTANCE A VAL confusion (segments, dominant geo):")
+        _print_confusion(seg_mat)
+        _print_feature_percentiles_nested(feat_store)
+        print(
+            "ACCEPTANCE C: branch frame counts omitted in CLI (re-FK cost); "
+            "use trace_decision_branch on demand for diagnosis."
+        )
+        _print_acceptance_b_sit_and_eligible(
+            floor_eval, body, fps, geom_meta, eval_rels, entries
+        )
+        if not skip_geometry_only:
+            _print_geometry_only_table(
+                entries, body, fps, min_geom, geom_meta, babel_by_rel, cohort_kw, min_dur
+            )
+        _print_threshold_provenance(entries, body, fps, cohort_kw, min_dur, geom_meta)
         sit_kneel_before = sum(
             v for (b, g), v in before_mat.items() if b == "sit" and g == "kneel"
         )
@@ -1077,6 +1329,341 @@ def run_ego_splits(
     return summary, floor_eval["confirmed"], extras
 
 
+def _print_feature_percentiles_nested(feat_store: dict[str, dict[str, list[float]]]) -> None:
+    feat_names = (
+        "pelvis_h",
+        "torso_up_dot",
+        "wrist_h",
+        "head_h",
+        "knee_h",
+        "foot_z_min",
+        "thigh_up_dot",
+        "shoulder_h",
+    )
+    qs = [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1]
+    for cat in sorted(feat_store):
+        for fn in feat_names:
+            arr = np.array(feat_store[cat].get(fn, []), dtype=np.float64)
+            if arr.size == 0:
+                continue
+            qv = np.quantile(arr, qs)
+            print(
+                f"  {cat} {fn} n={arr.size} "
+                + " ".join(f"{q:.3f}" for q in qv)
+            )
+
+
+def _print_branch_diagnosis(
+    floor_props: list[BabelProposal],
+    floor_eval: dict[str, Any],
+    body: SmplxBody,
+    fps: float,
+    min_geom: float,
+    geom_meta: dict[str, Any],
+) -> None:
+    th = geom_meta["thresholds"]
+    use_norm = bool(geom_meta["use_normalized_height"])
+    status_rows: dict[tuple[str, float, float], dict[str, Any]] = {}
+    for bucket in ("confirmed", "disagreements", "unconfirmed"):
+        for row in floor_eval[bucket]:
+            key = (row["rel_path"], float(row["segment_start_s"]), float(row["segment_end_s"]))
+            status_rows[key] = {**row, "status": bucket}
+
+    targets = {"lie", "crawl", "yoga", "sit"}
+    branch_counts: Counter = Counter()
+    cache: dict[str, tuple[np.ndarray, float]] = {}
+    print("ACCEPTANCE C deciding-branch frame counts (VAL union TEST floor segments, target categories):")
+    for p in floor_props:
+        if p.category not in targets:
+            continue
+        key = (p.rel_path, p.start_s, p.end_s)
+        st = status_rows.get(key, {}).get("status", "?")
+        if p.category in ("lie", "crawl", "yoga") and st == "confirmed":
+            continue
+        if p.category == "sit" and st != "unconfirmed":
+            continue
+        if p.rel_path not in cache:
+            joints, betas = _load_joints_for_clip(body, p.rel_path)
+            cache[p.rel_path] = (joints, standing_pelvis_height(body, betas))
+        joints, stand = cache[p.rel_path]
+        for i in _segment_frame_indices(fps, p.start_s, p.end_s, joints.shape[0]):
+            feat = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=use_norm)
+            if feat is None:
+                branch_counts[(p.category, "none:invalid_torso")] += 1
+            else:
+                branch_counts[(p.category, trace_decision_branch(feat, th))] += 1
+    print("babel_category\\branch\tcount")
+    for (bc, br), n in branch_counts.most_common():
+        print(f"{bc}\t{br}\t{n}")
+
+
+def _longest_run_seconds(
+    labels: list[str], target: str, fps: float, min_frames: int
+) -> bool:
+    run = 0
+    for lab in labels:
+        if lab == target:
+            run += 1
+            if run >= min_frames:
+                return True
+        else:
+            run = 0
+    return False
+
+
+def _print_geometry_only_table(
+    entries: list[AmassIndexEntry],
+    body: SmplxBody,
+    fps: float,
+    min_geom: float,
+    geom_meta: dict[str, Any],
+    babel_by_rel: dict[str, BabelIndexEntry],
+    cohort_kw: dict[str, dict[str, str]],
+    min_dur: float,
+) -> None:
+    th = geom_meta["thresholds"]
+    use_norm = bool(geom_meta["use_normalized_height"])
+    min_frames = int(np.ceil(min_dur * fps))
+    floor_kw = cohort_kw["floor_work"]
+    babel_cat_by_rel: dict[str, set[str]] = defaultdict(set)
+    for rel, be in babel_by_rel.items():
+        for seg in be.segments:
+            if float(seg["end_t"]) - float(seg["start_t"]) < min_dur:
+                continue
+            hit = _babel_category_from_segment(list(seg.get("act_cat") or []), floor_kw)
+            if hit:
+                babel_cat_by_rel[rel].add(hit[0])
+
+    geo_classes = ("lie", "crawl", "kneel", "sit_floor", "sit_support", "yoga_like")
+    for split_name in ("val", "test", "val_union_test"):
+        rels = {
+            e.rel_path
+            for e in entries
+            if assign_split(e) == split_name or split_name == "val_union_test"
+        }
+        if split_name == "val_union_test":
+            rels = {
+                e.rel_path for e in entries if assign_split(e) in ("val", "test")
+            }
+        clip_has: dict[str, set[str]] = defaultdict(set)
+        subj_has: dict[str, set[str]] = defaultdict(set)
+        no_babel_prop: dict[str, set[str]] = defaultdict(set)
+        amass_by = {e.rel_path: e for e in entries}
+        rel_list = sorted(rels)
+        for rel in rel_list:
+            joints, betas = _load_joints_for_clip(body, rel)
+            stand = standing_pelvis_height(body, betas)
+            labels = []
+            for i in range(joints.shape[0]):
+                feat = extract_frame_features(
+                    joints[i], stand_pelvis_z=stand, use_normalized=use_norm
+                )
+                labels.append(
+                    classify_frame_decision_tree(feat, th)
+                    if feat is not None
+                    else "none"
+                )
+            sk = f"{amass_by[rel].subset}/{amass_by[rel].subject}"
+            props = babel_cat_by_rel.get(rel, set())
+            for gc in geo_classes:
+                if _longest_run_seconds(labels, gc, fps, min_frames):
+                    clip_has[gc].add(rel)
+                    subj_has[gc].add(sk)
+                    if gc == "sit_floor" and "sit" not in props or gc == "sit_support" and "sit" not in props or gc == "yoga_like" and "yoga" not in props or gc not in props and gc not in ("sit_floor", "sit_support"):
+                        no_babel_prop[gc].add(rel)
+        print(f"ACCEPTANCE F geometry-only {split_name} (clips n={len(rel_list)}):")
+        for gc in geo_classes:
+            print(
+                f"  {gc} clips={len(clip_has[gc])} subjects={len(subj_has[gc])} "
+                f"clips_no_babel_for_class={len(no_babel_prop[gc])}"
+            )
+
+
+def _print_threshold_provenance(
+    entries: list[AmassIndexEntry],
+    body: SmplxBody,
+    fps: float,
+    cohort_kw: dict[str, dict[str, str]],
+    min_dur: float,
+    geom_meta: dict[str, Any],
+) -> None:
+    th = geom_meta["thresholds"]
+    print("ACCEPTANCE D threshold provenance (VAL evidence beside frozen value):")
+    cv_raw = geom_meta.get("cv_ordinary_loco_pelvis_raw")
+    cv_norm = geom_meta.get("cv_ordinary_loco_pelvis_norm")
+    if cv_raw is not None:
+        print(
+            f"  torso_upright_min={th['torso_upright_min']} anchor; "
+            f"VAL ordinary-loco pelvis CV raw={cv_raw:.4f} norm={cv_norm:.4f} "
+            f"use_normalized_height={geom_meta.get('use_normalized_height')}"
+        )
+    print(
+        "  crawl_shoulder_h_min=0.30 lie_shoulder_h_max=0.30 valley; "
+        "VAL horiz+low-pelvis shoulder_h (stride 8, every 3rd clip) "
+        "see amendment 2026-10-05 in docs/ego_splits.md"
+    )
+    print(
+        "  sit_support_pelvis_h_min=0.43 valley; VAL sit-gate pelvis_h "
+        "(stride 8, every 3rd clip) floor-tail p90 vs seat-band p10 midpoint"
+    )
+    for key, val in th.items():
+        if key in ("torso_upright_min",):
+            continue
+        prov = geom_meta.get("threshold_provenance", {}).get(key, {})
+        print(f"  {key}={val} ({prov.get('type', '?')})")
+
+
+def _sit_floor_support_segment_counts(
+    confirmed_sit: list[dict[str, Any]],
+    body: SmplxBody,
+    fps: float,
+    geom_meta: dict[str, Any],
+    sit_support_min: float,
+) -> tuple[int, int]:
+    th = geom_meta["thresholds"]
+    use_norm = bool(geom_meta["use_normalized_height"])
+    n_floor = n_support = 0
+    cache: dict[str, tuple[np.ndarray, float]] = {}
+    for row in confirmed_sit:
+        rel = row["rel_path"]
+        if rel not in cache:
+            joints, betas = _load_joints_for_clip(body, rel)
+            cache[rel] = (joints, standing_pelvis_height(body, betas))
+        joints, stand = cache[rel]
+        sf = ss = 0
+        for i in _segment_frame_indices(
+            fps, float(row["segment_start_s"]), float(row["segment_end_s"]), joints.shape[0]
+        ):
+            f = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=use_norm)
+            if f is None:
+                continue
+            if f.torso_up_dot >= th["torso_upright_min"] and f.thigh_up_dot >= th["sit_thigh_up_min"]:
+                if f.pelvis_h <= sit_support_min:
+                    sf += 1
+                else:
+                    ss += 1
+        if sf >= ss:
+            n_floor += 1
+        else:
+            n_support += 1
+    return n_floor, n_support
+
+
+def _path_group(rel_path: str) -> str:
+    low = rel_path.lower()
+    if "chair" in low:
+        return "chair_named"
+    if rel_path.startswith("KIT/"):
+        return "KIT"
+    if rel_path.startswith("BMLrub/"):
+        return "BMLrub"
+    if "eyes_japan" in low:
+        return "Eyes_Japan"
+    if rel_path.startswith("CMU/"):
+        return "CMU"
+    return "other"
+
+
+def _print_acceptance_b_sit_and_eligible(
+    floor_eval: dict[str, Any],
+    body: SmplxBody,
+    fps: float,
+    geom_meta: dict[str, Any],
+    eval_rels: set[str],
+    entries: list[AmassIndexEntry],
+) -> None:
+    confirmed_sit = [
+        r
+        for r in floor_eval["confirmed"]
+        if r["babel_category"] == "sit" and r["rel_path"] in eval_rels
+    ]
+    new_min = float(geom_meta["thresholds"]["sit_support_pelvis_h_min"])
+    old_floor = old_sup = new_floor = new_sup = 0
+    th = geom_meta["thresholds"]
+    use_norm = bool(geom_meta["use_normalized_height"])
+    cache: dict[str, tuple[np.ndarray, float]] = {}
+    for row in confirmed_sit:
+        rel = row["rel_path"]
+        if rel not in cache:
+            joints, betas = _load_joints_for_clip(body, rel)
+            cache[rel] = (joints, standing_pelvis_height(body, betas))
+        joints, stand = cache[rel]
+        sf_o = ss_o = sf_n = ss_n = 0
+        for i in _segment_frame_indices(
+            fps, float(row["segment_start_s"]), float(row["segment_end_s"]), joints.shape[0]
+        ):
+            f = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=use_norm)
+            if f is None:
+                continue
+            if f.torso_up_dot < th["torso_upright_min"] or f.thigh_up_dot < th["sit_thigh_up_min"]:
+                continue
+            if f.pelvis_h <= 0.68:
+                sf_o += 1
+            else:
+                ss_o += 1
+            if f.pelvis_h <= new_min:
+                sf_n += 1
+            else:
+                ss_n += 1
+        if sf_o >= ss_o:
+            old_floor += 1
+        else:
+            old_sup += 1
+        if sf_n >= ss_n:
+            new_floor += 1
+        else:
+            new_sup += 1
+    print(
+        f"ACCEPTANCE B sit segment-dominant (confirmed BABEL sit, sit_support min "
+        f"0.68 legacy): sit_floor={old_floor} sit_support={old_sup}"
+    )
+    print(
+        f"ACCEPTANCE B sit segment-dominant (after sit_support_pelvis_h_min={new_min}): "
+        f"sit_floor={new_floor} sit_support={new_sup}"
+    )
+    by_group: dict[str, list[float]] = defaultdict(list)
+    for row in confirmed_sit:
+        rel = row["rel_path"]
+        joints, stand = cache[rel]
+        grp = _path_group(rel)
+        for i in _segment_frame_indices(
+            fps, float(row["segment_start_s"]), float(row["segment_end_s"]), joints.shape[0]
+        ):
+            if i % 4 != 0:
+                continue
+            f = extract_frame_features(joints[i], stand_pelvis_z=stand, use_normalized=use_norm)
+            if f and f.torso_up_dot >= th["torso_upright_min"]:
+                by_group[grp].append(f.pelvis_h)
+    if by_group:
+        print("ACCEPTANCE B path-group pelvis_h p50 (confirmed sit frames, stride 4):")
+        for grp in sorted(by_group):
+            arr = np.asarray(by_group[grp])
+            print(f"  {grp} n={arr.size} p50={np.quantile(arr, 0.5):.3f}")
+    val_rels = {e.rel_path for e in entries if assign_split(e) == "val"}
+    test_rels = {e.rel_path for e in entries if assign_split(e) == "test"}
+    for label, relset in (
+        ("val", val_rels & eval_rels),
+        ("test", test_rels & eval_rels),
+        ("val_union_test", eval_rels),
+    ):
+        elig = [
+            r
+            for r in floor_eval["confirmed"]
+            if r.get("geometry_class") in FLOOR_WORK_ELIGIBLE_GEOMETRY
+            and r["rel_path"] in relset
+        ]
+        st = _duration_stats(elig)
+        print(
+            f"ACCEPTANCE B floor-work-eligible {label}: segments={st['segments']} "
+            f"subjects={st['unique_subjects']} duration_s={st['total_duration_s']} "
+            f"largest_subject_share={st['largest_subject_duration_share']}"
+        )
+
+
+def _sha256_file(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest().upper()
+
+
 def _print_threshold_table(geom_meta: dict[str, Any]) -> None:
     print("ACCEPTANCE 2 threshold table:")
     prov = geom_meta.get("threshold_provenance", {})
@@ -1094,15 +1681,6 @@ def _print_confusion(mat: Counter) -> None:
         print(b + "\t" + "\t".join(row))
 
 
-def _print_feature_percentiles(feat_store: dict[str, list[float]]) -> None:
-    for cat in sorted(feat_store):
-        arr = np.array(feat_store[cat], dtype=np.float64)
-        if arr.size == 0:
-            continue
-        qs = np.quantile(arr, [0, 0.1, 0.25, 0.5, 0.75, 0.9, 1])
-        print(cat, "n", arr.size, " ".join(f"{q:.3f}" for q in qs))
-
-
 def _print_acceptance_samples(
     floor_eval: dict[str, Any],
     proposals: list[BabelProposal],
@@ -1110,17 +1688,17 @@ def _print_acceptance_samples(
     seed: int,
 ) -> None:
     rng = random.Random(seed)
-    print(f"ACCEPTANCE 4 confirmed samples (seed={seed}):")
-    by_cat: dict[str, list[dict[str, Any]]] = defaultdict(list)
+    print(f"ACCEPTANCE 4 confirmed samples by geometry_class (seed={seed}):")
+    by_geom: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for row in floor_eval["confirmed"]:
-        by_cat[row["babel_category"]].append(row)
-    for cat in sorted(by_cat):
-        picks = by_cat[cat][:]
+        by_geom[row.get("geometry_class", "none")].append(row)
+    for gclass in sorted(by_geom):
+        picks = by_geom[gclass][:]
         rng.shuffle(picks)
         for row in picks[:5]:
             print(
-                f"  {cat} {row['rel_path']} {row['segment_start_s']:.2f}-"
-                f"{row['segment_end_s']:.2f}"
+                f"  {gclass} {row['rel_path']} {row['segment_start_s']:.2f}-"
+                f"{row['segment_end_s']:.2f} babel={row['babel_category']}"
             )
     dis_cells: Counter = Counter(
         (r["babel_category"], r.get("geometry_dominant"))
@@ -1167,6 +1745,7 @@ def _write_outputs(
         "segment_end_s",
         "ann_source",
         "geometry_dominant",
+        "geometry_class",
         "rise_cm",
         "rise_status",
         "skate_flag",
@@ -1188,13 +1767,48 @@ def main() -> None:
         help="Comma-separated eval splits for floor-work (default val,test)",
     )
     parser.add_argument("--derive-thresholds", action="store_true")
+    parser.add_argument(
+        "--verify-byte-stable",
+        action="store_true",
+        help="Run ego_splits twice and compare output SHA256",
+    )
     args = parser.parse_args()
     cfg_path = Path(args.config)
     cfg = _load_yaml(cfg_path)
     if args.derive_thresholds:
         cfg["derive_thresholds"] = True
     eval_splits = tuple(s.strip() for s in args.splits.split(",") if s.strip())  # type: ignore
-    payload, confirmed, extras = run_ego_splits(cfg, eval_splits=eval_splits)  # type: ignore
+    if args.verify_byte_stable:
+        hashes: list[dict[str, str]] = []
+        for run_i in range(2):
+            payload, confirmed, extras = run_ego_splits(
+                cfg,
+                eval_splits=eval_splits,
+                print_reports=(run_i == 1),
+                skip_geometry_only=True,
+            )  # type: ignore
+            _write_outputs(payload, confirmed, extras["cohort_counts"], cfg)
+            out = cfg["output"]
+            hashes.append(
+                {
+                    "splits.json": _sha256_file(Path(out["splits_json"])),
+                    "floor_work_clips.csv": _sha256_file(Path(out["floor_work_csv"])),
+                    "cohort_counts.json": _sha256_file(
+                        Path(out.get("cohort_counts_json", "results/E/cohort_counts.json"))
+                    ),
+                }
+            )
+        print("ACCEPTANCE H byte-stable hashes run1:", hashes[0])
+        print("ACCEPTANCE H byte-stable hashes run2:", hashes[1])
+        print(
+            "ACCEPTANCE H identical:",
+            hashes[0] == hashes[1],
+        )
+        return
+
+    payload, confirmed, extras = run_ego_splits(
+        cfg, eval_splits=eval_splits, skip_geometry_only=True
+    )  # type: ignore
     _write_outputs(payload, confirmed, extras["cohort_counts"], cfg)
     if extras.get("all_proposals"):
         _print_acceptance_samples(
@@ -1213,6 +1827,11 @@ def main() -> None:
         f"disagreements={fw['n_disagreements_excluded']} unconfirmed={fw['n_babel_unconfirmed_excluded']}"
     )
     print(f"per_category_confirmed={fw['per_category_confirmed']}")
+    sit_classes = Counter(r.get("geometry_class") for r in confirmed)
+    print(
+        f"ACCEPTANCE B confirmed sit_floor={sit_classes.get('sit_floor', 0)} "
+        f"sit_support={sit_classes.get('sit_support', 0)}"
+    )
     print(f"split_clip_sha256_train={payload['split_clip_list_sha256_after_tune']['train']}")
     print(f"tune_subjects_n={payload['tune']['n_subjects']} tune_sha256={payload['tune']['subject_list_sha256']}")
 

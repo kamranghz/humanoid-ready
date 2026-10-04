@@ -55,7 +55,7 @@ floor_work:
   min_segment_duration_s: 1.0
   min_geometry_fraction: 0.5
   geometry_tree:
-    frozen_date: "2026-10-04"
+    frozen_date: "2026-10-05"
     use_normalized_height: false
     height_unit: metres
     cv_ordinary_loco_pelvis_raw: 0.089
@@ -65,12 +65,13 @@ floor_work:
       torso_upright_min: 0.82
       crawl_pelvis_h_max: 0.42
       crawl_wrist_h_max: 0.22
-      crawl_foot_h_max: 0.06
-      lie_pelvis_h_max: 0.38
+      crawl_shoulder_h_min: 0.30
+      lie_pelvis_h_max: 0.40
+      lie_shoulder_h_max: 0.30
       kneel_thigh_up_max: -0.42
       kneel_pelvis_h_max: 0.58
       sit_thigh_up_min: -0.32
-      sit_support_pelvis_h_min: 0.68
+      sit_support_pelvis_h_min: 0.43
       yoga_pelvis_h_max: 0.55
       yoga_torso_up_min: 0.30
     threshold_provenance:
@@ -86,12 +87,15 @@ floor_work:
       crawl_wrist_h_max:
         type: anchor
         note: hands near floor
-      crawl_foot_h_max:
+      crawl_shoulder_h_min:
         type: valley
-        note: VAL label-free foot_z_min q30 capped at 0.08 m
+        note: VAL horiz+low-pelvis shoulder_h q55 trunk support split
       lie_pelvis_h_max:
         type: anchor
-        note: supine pelvis height band
+        note: floor supine pelvis; above is raised_support_not_floor
+      lie_shoulder_h_max:
+        type: valley
+        note: trunk on floor at or below crawl_shoulder split
       kneel_thigh_up_max:
         type: anchor
         note: thigh axis nearer vertical than sit
@@ -102,8 +106,8 @@ floor_work:
         type: anchor
         note: thigh axis nearer horizontal
       sit_support_pelvis_h_min:
-        type: anchor
-        note: chair-like pelvis above floor-sit
+        type: valley
+        note: VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-05)
       yoga_pelvis_h_max:
         type: anchor
         note: low non-upright residual

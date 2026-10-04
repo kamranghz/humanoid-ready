@@ -20,11 +20,12 @@
   },
   "floor_work": {
     "n_babel_proposals": 197,
-    "n_babel_unconfirmed_excluded": 80,
+    "n_babel_unconfirmed_excluded": 71,
     "n_disagreements_excluded": 10,
-    "n_geometry_confirmed": 107,
+    "n_geometry_confirmed": 116,
     "per_category_confirmed": {
       "kneel": 12,
+      "lie": 9,
       "sit": 95
     }
   },
@@ -33,18 +34,18 @@
     "test"
   ],
   "floor_work_geometry_tree": {
-    "cv_ordinary_loco_pelvis_norm": 0.0,
-    "cv_ordinary_loco_pelvis_raw": 0.0,
-    "frozen_date": "2026-10-04",
+    "cv_ordinary_loco_pelvis_norm": 0.112,
+    "cv_ordinary_loco_pelvis_raw": 0.089,
+    "frozen_date": "2026-10-05",
     "height_unit": "metres",
     "threshold_provenance": {
-      "crawl_foot_h_max": {
-        "note": "VAL label-free foot_z_min q30 capped at 0.08 m",
-        "type": "valley"
-      },
       "crawl_pelvis_h_max": {
         "note": "low pelvis metres grounded clip",
         "type": "anchor"
+      },
+      "crawl_shoulder_h_min": {
+        "note": "VAL horiz+low-pelvis shoulder_h q55 trunk support split",
+        "type": "valley"
       },
       "crawl_wrist_h_max": {
         "note": "hands near floor",
@@ -59,12 +60,16 @@
         "type": "anchor"
       },
       "lie_pelvis_h_max": {
-        "note": "supine pelvis height band",
+        "note": "floor supine pelvis; above is raised_support_not_floor",
         "type": "anchor"
       },
+      "lie_shoulder_h_max": {
+        "note": "trunk on floor at or below crawl_shoulder split",
+        "type": "valley"
+      },
       "sit_support_pelvis_h_min": {
-        "note": "chair-like pelvis above floor-sit",
-        "type": "anchor"
+        "note": "VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-05)",
+        "type": "valley"
       },
       "sit_thigh_up_min": {
         "note": "thigh axis nearer horizontal",
@@ -88,13 +93,14 @@
       }
     },
     "thresholds": {
-      "crawl_foot_h_max": 0.06,
       "crawl_pelvis_h_max": 0.42,
+      "crawl_shoulder_h_min": 0.3,
       "crawl_wrist_h_max": 0.22,
       "kneel_pelvis_h_max": 0.58,
       "kneel_thigh_up_max": -0.42,
-      "lie_pelvis_h_max": 0.38,
-      "sit_support_pelvis_h_min": 0.68,
+      "lie_pelvis_h_max": 0.4,
+      "lie_shoulder_h_max": 0.3,
+      "sit_support_pelvis_h_min": 0.43,
       "sit_thigh_up_min": -0.32,
       "torso_horizontal_max": 0.45,
       "torso_upright_min": 0.82,
