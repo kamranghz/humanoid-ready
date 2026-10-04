@@ -244,11 +244,11 @@ The paper is written from the same code and results as the work packages. It doe
 
 
 **Minimum milestone:** items 1–6 (and 7–8 if time). Items 1–11 cover the physics, loss, contact,
-torque and robot clauses; 12–13 cover from-scratch vision; 14–19 complete the rest. Track E (§8) starts only after item 8 is closed and Oct 8, 2026, on the user's explicit 'start track E'.
+torque and robot clauses; 12–13 cover from-scratch vision; 14–19 complete the rest. Track E starts now (decided Oct 4, 2026); item 8 ablation is paused (branch `wip/fast-loader` holds the unfinished fast loader and ablation CLI).
 
 ## 8. Extension track E — egocentric motion prior + physics tracking (queued; do not start before item 8 is closed and Oct 8, 2026)
 
-**Status:** queued. Nothing in §0–§7 changes. Minimum milestone (items 1–8) is unaffected. Work on E only when the user says "start track E".
+**Status:** active (Oct 4, 2026). Item 8 ablation paused on `wip/fast-loader`. **Priority for Oct 7:** E0, E1, E2, E3 first; E4 only if time; no G1 in Track E.
 
 **Why.** The problem:from a head-mounted rig, hands/wrists, upper-body keypoints and the metric head/camera trajectory are observed; legs and feet are rarely visible. Today the lower body is inferred, feet are an ankle offset on an assumed flat floor, and contact is a frame-rejection check. Track E builds a model that outputs a full-body pose per frame in one metric world frame that stands on the floor, does not slide or sink, handles floor work (kneel, sit, lie, crawl), and reports calibrated per-foot contact; a physics stage then makes the result physically consistent.
 
