@@ -1,0 +1,2404 @@
+frozen_date: '2026-10-04'
+anti_circularity:
+  rule: Thresholds are fixed to foot constants; not fitted on floor-work eval segments.
+    Loco negative envelope and ordinary-locomotion rates use BABEL segment ranges
+    only.
+  loco_sample_seed: 0
+  loco_max_segments: 200
+  loco_frame_stride: 4
+ordinary_locomotion_babel_keywords:
+  walk: walk
+  run: run
+  stand: stand
+  turn: turn
+min_segment_duration_s: 1.0
+floor_uncertain_reporting:
+  per_clip_median_stand_foot_threshold_m: 0.07
+foot:
+  source: hready.data.contact
+  h_on_m: 0.05
+  h_off_m: 0.06
+  v_on_m_s: 0.2
+  v_off_m_s: 0.25
+  min_run: 3
+regions:
+  shins:
+    joints:
+    - 4
+    - 5
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  thighs:
+    joints:
+    - 1
+    - 2
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  pelvis_seat:
+    joints:
+    - 0
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  back_torso:
+    joints:
+    - 3
+    - 6
+    - 9
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  head:
+    joints:
+    - 12
+    - 15
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  forearms:
+    joints:
+    - 18
+    - 19
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  wrists:
+    joints:
+    - 20
+    - 21
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+  hands:
+    joints:
+    - 25
+    - 26
+    - 27
+    - 28
+    - 29
+    - 30
+    - 31
+    - 32
+    - 33
+    - 34
+    - 35
+    - 36
+    - 37
+    - 38
+    - 39
+    - 40
+    - 41
+    - 42
+    - 43
+    - 44
+    - 45
+    - 46
+    - 47
+    - 48
+    - 49
+    - 50
+    - 51
+    - 52
+    - 53
+    - 54
+    h_on_m: 0.05
+    h_off_m: 0.06
+    v_on_m_s: 0.2
+    v_off_m_s: 0.25
+    min_run: 3
+validation_clips:
+  kneel:
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz
+    start_s: 3.116
+    end_s: 5.608
+  - rel_path: Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz
+    start_s: 4.28
+    end_s: 7.472
+  lie:
+  - rel_path: ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz
+    start_s: 0.0
+    end_s: 7.9
+  - rel_path: ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz
+    start_s: 3.877
+    end_s: 6.467
+  sit_floor:
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-08-long_sitting-aita_stageii.npz
+    start_s: 6.065
+    end_s: 10.125
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-09-squat_down-aita_stageii.npz
+    start_s: 3.334
+    end_s: 8.474
+  sit_support:
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz
+    start_s: 5.648
+    end_s: 6.773
+  - rel_path: BMLrub/rub002/0012_sitting2_stageii.npz
+    start_s: 1.968
+    end_s: 3.044
+  walk:
+  - rel_path: CMU/132/132_35_stageii.npz
+    start_s: null
+    end_s: null
+  - rel_path: CMU/05/05_01_stageii.npz
+    start_s: null
+    end_s: null
+output_json: results/E/support_contact_v2_rates.json
+paths_config: configs/paths.yaml
+floor_work_clips_csv: results/E/floor_work_clips.csv
+standing_foot_characterisation_val:
+  per_clip:
+  - rel_path: ACCAD/Female1General_c3d/A1_-_Stand_stageii.npz
+    subset: ACCAD
+    median_stand_foot_min_channel_m: 0.00022866204380989075
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: ACCAD/Female1General_c3d/A2_-_Sway_t2_stageii.npz
+    subset: ACCAD
+    median_stand_foot_min_channel_m: 0.005481865257024765
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: ACCAD/Female1Gestures_c3d/D2_-_Wait_1_stageii.npz
+    subset: ACCAD
+    median_stand_foot_min_channel_m: 0.050137054175138474
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_11_F_MoSh/Subject_11_F_13_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0923813134431839
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_11_F_MoSh/Subject_11_F_15_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0063631571829319
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_11_F_MoSh/Subject_11_F_20_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.004515320062637329
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_11_F_MoSh/Subject_11_F_21_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.08718638122081757
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_11_F_MoSh/Subject_11_F_9_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.027168069034814835
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_11_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.011343777179718018
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_15_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.007901772856712341
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_16_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0030970387160778046
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_17_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0006636139005422592
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_1_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0037326086312532425
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_3_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.007006511092185974
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_12_F_MoSh/Subject_12_F_7_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.06483572721481323
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_1_F_MoSh/Subject_1_F_21_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.006935812532901764
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_1_F_MoSh/Subject_1_F_8_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.006015840917825699
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_33_F_MoSh/Subject_33_F_16_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.09053966403007507
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_33_F_MoSh/Subject_33_F_1_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.005607496947050095
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_33_F_MoSh/Subject_33_F_9_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.010826941579580307
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_51_F_MoSh/Subject_51_F_11_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.021547898650169373
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_51_F_MoSh/Subject_51_F_12_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.08283683657646179
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_51_F_MoSh/Subject_51_F_13_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.0033897031098604202
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_67_F_MoSh/Subject_67_F_14_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.04177159070968628
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_67_F_MoSh/Subject_67_F_19_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.01593458652496338
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLmovi/Subject_67_F_MoSh/Subject_67_F_2_stageii.npz
+    subset: BMLmovi
+    median_stand_foot_min_channel_m: 0.020199913531541824
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub026/0013_knocking1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0021423385478556156
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub026/0017_lifting_light1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.025734793394804
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub049/0011_knocking1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0020449282601475716
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub049/0012_knocking2_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0013051535934209824
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub049/0019_catching_and_throwing_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0037810448557138443
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub049/0022_throwing_hard3_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0024237576872110367
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub080/0029_scamper_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.030798405408859253
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub080/0030_rom_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0033437255769968033
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub085/0014_knocking2_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.00928653497248888
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0004_motorcycle_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.0004114927724003792
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0013_knocking1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.005829663947224617
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0021_catching_and_throwing_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.010156214237213135
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0024_throwing_hard3_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.03039499558508396
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0025_kicking1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.006100492551922798
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub091/0031_rom_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.017206013202667236
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub114/0013_knocking1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.003028509207069874
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub114/0014_knocking2_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.005297117866575718
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub114/0026_circle_walk_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.010344266891479492
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: BMLrub/rub114/0027_jumping1_stageii.npz
+    subset: BMLrub
+    median_stand_foot_min_channel_m: 0.011009374633431435
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/01/01_06_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.5272706151008606
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/01/01_08_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.761411190032959
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - interact with/use object
+    - stand
+  - rel_path: CMU/105/105_04_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.003934882581233978
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_13_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0036816559731960297
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_15_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.007119506597518921
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_22_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.004677761346101761
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_23_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0036530420184135437
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_25_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0043516866862773895
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_26_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.007182493805885315
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_30_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0011839307844638824
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_31_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0026192069053649902
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_41_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.016552457585930824
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_45_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.016579553484916687
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_46_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.01391836628317833
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_55_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.008360220119357109
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_56_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.003039836883544922
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/105/105_61_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.004216277971863747
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_04_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.00787724182009697
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_09_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.008451204746961594
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_19_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.005509510636329651
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_23_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0016875751316547394
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_26_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.005460664629936218
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_28_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.009489234536886215
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_29_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.003640681505203247
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_38_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0403880700469017
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/111/111_40_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.007022235542535782
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - leg movements
+    - stand
+  - rel_path: CMU/127/127_23_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.1553899496793747
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_05_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0017243432812392712
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_11_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0019016088917851448
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_13_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0038119694218039513
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_14_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0010637522209435701
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_16_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.482319712638855
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/74/74_17_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.47435125708580017
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_01_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.01381954550743103
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_06_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.009787922725081444
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_07_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.01792629063129425
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_08_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.014446577057242393
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_12_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.03394360840320587
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_14_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.014089088886976242
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_16_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.02244916930794716
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_17_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.028319749981164932
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_18_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.02166013792157173
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_19_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.026446033269166946
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/75/75_20_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.027788802981376648
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_06_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0019509587436914444
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_07_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0006208494305610657
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - stand
+  - rel_path: CMU/90/90_08_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0010308101773262024
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_16_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.03326660394668579
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_19_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.04106535762548447
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_22_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.001201234757900238
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_23_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.004789676517248154
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_24_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.00025681033730506897
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_28_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0818038135766983
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_30_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.0019416660070419312
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - look
+    - stand
+  - rel_path: CMU/90/90_32_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.010762497782707214
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: CMU/90/90_35_stageii.npz
+    subset: CMU
+    median_stand_foot_min_channel_m: 0.053107649087905884
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - spread
+    - stand
+  - rel_path: EKUT/265/BEAM01_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0334121435880661
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/BEAMN01_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.03332136943936348
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - poses
+    - stand
+  - rel_path: EKUT/265/BEAMN02_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.014671070501208305
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/BEAMN05_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.012361198663711548
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/MTR03_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP101_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0034339248668402433
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP103_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.008597271516919136
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP105_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.006570494268089533
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP201_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.015736568719148636
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP302_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.02131527289748192
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLP305_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.018228566274046898
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD102_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.14948074519634247
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD103_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.14921864867210388
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD104_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.14515778422355652
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD201_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.02160726487636566
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - poses
+    - stand
+    - touching body part
+  - rel_path: EKUT/265/SLPD202_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.5107190608978271
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD203_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.5056203007698059
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/265/SLPD305_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.01733180321753025
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushBeamPedar_21_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.020243342965841293
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushBeamPedar_23_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.00020725466310977936
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - lean
+    - stand
+  - rel_path: EKUT/300/PushStandClosed_04_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.005886545404791832
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - poses
+    - stand
+  - rel_path: EKUT/300/PushStandClosed_06_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.010782148689031601
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_04_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.006700276862829924
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_05_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.015398996882140636
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_06_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.00029725953936576843
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_10_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.001396658830344677
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_11_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.011661149561405182
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_14_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0007305266335606575
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_17_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0023394934833049774
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandOpen_20_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.0008735684677958488
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandStraightPedar_05_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.005707550793886185
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandStraightPedar_09_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.04319440573453903
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - leg movements
+    - stand
+  - rel_path: EKUT/300/PushStandStraightPedar_10_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.04122167080640793
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandStraight_03_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.05773865431547165
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandTransPedar_02_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.01770397275686264
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - poses
+    - stand
+  - rel_path: EKUT/300/PushStandTransPedar_03_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.00797109305858612
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandTransPedar_05_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.023301858454942703
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandTransPedar_08_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.00671706348657608
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: EKUT/300/PushStandTransPedar_09_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.04107814282178879
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - lean
+    - stand
+    - upper body movements
+  - rel_path: EKUT/300/PushStandTrans_06_stageii.npz
+    subset: EKUT
+    median_stand_foot_min_channel_m: 0.02331872470676899
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/accident-03-damage_head-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.019688863307237625
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/accident-09-damage_leftfoot-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.04897211864590645
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/accident-10-spasm-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005400538444519043
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-03-set_3-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0035441159270703793
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-04-set_4-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0025755525566637516
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-14-apologize-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.03182048723101616
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-17-drink-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.00085105886682868
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-20-swing_chair-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.025928795337677002
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-30-fxxk-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0037404061295092106
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/gesture_etc-34-peace-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0017113806679844856
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/greeting-02-bye-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0013712523505091667
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/greeting-04-salute_(head)-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0029009580612182617
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - foot movements
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/greeting-07-bow-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.009589022025465965
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/pose-13-model-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0009034513495862484
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/pose-14-look_up-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.00840086955577135
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/pose-15-look_down-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.006100756116211414
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/pose-18-applause-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.001212680246680975
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/pose-19-funny-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.006674666423350573
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-04-chair_elbow-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.007318723946809769
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-05-straight-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.03835377097129822
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/throw_toss-04-both_hands_over_light-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.006537365727126598
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/throw_toss-15-pass_to_left_light-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005875200033187866
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/throw_toss-20-pass_to_front_heavy-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005891734734177589
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/aita/walk-07-moonwalk-aita_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.02950141578912735
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/accident-01-dodge-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.009814012795686722
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/accident-04-damage_right_leg-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.017312508076429367
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/accident-05-damage_right_arm-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.015567556023597717
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/accident-12-twist_foot-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.028653357177972794
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-05-touch_nose-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005986837670207024
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-17-drink-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.004109714180231094
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-29-pantomime-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.004762053489685059
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-30-fxxk-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005060611292719841
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-31-ok-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0037769582122564316
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-32-no-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.004667038097977638
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-34-peace-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0035782456398010254
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/gesture_etc-36-shame-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.013543568551540375
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/greeting-08-shakehands-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005703650414943695
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/jump-13-matrix-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.006827663630247116
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/pose-01-normal-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005084477365016937
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/pose-07-pray_cross-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.003833625465631485
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/pose-15-look_down-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.006686262786388397
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/pose-19-funny-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0053445324301719666
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/sitdown_standup-03-chair_back-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.007890332490205765
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/sitdown_standup-05-straight-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.031521718949079514
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/sitdown_standup-09-squat_down-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.014283932745456696
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/throw_toss-01-over-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.019222073256969452
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/hamada/turn-01-call-hamada_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0037116408348083496
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/accident-02-dodge_fast-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.015875738114118576
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/accident-13-damage_back-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.007216525264084339
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-03-set_3-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005555993411689997
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-05-touch_nose-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.003127324627712369
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-06-jiggle_knee-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.003456807229667902
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+    - wait
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-18-eat-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.002488636877387762
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-37-gay-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.003884529694914818
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/gesture_etc-39-giant_baba-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.007586514577269554
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/greeting-01-hello-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.002356124110519886
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/greeting-07-bow-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.004750561900436878
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/greeting-09-certificate-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.005277788732200861
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/jump-01-normal-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0008209287188947201
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/pain-03-toothache-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0032636048272252083
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/pose-09-pray_buddhism-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0014160871505737305
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/pose-15-look_down-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0037467600777745247
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/tennis-18-catch_netball-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.02683229371905327
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/tennis-19-catch_overhead-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.007494008634239435
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/kaiwa/walk-24-listless-kaiwa_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.0019277837127447128
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: Eyes_Japan_Dataset/yokoyama/karate-08-jab-yokoyama_stageii.npz
+    subset: Eyes_Japan_Dataset
+    median_stand_foot_min_channel_m: 0.00802987813949585
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_01-02_02_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.04159246012568474
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_01-04_01_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.020075835287570953
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_02-02_03_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.012106310576200485
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_02-02_04_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.017649678513407707
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_03-01_02_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.008116528391838074
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_03-02_01_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.016287004575133324
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - raising body part
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_03-03_01_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.09492149949073792
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_03-03_02_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.09972711652517319
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_03-05_01_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.01711064577102661
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_05-02_01_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.036180078983306885
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_05-02_02_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.023600853979587555
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HDM05/tr/HDM_tr_06-01_02_120_stageii.npz
+    subset: HDM05
+    median_stand_foot_min_channel_m: 0.007636848837137222
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: HumanEva/S3/ThrowCatch_1_stageii.npz
+    subset: HumanEva
+    median_stand_foot_min_channel_m: 0.0076596662402153015
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_bottle01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006260541267693043
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_bottle02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00217533390969038
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_bottle03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.000942230224609375
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_bottle04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00048488378524780273
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_bottle05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0011722538620233536
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/pouring_the_cup07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006405210122466087
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/stirring_in_the_bowl03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004076823592185974
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/stirring_in_the_bowl07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0009710532613098621
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/1487/wiping_the_table06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0027597835287451744
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_left07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01006576418876648
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_left08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.009289037436246872
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_left09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007171761244535446
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_right01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01250038668513298
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_right05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.012136390432715416
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_right06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007577285170555115
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/bend_right08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.009820699691772461
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/downstairs01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.8038437962532043
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/go_over_beam_n01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.008650479838252068
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/go_over_beam_n06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00557326152920723
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/go_over_beam_n08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.001543101854622364
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/go_over_beam_n10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006424207240343094
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/parkour01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010064207017421722
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/parkour02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.012301979586482048
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/parkour03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.015933826565742493
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/parkour04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00809674896299839
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/parkour07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007430708035826683
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/step_over_gap02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.008499054238200188
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/step_over_gap03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010381622239947319
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/step_over_gap06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01254843920469284
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/step_over_gap07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.014040114358067513
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.015684060752391815
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011488543823361397
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00845402292907238
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010092519223690033
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.013011874631047249
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.014853894710540771
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010284818708896637
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_left10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007336422801017761
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_right02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010432083159685135
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_right03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00911458395421505
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/turn_right07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007552970200777054
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/upstairs10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.8054119348526001
+    floor_uncertain: true
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/walking_fast02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006409117951989174
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/walking_slow06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007955137640237808
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/183/walking_slow10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010755915194749832
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_left01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0015453635714948177
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_left03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0037688433658331633
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_left07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0068939803168177605
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_left09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0043050386011600494
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_left10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004138705786317587
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/bend_right01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00930374301970005
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - poses
+    - stand
+  - rel_path: KIT/348/go_over_beam04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005791169591248035
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/go_over_beam05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005106481723487377
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/go_over_beam07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004738234914839268
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/go_over_beam08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005346870515495539
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/go_over_beam09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004603437148034573
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/parkour06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011912187561392784
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_left02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006000259891152382
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_left05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007183820940554142
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_left07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005879313684999943
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006708146072924137
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0040906984359025955
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005004996433854103
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006610529497265816
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005511840805411339
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004972722381353378
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005394092760980129
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/turn_right10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006270465441048145
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/walking_fast05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006255049724131823
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/walking_medium07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005764806643128395
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/walking_run04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0014519337564706802
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - bend
+    - stand
+  - rel_path: KIT/348/walking_run06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011882048100233078
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/walking_slow05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0007866979576647282
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/348/walking_slow09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005474724806845188
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.018421608954668045
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01661520265042782
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.003925922443158925
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0027962536551058292
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.016408642753958702
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_back10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0035423277877271175
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010404026135802269
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.009574143216013908
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00016735191456973553
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011394798755645752
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01089739054441452
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.013108396902680397
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_front09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.012698221020400524
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01704520359635353
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0012812477070838213
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0013232589699327946
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0028112817090004683
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0010663479333743453
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.013921690173447132
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_left09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0026699542067945004
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00994409341365099
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01114567555487156
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0063845813274383545
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right05_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00016675284132361412
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0011878223158419132
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011842941865324974
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005767256021499634
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_right10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.011293751187622547
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_back02_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.012096380814909935
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_back04_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.009960388764739037
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_back06_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0036519586574286222
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_back10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.017806435003876686
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_front03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005827194079756737
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_front08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0005060434341430664
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_front10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.0041158851236104965
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_left10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007729801349341869
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/378/push_recovery_stand_right09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.000836656428873539
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/RightTurn07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.004962563514709473
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/RightTurn10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007403738796710968
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkInClockwiseCircle01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.010074913501739502
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkInClockwiseCircle07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.007218381855636835
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkInClockwiseCircle10_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.00850427895784378
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkInCounterClockwiseCircle03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.012781697325408459
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkInCounterClockwiseCircle08_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.01234667282551527
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkingStraightBackwards03_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.003425832837820053
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkingStraightBackwards09_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.002679220400750637
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkingStraightBackwards10_1_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.003164430148899555
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkingStraightForwards01_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.005118844099342823
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: KIT/8/WalkingStraightForwards07_stageii.npz
+    subset: KIT
+    median_stand_foot_min_channel_m: 0.006684044376015663
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: MoSh/00058/army_poses_stageii.npz
+    subset: MoSh
+    median_stand_foot_min_channel_m: 0.004558917135000229
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: MoSh/50027/misc_dancing_hiphop_stageii.npz
+    subset: MoSh
+    median_stand_foot_min_channel_m: 0.003096453845500946
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - arm movements
+    - stand
+  - rel_path: SSM/20160930_50032/dribble_kick_sync_stageii.npz
+    subset: SSM
+    median_stand_foot_min_channel_m: 0.017922481521964073
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: SSM/20160930_50032/punch_kick_sync_stageii.npz
+    subset: SSM
+    median_stand_foot_min_channel_m: 0.03699822723865509
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  - rel_path: TotalCapture/s1/freestyle2_stageii.npz
+    subset: TotalCapture
+    median_stand_foot_min_channel_m: 0.007294228300452232
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - hand movements
+    - stand
+    - touching body part
+  - rel_path: TotalCapture/s1/rom2_stageii.npz
+    subset: TotalCapture
+    median_stand_foot_min_channel_m: 0.020769618451595306
+    floor_uncertain: false
+    babel_stand_act_cat:
+    - stand
+  overall:
+    n_clips: 349
+    p50_m: 0.007318723946809769
+    p95_m: 0.08242362737655635
+    max_m: 0.8054119348526001
+  per_subset:
+    ACCAD:
+      n_clips: 3
+      p50_m: 0.005481865257024765
+      p95_m: 0.0456715352833271
+      max_m: 0.050137054175138474
+    BMLmovi:
+      n_clips: 23
+      p50_m: 0.010826941579580307
+      p95_m: 0.09020433574914932
+      max_m: 0.0923813134431839
+    BMLrub:
+      n_clips: 19
+      p50_m: 0.005829663947224617
+      p95_m: 0.03043533656746149
+      max_m: 0.030798405408859253
+    CMU:
+      n_clips: 56
+      p50_m: 0.00811873096972704
+      p95_m: 0.4763433709740639
+      max_m: 0.761411190032959
+    EKUT:
+      n_clips: 40
+      p50_m: 0.015567782800644636
+      p95_m: 0.16728772297501462
+      max_m: 0.5107190608978271
+    Eyes_Japan_Dataset:
+      n_clips: 66
+      p50_m: 0.005629821913316846
+      p95_m: 0.031016643159091473
+      max_m: 0.04897211864590645
+    HDM05:
+      n_clips: 12
+      p50_m: 0.01886275690048933
+      p95_m: 0.09708402715623378
+      max_m: 0.09972711652517319
+    HumanEva:
+      n_clips: 1
+      p50_m: 0.0076596662402153015
+      p95_m: 0.0076596662402153015
+      max_m: 0.0076596662402153015
+    KIT:
+      n_clips: 123
+      p50_m: 0.0068939803168177605
+      p95_m: 0.016361161135137078
+      max_m: 0.8054119348526001
+    MoSh:
+      n_clips: 2
+      p50_m: 0.0038276854902505875
+      p95_m: 0.004485793970525264
+      max_m: 0.004558917135000229
+    SSM:
+      n_clips: 2
+      p50_m: 0.027460354380309582
+      p95_m: 0.036044439952820535
+      max_m: 0.03699822723865509
+    TotalCapture:
+      n_clips: 2
+      p50_m: 0.01403192337602377
+      p95_m: 0.020095848944038153
+      max_m: 0.020769618451595306
+  floor_uncertain_threshold_median_m: 0.07
+loco_negative_envelope:
+  shins:
+    n_frames: 3896
+    p0.5: 0.08293881937861443
+    p1: 0.08456332162022591
+    p50: 0.10628697276115417
+    contact_fraction_at_frozen_h_on: 0.0
+  thighs:
+    n_frames: 3896
+    p0.5: 0.24499984234571456
+    p1: 0.3785649076104164
+    p50: 0.46402207016944885
+    contact_fraction_at_frozen_h_on: 0.0
+  pelvis_seat:
+    n_frames: 3896
+    p0.5: 0.310138163715601
+    p1: 0.45270496457815174
+    p50: 0.7201543152332306
+    contact_fraction_at_frozen_h_on: 0.0
+  back_torso:
+    n_frames: 3896
+    p0.5: 0.531841477751732
+    p1: 0.6972785085439682
+    p50: 0.9843456745147705
+    contact_fraction_at_frozen_h_on: 0.0
+  head:
+    n_frames: 3896
+    p0.5: 0.797278867661953
+    p1: 1.035453349351883
+    p50: 1.4241588711738586
+    contact_fraction_at_frozen_h_on: 0.0
+  forearms:
+    n_frames: 3896
+    p0.5: 0.41112239584326743
+    p1: 0.6054932236671448
+    p50: 0.8492377698421478
+    contact_fraction_at_frozen_h_on: 0.0
+  wrists:
+    n_frames: 3896
+    p0.5: 0.36155446246266365
+    p1: 0.5276567310094833
+    p50: 0.7696823179721832
+    contact_fraction_at_frozen_h_on: 0.0
+  hands:
+    n_frames: 3896
+    p0.5: 0.31122715622186664
+    p1: 0.47627360224723814
+    p50: 0.7082200348377228
+    contact_fraction_at_frozen_h_on: 0.0002566735112936345
+threshold_note: Non-foot h_on/h_off identical to foot (0.05/0.06 m); heights are lowest-vertex
+  world z after clip floor_offset (pipeline floor z=0). Not fitted on floor-work eval.
