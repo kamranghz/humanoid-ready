@@ -28,7 +28,7 @@ On grounded SMPL-X FK, **pelvis joint height** (metres, floor z=0) splits seated
 - **`sit_floor`:** upright sit gates + `pelvis_h ≤ sit_support_pelvis_h_min` (low pelvis band — floor sitting in joint space).
 - **`sit_support`:** same gates + `pelvis_h` above that threshold (seat-height mode ~0.5–0.6 m in AMASS; includes most KIT chair/wipe tasks).
 
-**Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (label-free VAL sit-gate pelvis valley: floor-tail p90 vs seat-band p10 midpoint, stride **8**, every **3rd** VAL clip; see acceptance **D**). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
+**Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (policy freeze for mesh pelvis bands; midpoint formula on the sit-gate pool yields **0.402 m** on the current index — see provenance below). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
 
 **Floor-work-eligible geometry** (metrics that assume floor support): `sit_floor`, `kneel`, `lie`, `crawl`, `yoga_like`. **`sit_support` is excluded** — reported separately in `cohort_counts.json` → `floor_work_eligible`.
 
@@ -52,17 +52,23 @@ Features: `pelvis_h`, `torso_up_dot` (neck−pelvis vs +Z), `wrist_h`, `head_h`,
 
 ### Threshold amendments (old → new, provenance)
 
-| Threshold | Frozen | Previous / removed | Provenance |
-|-----------|--------|-------------------|------------|
-| `crawl_shoulder_h_min` | **0.30** | *(new)* | VAL horiz+low-pelvis `shoulder_h` valley (q55 trunk-support split; stride **8**, every **3rd** clip) |
-| `lie_shoulder_h_max` | **0.30** | *(new)* | Same valley as crawl shoulder split |
-| `sit_support_pelvis_h_min` | **0.43** | **0.68** | VAL sit-gate `pelvis_h` valley (floor-tail p90 vs seat-band p10 midpoint) |
+| Threshold | Frozen | Previous / removed | Provenance type |
+|-----------|--------|-------------------|-----------------|
+| `crawl_shoulder_h_min` | **0.30** | *(new)* | `percentile_split` (see below) |
+| `lie_shoulder_h_max` | **0.30** | *(new)* | `shared_split` with `crawl_shoulder_h_min` |
+| `sit_support_pelvis_h_min` | **0.43** | **0.68** | `midpoint_percentiles` (see below) |
 | `crawl_foot_h_max` | — | **removed** | Unsatisfiable on ankle heights |
 | Lie `wrist_h > 0.22` gate | — | **removed** | Excluded supine arms |
 
 Anchors unchanged from P1 (e.g. `torso_horizontal_max=0.45`, `crawl_pelvis_h_max=0.42`, `crawl_wrist_h_max=0.22`, `lie_pelvis_h_max=0.40`, kneel/sit/yoga anchors in `configs/ego_splits.yaml`).
 
 Each threshold has a matching entry in `threshold_provenance`. Thresholds were **not** tuned to maximize BABEL agreement.
+
+#### Provenance detail (label-free VAL; frozen values unchanged)
+
+**`crawl_shoulder_h_min` / `lie_shoulder_h_max` (0.30 m).** Sample: **all 2223 VAL clips** (sorted `rel_path`), **frame stride 4**, gates `torso_up_dot ≤ 0.45` and `pelvis_h ≤ 0.42` (raw metres) — this is the `derive_geometry_thresholds` shoulder pool (**not** the crawl diagnostic scan, which uses **stride 8** on the same clip list). **n = 828** frames, **27** clips, **7** subjects. **q55(`shoulder_h`) = 0.280 m** (`round(..., 3)` → 0.28); config remains **0.30 m**. Shoulder histogram on this pool (0.05 m bins): [0.15,0.20) **109**; [0.20,0.25) **151**; [0.25,0.30) **279**; [0.30,0.35) **110**; [0.35,0.40) **88**; [0.40,0.45) **62**; [0.45,0.50) **14**; [0.50,0.55) **15** — unimodal below 0.30 with a decaying tail above, **not** a valley at 0.30. Physical rule: within the horizontal low-pelvis band, crawl requires shoulders above the split (arms supporting trunk); lie requires shoulders at or below. SMPL-X `locked_head` neutral FK (zero betas/pose, grounded) is **outside** this band (upright reference only).
+
+**`sit_support_pelvis_h_min` (0.43 m).** Sample: **every 3rd VAL clip** (**741** clips in subsample), **frame stride 8**, gates `torso_up_dot ≥ 0.82` and `thigh_up_dot ≥ -0.32` — distinct from the shoulder pool. **n = 598** sit-gate frames, **37** clips, **17** subjects. **floor_tail** (`pelvis_h ≤ 0.35`): **p90 = 0.305 m** (**n = 192**). **seat_band** (`0.45 ≤ pelvis_h ≤ 0.65`): **p10 = 0.499 m** (**n = 308**). Midpoint **(p90 + p10) / 2 = 0.402 m** — **not** a histogram valley. Config **0.43 m** is the **E1 amendment** from **0.68** (mesh pelvis bands); it is **not** equal to the recomputed midpoint on the current index.
 
 ## Floor-work evaluation set
 
@@ -103,9 +109,11 @@ Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows
 
 On **all 2223 VAL clips** (frame stride **8**, raw-metre features), crawl **pre-filter** frames (`torso_up_dot ≤ 0.45`, `pelvis_h ≤ 0.42`): **416** frames from **26** clips / **7** subjects. Of those, **`shoulder_h > 0.30`**: **145** frames from **17** clips / **7** subjects. `shoulder_h` on pre-filter frames (0.05 m bins): 54 in [0.15,0.20), 76 in [0.20,0.25), **141 in [0.25,0.30)**, 57 in [0.30,0.35), 43 in [0.35,0.40), 29 in [0.40,0.45), 8 in [0.45,0.50), 8 in [0.50,0.55).
 
-On BABEL-**crawl** VAL segments, the frozen tree assigns **`crawl` geometry to only 6 frames** (ACCEPTANCE A confusion); **0** crawl proposals reach segment confirmation (VAL ∪ TEST).
+On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the frozen tree classifies most as **`lie`** (**419** frames) vs **`crawl`** (**6** frames) — BABEL crawl labels rarely match the crawl geometry gate. **0** crawl proposals reach segment confirmation (VAL ∪ TEST).
 
-**Conclusion:** **not** “no quadruped-like horizontal low-pelvis frames in VAL” — **145** shoulder-pass pre-filter frames exist. **Crawl confirmed = 0** because **BABEL crawl segments do not match** the frozen crawl shoulder/wrist gates at ≥50% frame fraction (disagreements → `yoga_like` / `lie` / `none`), not because VAL lacks low horizontal posture.
+**Quadruped-like frames without BABEL crawl:** the stride-**8** diagnostic scan finds **145** frames (**17** clips, **7** subjects) with horizontal low pelvis and `shoulder_h > 0.30` that need not fall inside a BABEL crawl segment.
+
+**Conclusion:** **not** “no quadruped-like horizontal low-pelvis frames in VAL.” **Crawl confirmed = 0** because **BABEL crawl segments do not match** the frozen crawl shoulder/wrist gates at ≥50% frame fraction (disagreements → `yoga_like` / `lie` / `none`), not because VAL lacks low horizontal posture.
 
 ## Tune set
 

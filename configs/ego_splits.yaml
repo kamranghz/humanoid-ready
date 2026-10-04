@@ -88,14 +88,17 @@ floor_work:
         type: anchor
         note: hands near floor
       crawl_shoulder_h_min:
-        type: valley
-        note: VAL horiz+low-pelvis shoulder_h q55 trunk support split
+        type: percentile_split
+        note: >-
+          q55 on horiz+low-pelvis shoulder_h pool (all VAL clips, frame stride 4):
+          n=828 frames, 27 clips, 7 subjects; q55=0.280 m; frozen 0.30 m (not a histogram valley).
+          Physical rule: crawl needs trunk supported on arms (shoulder above lie band) within horizontal low-pelvis gate.
       lie_pelvis_h_max:
         type: anchor
         note: floor supine pelvis; above is raised_support_not_floor
       lie_shoulder_h_max:
-        type: valley
-        note: trunk on floor at or below crawl_shoulder split
+        type: shared_split
+        note: same frozen value as crawl_shoulder_h_min; lie trunk on floor at or below split
       kneel_thigh_up_max:
         type: anchor
         note: thigh axis nearer vertical than sit
@@ -106,8 +109,11 @@ floor_work:
         type: anchor
         note: thigh axis nearer horizontal
       sit_support_pelvis_h_min:
-        type: valley
-        note: VAL sit-gate pelvis_h valley floor-sit vs seat-height (amended 2026-10-04)
+        type: midpoint_percentiles
+        note: >-
+          sit-gate pool (every 3rd VAL clip, frame stride 8): n=598 frames, 37 clips, 17 subjects;
+          floor_tail (pelvis_h<=0.35) p90=0.305 m (n=192); seat_band (0.45-0.65) p10=0.499 m (n=308);
+          formula midpoint=0.402 m; frozen 0.43 m (E1 amendment from 0.68, not equal to recomputed midpoint).
       yoga_pelvis_h_max:
         type: anchor
         note: low non-upright residual
