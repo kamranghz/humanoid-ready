@@ -20,7 +20,7 @@ Vertices around the knee are **split by max-LBS assignment**: joint **4–5** �
 
 **All non-foot regions use foot constants:** `h_on=0.05 m`, `h_off=0.06 m`, `v_on=0.2 m/s`, `v_off=0.25 m/s`, `min_run=3`. Heights are **lowest-vertex world z** after clip `floor_offset` (pipeline floor **z=0**). Thresholds were **not** changed on 2026-10-04.
 
-**Rationale:** Standing-foot residual on reliably grounded VAL clips is small on many subsets (ACCAD/BMLmovi/MoSh medians often &lt; 0.01 m). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
+**Rationale:** VAL stand-segment characterisation (`standing_foot_characterisation_val`, frozen with rates in `configs/support_contact_v2.yaml` / `results/E/support_contact_v2_rates.json`): subset **p50** medians — ACCAD **0.0055 m**, BMLmovi **0.0108 m**, MoSh **0.0038 m** (overall **p50 ≈ 0.0073 m**). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
 
 ### Amendment 2026-10-04 — non-foot speed only (feet unchanged)
 
@@ -34,7 +34,7 @@ Vertices around the knee are **split by max-LBS assignment**: joint **4–5** �
 
 Validation kneel clips (frozen production thresholds except grid overrides): **mean shin contact** at `h_on=0.05 m` is about **0.82** at `z_shift=0`, **0.16** at `+0.035 m`, and **0** at `+0.07 m` (see `sensitivity_validation_clips` in the rates JSON). **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
 
-Synthetic negative shifts are report-only; production uses `z_shift=0`.
+Sensitivity grid uses **synthetic `z_shift` only** at **0, +0.035, +0.07 m** (report-only; production **`z_shift=0`**).
 
 ## Standing-foot characterisation (not a gate)
 

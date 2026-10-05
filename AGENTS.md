@@ -245,7 +245,7 @@ torque and robot clauses; 12–13 cover perception pretraining (E2-B3 prerequisi
 
 ## 8. Extension track E — egocentric RGB to physics-refined motion (main path)
 
-**Status:** active (Oct 4, 2026). **§8 header contradiction fixed:** the prior header said `(queued; do not start before item 8 is closed and Oct 8, 2026)` while the next line said `**Status:** active (Oct 4, 2026)` — incompatible; Track E is active per owner definition v2. **No G1** on this path (items 6/11 remain downstream).
+**Status:** active (Oct 4, 2026). **No G1** on this path (items 6/11 remain downstream).
 
 **Authoritative spec:** `docs/project_definition.md` (binding decisions **D1–D4**, stage contracts, evidence schema, controls, Track E order). Summary chain:
 

@@ -127,7 +127,7 @@ On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the
 
 ## Eyes_Japan floor offset
 
-Some Eyes_Japan clips show a **standing foot height** up to about **0.07 m** above the grounded floor (e.g. **snip_nail** standing feet ~**0.07 m**). The confirmed **kneel** cohort is **all Eyes_Japan** (**3** subjects on VAL ∪ TEST), so kneel floor-contact metrics inherit this offset; do not treat **0.07 m** as a universal AMASS tolerance.
+**E1b standing-foot characterisation (VAL, BABEL `stand` segments):** Eyes_Japan per-clip stand-foot medians are **p50 ≈ 0.0056 m**, **p95 ≈ 0.031 m**, **max ≈ 0.049 m** (`standing_foot_characterisation_val` in frozen `configs/support_contact_v2.yaml`, reported with `results/E/support_contact_v2_rates.json`). That does **not** support a blanket **0.07 m** standing residual on Eyes_Japan. With production thresholds, cohort **kneel** mean shin contact fraction is **≈ 0.911** (patch-median speed amendment). Details: `docs/contact_labels_v2.md`.
 
 ## Legacy acceptance (joint-index fix)
 
