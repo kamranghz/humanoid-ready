@@ -14,10 +14,7 @@ Items marked *(later)* need data that is not downloaded yet and are done only if
 
 ## 0. One-paragraph goal
 
-Build **HumanoidReady**: a from-scratch human-motion perception stack that goes from images/video to SMPL-X bodies,
-cleans the motion with physics and biomechanics losses, estimates contact and joint torques, and checks whether the
-motion is executable by a Unitree G1 humanoid in Isaac Lab + Newton. Main message:*pose accuracy is not
-physical usability — this stack measures and enforces the latter.*
+HumanoidReady is ONE integrated system that goes from **egocentric RGB/video** to a **physically refined full-body human motion**, and evaluates every stage: egocentric RGB/video (+ given head/camera pose and gravity in v1) → trained visual perception → partial 3D evidence (shared schema) → full-body completion → contact prediction and ground plane (foot channel + E1b regions) → physics-aware refinement (**K** kinematic/contact-aware, then **S** SMPL-X humanoid simulation tracking in Newton) → evaluation (E5, E1 cohort slices). Vision is mandatory on the main path. G1 executability (items 6, 11, paper track) is **downstream/supporting**, not the Track E path. Authoritative detail: `docs/project_definition.md` (APPROVED 2026-10-04).
 
 ## 1. Data and models available (frozen — no more downloads unless a WP marked *(later)* is started)
 
@@ -34,14 +31,14 @@ physical usability — this stack measures and enforces the latter.*
 | 3DPW test video + GT *(to download, paper item R3)*; EMDB if obtainable | `datasets/3dpw/`, `datasets/emdb/` | §6 paper |
 
 The repo **never** contains these files. Code reads paths from `configs/paths.yaml` (git-ignored; a
-`paths.example.yaml` is committed).
+`paths.example.yaml` is committed). **Downloads frozen** for the current stage; real egocentric validation (Track E **E5b**) is decided after the first synthetic end-to-end result (`docs/project_definition.md` §7).
 
 ## 2. Rules
 
 0. **Physics engine is fixed: NVIDIA Isaac Lab with the Newton backend** for all robot simulation (WP-D, B3) and Newton for human inverse dynamics (WP-B2). PhysX (via Isaac Lab) and MuJoCo are used **only** for the paper's cross-engine study (§6), under the configuration-fair protocol; every single-engine result is reported in Newton.
 
 1. No fabricated numbers. Every number in README/slides/paper comes from a script that ran; outputs in `results/`.
-2. "From scratch" = random init for HR-HMR and HR-Refine. Pretrained models appear only as labeled baselines.
+2. "From scratch" = random init for HR-HMR and HR-Refine. Other models (pretrained baselines, and the adapted variant P-C) are allowed, always labeled **pretrained** in every table row and figure.
 3. Verify library APIs from installed packages (Isaac Lab, Newton, smplx, SOMA-X change often); pin versions in `env/versions.lock`.
 4. Never commit licensed models or data. `.gitignore` covers `models/`, `datasets/`, `data/`, checkpoints, shards.
 5. Each WP has its own CLI entry point. Checks are run but not saved: the agent may run any test, smoke test or sanity script to verify its work, but it does so from a scratch location (e.g. a temp dir or `python -c`), shows the raw output, and deletes every such file before finishing. No test files, mock files, placeholder reports, demo scripts or other extra files are committed. `git status --short --untracked-files=all` must list only files the current checklist item calls for.
@@ -199,21 +196,21 @@ The paper is written from the same code and results as the work packages. It doe
 | 4 | Metrics + bootstrap CI | all | none | checked against hand-computed values; raw output shown, check files not saved | ☑ evidence: `hready/metrics/pose.py`, `hready/metrics/physical.py`, `hready/metrics/contact.py`, `hready/metrics/stats.py`, `hready/metrics/__init__.py`, `hready/losses/_constants.py` |
 | 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☑ evidence: `hready/data/amass.py`, `hready/data/babel.py`, `hready/data/contact.py`, `hready/data/imu.py`, `hready/data/foot_height_rise.py`, `scripts/inspect_clip.py`, `scripts/babel_gait_stats.py`, `results/checks/` (CMU/132/132_35, ACCAD C20 run_to_jump, BMLrub treadmill), `docs/dataset_challenges.md`, `docs/pivot_log.md`; contact core vs `27cc2da` on 300 `foot_traj` clips (seed 0) |
 | 6 | **G1 smoke test:** one AMASS walk → G1 in Isaac Lab + Newton, metrics + video | WP-D | AMASS | video + JSON | ☑ evidence: `hready/robot/isaaclab_newton.py`, `hready/robot/run_smoke.py`, `hready/robot/metrics.py`, `hready/robot/replay.py`, `results/D/smoke/summary.json`, `results/D/smoke/*/metrics_*.json`, `results/D/smoke/*/replay_*.mp4`, `docs/decisions.md`, `docs/pivot_log.md`; visual sign-off CMU walk / ACCAD jump / BMLrub treadmill (`76bf7e2`) |
-| 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer | WP-A2, B2 | AMASS | overfits 1 batch; resume works | ☑ evidence: `hready/models/hr_refine.py`, `hready/train/`, `configs/hr_refine.yaml`, `docs/decisions.md` |
-| 8 | HR-Refine training + loss ablation | WP-A3 | AMASS | `results/A3/ablation.csv` | ☐ |
-| 9 | Contact, action, intent heads; IMU fusion ablation | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1`; **affordance F1** (agreement with BABEL action labels) | ☐ |
-| 10 | Joint torques (inverse dynamics) raw vs refined | WP-B2 | AMASS | torque plots | ☐ |
-| 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag | WP-D | AMASS | `results/D/`; end-to-end: one real video (**3DPW** test sequence) → HMR → HR-Refine → G1 rollout video in `results/D/e2e/` | ☐ |
-| 12 | BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations | WP-A1, B1 | BEDLAM | training curves, overlays | ☐ |
-| 13 | BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1`; **tracking:** ID-switch count and jitter on `orbit_bigOffice`, temporal transformer vs per-frame baseline | ☐ |
-| 14 | Action-conditioned prior ± physics regularization, evaluated on G1 | WP-B3 | AMASS, BABEL | `results/B3/` | ☐ |
+| 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer — **candidate learned instance of refinement K** (not the Track E main path) | WP-A2, B2 | AMASS | overfits 1 batch; resume works | ☑ evidence: `hready/models/hr_refine.py`, `hready/train/`, `configs/hr_refine.yaml`, `docs/decisions.md` |
+| 8 | HR-Refine training + item-3 loss ablation (supporting evidence for K losses) | WP-A3 | AMASS | `results/A3/ablation.csv` | ☐ |
+| 9 | Contact, action, intent heads; IMU fusion ablation — contact overlaps E4; action/intent/IMU supporting (work package C1) | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1`; **affordance F1** (agreement with BABEL action labels) | ☐ |
+| 10 | Joint torques (inverse dynamics) on reconstructed body — supporting metric | WP-B2 | AMASS | torque plots | ☐ |
+| 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag (**downstream**, not Track E) | WP-D | AMASS | `results/D/`; end-to-end: one real video (**3DPW** test sequence) → HMR → HR-Refine → G1 rollout video in `results/D/e2e/` | ☐ |
+| 12 | **Perception pretraining (P-A):** BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations — prerequisite of E2-B3 | WP-A1, B1 | BEDLAM | training curves, overlays | ☐ |
+| 13 | **Perception pretraining (P-A):** BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people — prerequisite of E2-B3 | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1`; **tracking:** ID-switch count and jitter on `orbit_bigOffice`, temporal transformer vs per-frame baseline | ☐ |
+| 14 | Action-conditioned prior ± physics regularization, evaluated on G1 (**downstream**) | WP-B3 | AMASS, BABEL | `results/B3/` | ☐ |
 | 15 | DDP equivalence test + Kaggle 2×T4 run | WP-A2 | AMASS | scaling table | ☐ |
 | 16 | Loader bottleneck before/after; shard + rolling-window pipeline | WP-C2, Req. multi-TB | AMASS/BEDLAM | `results/C2/` | ☐ |
 | 17 | SOMA-X pivot SMPL-X ↔ MHR + `body_models.md` | Req. body models | SMPL-X | round-trip error reported. **SMPL-X ↔ MHR** goes through the **SOMA-X pivot** (`py-soma-x` tools convert **to** SOMA; no direct SMPL-X↔MHR API documented). Implement in a **separate conda env `hready-soma`** (chumpy conflicts with NumPy 2.x in `hready`); API verified from the installed package (rule 3). **GHUM** in `docs/body_models.md` only (not supported by SOMA-X). | ☐ |
 | 18 | README with §4 table linked to evidence; `dataset_challenges.md`; `pivot_log.md` | all | — | every number traced to `results/` | ☐ |
 | 19 | Paper draft + slides | Strong signal | — | compiles | ☐ |
 | 20a | File access requests for Human3.6M, EgoBody and PROX *(no downloads yet)* | Strong signal | — | requests filed | ☐ |
-| 20b | *(later)* Human3.6M / EgoBody / PROX eval on a small subset; multi-TB run | Strong signal | needs download | — | ☐ |
+| 20b | *(later)* Human3.6M / PROX eval on a small subset; multi-TB run; **EgoBody → Track E E5b** | Strong signal | needs download | — | ☐ |
 
 ### Paper track checklist (interleaved with the items above; see the week plan)
 
@@ -244,48 +241,64 @@ The paper is written from the same code and results as the work packages. It doe
 
 
 **Minimum milestone:** items 1–6 (and 7–8 if time). Items 1–11 cover the physics, loss, contact,
-torque and robot clauses; 12–13 cover from-scratch vision; 14–19 complete the rest. Track E starts now (decided Oct 4, 2026); item 8 ablation is paused (branch `wip/fast-loader` holds the unfinished fast loader and ablation CLI).
+torque and robot clauses; 12–13 cover perception pretraining (E2-B3 prerequisites); 14–19 complete the rest. Track E main path is `docs/project_definition.md` (APPROVED 2026-10-04); item 8 ablation paused on `wip/fast-loader`.
 
-## 8. Extension track E — egocentric motion prior + physics tracking (queued; do not start before item 8 is closed and Oct 8, 2026)
+## 8. Extension track E — egocentric RGB to physics-refined motion (main path)
 
-**Status:** active (Oct 4, 2026). Item 8 ablation paused on `wip/fast-loader`. **Priority for Oct 7:** E0, E1, E2, E3 first; E4 only if time; no G1 in Track E.
+**Status:** active (Oct 4, 2026). **§8 header contradiction fixed:** the prior header said `(queued; do not start before item 8 is closed and Oct 8, 2026)` while the next line said `**Status:** active (Oct 4, 2026)` — incompatible; Track E is active per owner definition v2. **No G1** on this path (items 6/11 remain downstream).
 
-**Why.** The problem:from a head-mounted rig, hands/wrists, upper-body keypoints and the metric head/camera trajectory are observed; legs and feet are rarely visible. Today the lower body is inferred, feet are an ankle offset on an assumed flat floor, and contact is a frame-rejection check. Track E builds a model that outputs a full-body pose per frame in one metric world frame that stands on the floor, does not slide or sink, handles floor work (kneel, sit, lie, crawl), and reports calibrated per-foot contact; a physics stage then makes the result physically consistent.
+**Authoritative spec:** `docs/project_definition.md` (binding decisions **D1–D4**, stage contracts, evidence schema, controls, Track E order). Summary chain:
 
-**Mapping to existing work (reuse, do not rewrite or delete working modules).**
-- Module A reuses: AMASS/BABEL loaders and contact labels (item 5), synthetic IMU/virtual-camera code (item 7), losses (item 3), metrics + bootstrap (item 4), smplx wrapper (item 2). It extends WP-B2 (ego-only) and replaces nothing.
-- Module B reuses: the Isaac Lab + Newton runner, robot metrics and WSL orchestration from item 6 (hready/robot/). It does NOT use the G1 or the GMR retargeter; the G1 pipeline stays as is for WP-D.
+```
+egocentric RGB/video (+ given head pose + gravity, v1)
+  -> visual perception (E2-B)
+  -> evidence schema (E2-A defines; oracle + perceived share it)
+  -> completion (E3 baselines, E4 generative prior)
+  -> contact + ground (foot + E1b region channels)
+  -> refinement K then S (E7 arms: none, K, S, K+S)
+  -> evaluation E5 (+ E5b real ego when scheduled)
+```
 
-**Fixed constraints.** Single local GPU (RTX 4090); no cloud, no new downloads; everything trains and evaluates on this machine. Newton is the only physics backend (rule 0): if a feature is missing, stop and report with evidence; never silently switch to PhysX. Checkpoints/logs live under hready_data, not the repo. No multi-GPU / multi-TB claims.
+- **D1:** metric head/camera pose and gravity are **given** in v1 (rig); stated on every results table.
+- **D2:** perception variants P-A (our HR-HMR-style, random init + ego adapt), P-B (labeled pretrained), P-C (adapted if needed); weak HR-HMR does not block the pipeline — **E2-B4** selects the main-path model.
+- **D3:** synthetic egocentric RGB from AMASS first; **E5b** = real egocentric validation (explicit step, not indefinite later).
+- **D4:** refinement **K** (kinematic/contact-aware, item-3 losses; HR-Refine a candidate learned K) then **S** (SMPL-X humanoid simulation tracking, Newton only).
 
-### Module A — conditional full-body motion prior
-- Body model: SMPL-X locked_head. MHR/SOMA-X adapter only if model files exist locally; else "future work".
-- Data: AMASS subset already in hready_data. Deterministic split by SUBJECT (train/val/test) plus a separate "floor work" test subset (kneel, sit, lie, crawl, yoga-like) chosen by documented rules (BABEL labels + geometric rules). One command reproduces splits and subset. Exclude skate-flagged clips and clips with foot-height rise > 5 cm unless a documented reason says otherwise.
-- Synthetic egocentric observations (seeded, configurable, documented in docs/ego_observation_model.md): head 6-DoF trajectory, wrist 6-DoF poses, upper-body 3D keypoints, partial/noisy/intermittently visible leg keypoints with realistic noise and dropout.
-- Model: ONE conditional generative model (diffusion OR masked transformer; choice justified in this file before training). Outputs full-body pose sequence in metric world frame + per-frame per-foot contact probability. Trainable on one GPU in < ~24 h.
-- Baselines on identical splits/metrics: (1) industry heuristic: inferred lower body + ankle offset on flat floor; (2) deterministic regression model of similar size.
-- Metrics: MPJPE and lower-body/feet MPJPE (world frame), foot skate, ground penetration, jitter, contact P/R/F1, calibration (ECE + reliability plot). Floor-work subset reported separately.
+**Controls:** **E2-A** oracle path (AMASS → observation simulator → schema → …) is a **control**, not the product interface. **E3** runs oracle mode first for diagnosis only; perceived RGB path is the main end-to-end system. **E5** main rows = perceived; oracle rows = control; perception-only row + decomposition.
 
-### Module B — physics-based tracking (Isaac Lab + Newton), SMPL-X-skeleton humanoid
-- Humanoid: a simulated humanoid whose skeleton matches the SMPL-X body model (22 body joints, 3-DoF spherical joints as in SMPL-X rotations), so Module A output is tracked directly with no retargeting. The asset is GENERATED programmatically from SMPL-X (bone lengths from the locked_head shape, segment masses/inertias from the de Leva tables already used in the repo, simple capsule/box collision geometry, joint limits from the item-3 ROM table, PD gains documented) into MJCF/URDF under hready/robot/. No downloads. A public SMPL humanoid asset (e.g. from ProtoMotions/MimicKit) may be used as a REFERENCE only if already installed locally; record this in the audit.
-- Asset acceptance before any RL: loads in Isaac Lab + Newton; stands passively under PD holding a static AMASS pose for >= 5 s; mass matches the de Leva total; joint ordering round-trips to SMPL-X pose parameters (error reported).
-- DeepMimic-style imitation reward (pose, velocity, end-effector, root) + PPO with parallel envs sized to the GPU. ProtoMotions / MimicKit as dependency only if they actually run on this Isaac Lab + Newton setup; verify and record here.
-- Compare kinematic-only vs physics-tracked: foot skate, penetration, fall/termination rate, tracking error to GT, contact agreement with Module A. Include floor-work subset. Log number of envs and wall-clock time.
-- Scope honesty: state how many clips the policy was trained on; a policy trained on a few clips is not a general tracker. If the humanoid cannot be stabilised, report it with evidence; do not fall back to G1 silently (a G1 fallback needs user approval and is labelled as such).
+**Evidence schema (E2-A):** head 6-DoF; visible-joint 3D in world frame; per-joint visibility mask and confidence; optional 2D keypoints from virtual head camera. Completion consumes **only** schema tensors (+ given rig signals per [C1]).
+
+**E2-B sub-steps (critical path perception):** **B1** ego render set; **B2** baseline measurement (~50 frames then VAL, not a go/no-go gate); **B3** train/adapt P-A/P-B/P-C (items **12–13** prerequisites for P-A); **B4** select on VAL (criterion frozen before TEST), emit schema for splits.
+
+**Stage S (E6a/E6/E7):** SMPL-X-skeleton humanoid asset generated in-repo; PPO DeepMimic-style tracking in Newton; **E7** compares none vs K vs S vs K+S on reconstructed motion. Reuses `hready/robot/` Newton runner patterns from item 6 but **not** G1/GMR.
+
+**Floor-work cohorts (frozen E1):** evaluable floor-work metrics = **kneel + lie** only (`floor_work_eligible`); **crawl** and **yoga_like** have **0** confirmed segments; **sit_floor** / **sit_support** reported separately (sit_floor **not** eligible). E1b region contact labels are GT-derived training targets; at test time contact is predicted from perceived/completed evidence.
+
+**Completion training direction [C3] (open, prompts for E3/E4):** final training targets evidence whose error distribution approximates perception (calibrated from held-out perception errors; oracle evidence is a control, not the final training distribution). See `docs/project_definition.md` §8.
+
+**Fixed constraints.** Single local GPU (RTX 4090); no cloud; **no new downloads** until E5b decision. Newton only (rule 0). Checkpoints/logs under `hready_data`. No multi-GPU / multi-TB claims beyond items 15–16 measured paths.
+
+**Reuse (do not delete working modules):** items 2–5 loaders/contact/metrics/losses; item 7 virtual-camera/IMU code for controls; item 6 Newton orchestration patterns for stage S only.
 
 ### Track E checklist (work in order; one item at a time)
 | # | Item | Done when | ☐/☑ |
 |---|---|---|---|
-| E0 | Audit section appended to this file: what exists, what is reused, what conflicts | written, reviewed by user | ☑ evidence: `docs/e0_audit.md` |
-| E1 | Subject split + floor-work subset, one command | reproducible, documented | ☑ evidence: `results/E/splits.json`, `results/E/cohort_counts.json`, `results/E/floor_work_clips.csv`, `docs/ego_splits.md` |
-| E2 | Ego observation synthesis, seeded + configurable | docs/ego_observation_model.md | ☐ |
-| E3 | Baselines (heuristic, regression) on identical splits | results table | ☐ |
-| E4 | Generative prior trains end to end from one command | logs/ckpts under hready_data | ☐ |
-| E5 | One eval command: full metrics table (test + floor-work) + reliability plot | results/E/ | ☐ |
-| E6a | SMPL-X-skeleton humanoid asset generated; passes the asset acceptance above in Newton | evidence in results/E/asset/ | ☐ |
-| E6 | PPO tracking trains on Newton with parallel envs | envs + wall-clock logged | ☐ |
-| E7 | Kinematic vs physics-tracked table, one command | results/E/ | ☐ |
-| E8 | Qualitative clips: GT vs baseline vs ours vs physics-tracked, >= 1 floor-work | local mp4 | ☐ |
-| E9 | Claims section lists only logged results with exact command + config | claims_map | ☐ |
+| E0 | Audit: what exists, what is reused, what conflicts | written, reviewed by user | ☑ evidence: `docs/e0_audit.md` |
+| E1 | Subject split + floor-work subset (kneel/lie eligible; crawl/yoga 0 confirmed; sit_floor separate) | reproducible, documented | ☑ evidence: `results/E/splits.json`, `results/E/cohort_counts.json`, `results/E/floor_work_clips.csv`, `docs/ego_splits.md` |
+| E1b | Support-region contact labels v2 (E1b; foot channel unchanged) | frozen thresholds + rates JSON | ☑ evidence: `docs/contact_labels_v2.md` (commit `b9dd8ce`) |
+| E2-A | Oracle-evidence control + evidence schema + leak-proof observation simulator | `docs/ego_observation_model.md` + oracle path config | ☐ |
+| E2-B1 | Ego render set (virtual head camera; E1 splits; camera/appearance spec recorded) | render manifest + spec doc | ☐ |
+| E2-B2 | Perception baseline measurement (pretrained zero-shot; ~50 frames then VAL) | measurement table (not a gate) | ☐ |
+| E2-B3 | Train/adapt perception P-A / P-B / P-C (items 12–13 for P-A) | checkpoints under hready_data | ☐ |
+| E2-B4 | Select main-path model on VAL; emit schema evidence train/val/test | selection record + emitted schema | ☐ |
+| E3 | Completion baselines (heuristic, regression) — **oracle mode first** (control), then perceived after B4 | `results/E/` tables (oracle labeled control) | ☐ |
+| E4 | Generative prior on schema (visibility + confidence); trains on perceived evidence | logs/ckpts under hready_data | ☐ |
+| E5 | Eval command: perceived rows main; oracle control; perception-only row; decomposition; floor-work slice (kneel+lie) | `results/E/` + reliability plot | ☐ |
+| E5b | Real egocentric validation (dataset decision + download exception after first synthetic E5) | planned eval under `results/E/` | ☐ |
+| E6a | SMPL-X-skeleton humanoid asset; Newton acceptance (static pose ≥5 s) | `results/E/asset/` | ☐ |
+| E6 | PPO stage-S tracking trains on Newton | envs + wall-clock logged | ☐ |
+| E7 | Refinement arms none / K / S / K+S on reconstructed motion | `results/E/` | ☐ |
+| E8 | Qualitative: ego RGB, perceived evidence, GT vs completion vs physics; ≥1 kneel/lie clip | local mp4 (not in repo) | ☐ |
+| E9 | Claims: perception vs completion vs physics separate; oracle vs perceived separate; D2 labeling | claims map with commands | ☐ |
 
-**Integrity rules (apply to every E item).** Existing modules, commands and results keep working exactly as before (re-run the regression of §7 items 2–6). No fabricated, estimated or placeholder numbers; a result not run is "not run". Negative or weak results are reported as found. Scratch checks follow rule 5. No large data, checkpoints or renders in the repo. All seeds fixed and recorded.
+**Integrity rules (apply to every E item).** Existing modules, commands and results keep working exactly as before (re-run the regression of §7 items 2–5; item 6 when robot code changes). No fabricated, estimated or placeholder numbers; a result not run is "not run". Negative or weak results are reported as found. Scratch checks follow rule 5. No large data, checkpoints or renders in the repo. All seeds fixed and recorded.
