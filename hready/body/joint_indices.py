@@ -48,5 +48,28 @@ RIGHT_SHOULDER = JOINT_INDEX["right_shoulder"]
 
 UPPER_BODY_JOINTS: tuple[int, ...] = (3, 6, 9, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21)
 LOWER_BODY_JOINTS: tuple[int, ...] = (1, 2, 4, 5, 7, 8, 10, 11)
+# SMPL-X ``body_pose`` indices for leg articulation (leak tests).
+LEG_BODY_AA_INDICES: tuple[int, ...] = (0, 1, 3, 4, 6, 7, 9, 10)
 FEET_JOINTS: tuple[int, ...] = (7, 8, 10, 11)
 OBSERVED_BY_DESIGN_JOINTS: tuple[int, ...] = (15, 20, 21) + UPPER_BODY_JOINTS
+
+# SMPL-X FK ``joints`` layout (55 joints); eyes are not in the 22-joint keypoint table.
+SMPLX_LEFT_EYE = 23
+SMPLX_RIGHT_EYE = 24
+
+# Visibility / reporting groups (22-joint indices).
+JOINT_GROUP_HANDS: tuple[int, ...] = (20, 21)
+JOINT_GROUP_FOREARMS: tuple[int, ...] = (18, 19)
+JOINT_GROUP_TORSO: tuple[int, ...] = (0, 3, 6, 9, 12, 13, 14)
+JOINT_GROUP_THIGHS: tuple[int, ...] = (1, 2, 4, 5)
+JOINT_GROUP_SHINS: tuple[int, ...] = (7, 8)
+JOINT_GROUP_FEET: tuple[int, ...] = (10, 11)
+
+VISIBILITY_JOINT_GROUPS: dict[str, tuple[int, ...]] = {
+    "hands": JOINT_GROUP_HANDS,
+    "forearms": JOINT_GROUP_FOREARMS,
+    "torso": JOINT_GROUP_TORSO,
+    "thighs": JOINT_GROUP_THIGHS,
+    "shins": JOINT_GROUP_SHINS,
+    "feet": JOINT_GROUP_FEET,
+}

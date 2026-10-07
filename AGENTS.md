@@ -286,7 +286,7 @@ egocentric RGB/video (+ given head pose + gravity, v1)
 | E0 | Audit: what exists, what is reused, what conflicts | written, reviewed by user | ☑ evidence: `docs/e0_audit.md` |
 | E1 | Subject split + floor-work subset (kneel/lie eligible; crawl/yoga 0 confirmed; sit_floor separate) | reproducible, documented | ☑ evidence: `results/E/splits.json`, `results/E/cohort_counts.json`, `results/E/floor_work_clips.csv`, `docs/ego_splits.md` |
 | E1b | Support-region contact labels v2 (E1b; foot channel unchanged) | frozen thresholds + rates JSON | ☑ evidence: `docs/contact_labels_v2.md` (commit `b9dd8ce`) |
-| E2-A | Oracle-evidence control + evidence schema + leak-proof observation simulator | `docs/ego_observation_model.md` + oracle path config | ☐ |
+| E2-A | Oracle-evidence control + evidence schema + leak-proof observation simulator | `docs/ego_observation_model.md` + oracle path config | ☑ evidence: `docs/ego_observation_model.md`, `configs/ego_observation.yaml`, `hready/data/ego_observation.py`, `hready/models/ego_completion.py`, `hready/body/joint_indices.py` |
 | E2-B1 | Ego render set (virtual head camera; E1 splits; camera/appearance spec recorded) | render manifest + spec doc | ☐ |
 | E2-B2 | Perception baseline measurement (pretrained zero-shot; ~50 frames then VAL) | measurement table (not a gate) | ☐ |
 | E2-B3 | Train/adapt perception P-A / P-B / P-C (items 12–13 for P-A) | checkpoints under hready_data | ☐ |

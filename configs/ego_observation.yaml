@@ -1,0 +1,83 @@
+# Track E2-A oracle egocentric evidence (control path). Seeds recorded in docs/ego_observation_model.md.
+seed: 0
+paths_config: configs/paths.yaml
+floor_work_clips_csv: results/E/floor_work_clips.csv
+
+byte_stable_clip: CMU/132/132_35_stageii.npz
+leak_check_clip: CMU/132/132_35_stageii.npz
+
+loco_sample:
+  seed: 0
+  n_segments: 200
+  frame_stride: 4
+
+camera:
+  # Wide egocentric default (~2*atan(256/120) ≈ 130 deg horizontal at 512 px).
+  focal_px_default: 120
+  # FOV sweep for visibility report (assumption; not measured hardware).
+  focal_px_sweep:
+    - 200
+    - 350
+  img_size: [512, 512]
+  z_near: 0.1
+
+noise:
+  wrist_pos_std_m: 0.012
+  upper_body_pos_std_m: 0.008
+  leg_pos_std_m: 0.015
+  kp_noise_px: 2.0
+  joint_dropout_prob: 0.05
+  frame_dropout_prob: 0.02
+  confidence_visible: 0.92
+  confidence_hidden: 0.0
+
+occlusion:
+  torso_radius_m: 0.11
+  upper_arm_radius_m: 0.055
+
+visibility:
+  frame_stride: 8
+
+head_frame_check_clips:
+  walk:
+    - rel_path: CMU/132/132_35_stageii.npz
+      start_s: null
+      end_s: null
+    - rel_path: CMU/05/05_01_stageii.npz
+      start_s: null
+      end_s: null
+    - rel_path: CMU/08/08_01_stageii.npz
+      start_s: null
+      end_s: null
+  lie:
+    - rel_path: ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz
+      start_s: 0.0
+      end_s: 7.9
+    - rel_path: ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz
+      start_s: 3.877
+      end_s: 6.467
+  kneel:
+    - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz
+      start_s: 3.116
+      end_s: 5.608
+    - rel_path: Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz
+      start_s: 4.28
+      end_s: 7.472
+
+image_plane_floor_clips:
+  - rel_path: ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz
+    cohort: lie
+    start_s: 0.0
+    end_s: 7.9
+  - rel_path: ACCAD/Female1General_c3d/A8_-_crouch_to_lie_stageii.npz
+    cohort: lie
+    start_s: 3.877
+    end_s: 6.467
+  - rel_path: Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz
+    cohort: kneel
+    start_s: 3.116
+    end_s: 5.608
+  - rel_path: Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz
+    cohort: kneel
+    start_s: 4.28
+    end_s: 7.472

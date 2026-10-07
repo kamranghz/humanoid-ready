@@ -32,7 +32,7 @@ Vertices around the knee are **split by max-LBS assignment**: joint **4–5** �
 
 ## Floor calibration sensitivity
 
-Validation kneel clips (frozen production thresholds except grid overrides): **mean shin contact** at `h_on=0.05 m` is about **0.82** at `z_shift=0`, **0.16** at `+0.035 m`, and **0** at `+0.07 m` (see `sensitivity_validation_clips` in the rates JSON). **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
+Validation kneel clips (frozen production thresholds except grid overrides): at `h_on_m=0.05`, `z_shift_m=0`, `results/E/support_contact_v2_rates.json` → `sensitivity_validation_clips` entries with `cohort=kneel` report per-clip `contact_fraction.shins` **0.671** (`Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz`) and **1.0** (`Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz`); unweighted mean **≈ 0.836** (not the full kneel cohort). At `z_shift_m=0.035` on the aita clip, shins **0.329**; at `z_shift_m=0.07`, shins **0** on that clip. **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
 
 Sensitivity grid uses **synthetic `z_shift` only** at **0, +0.035, +0.07 m** (report-only; production **`z_shift=0`**).
 
