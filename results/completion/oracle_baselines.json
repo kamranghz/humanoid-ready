@@ -1,0 +1,35 @@
+{
+ "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+ "config": "configs/e3_oracle.yaml",
+ "seed": 0,
+ "eval_noise_seed": 1,
+ "clip_lists": {
+  "train_clip_list": {
+   "rule": "assign_split == train AND skate_flag == false AND subject not in splits.json tune.subject_ids",
+   "n_train_split": 13860,
+   "n_removed_skate_flag": 1069,
+   "n_removed_tune_subject": 482,
+   "n_tune_subjects": 19,
+   "n_clips": 12309,
+   "train_clip_list_sha256": "f48dc5735d59230c7bce73c1adc7ce3ee754351b975fc8b2b120ff9a0874f2c2"
+  },
+  "split_sha256": {
+   "recomputed_from_index": {
+    "train": "a3621dfbe0863558f0c1ed0ebd7b8c5af96533963ce3c9e80b9052093b459657",
+    "val": "19d97bd7cd23d2168627a17825721e102565394faf4616b5fcd2465ec4c7e957",
+    "test": "0ebd29fb002793b491d0d122c88e5171e8e96bf99961d2271a98a049f9f32832"
+   },
+   "splits_json": {
+    "test": "0ebd29fb002793b491d0d122c88e5171e8e96bf99961d2271a98a049f9f32832",
+    "train": "a3621dfbe0863558f0c1ed0ebd7b8c5af96533963ce3c9e80b9052093b459657",
+    "val": "19d97bd7cd23d2168627a17825721e102565394faf4616b5fcd2465ec4c7e957"
+   },
+   "docs_ego_splits_md": {
+    "train": "a3621dfbe0863558f0c1ed0ebd7b8c5af96533963ce3c9e80b9052093b459657",
+    "val": "19d97bd7cd23d2168627a17825721e102565394faf4616b5fcd2465ec4c7e957",
+    "test": "0ebd29fb002793b491d0d122c88e5171e8e96bf99961d2271a98a049f9f32832"
+   },
+   "match": true
+  }
+ }
+}

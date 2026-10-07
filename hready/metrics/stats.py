@@ -319,6 +319,30 @@ def auroc(scores: Any, labels: Any) -> float:
     return float(count / total)
 
 
+def expected_calibration_error(
+    probs: Any,
+    labels: Any,
+    *,
+    n_bins: int = 10,
+) -> float:
+    """Mean absolute calibration gap over bins (binary, flattened)."""
+    p = _to_numpy(probs).reshape(-1).astype(float)
+    y = _to_numpy(labels).reshape(-1).astype(bool)
+    if p.size == 0:
+        return float("nan")
+    bins = np.linspace(0.0, 1.0, n_bins + 1)
+    ece = 0.0
+    for i in range(n_bins):
+        lo, hi = bins[i], bins[i + 1]
+        mask = (p >= lo) & (p < hi if i < n_bins - 1 else p <= hi)
+        if not np.any(mask):
+            continue
+        acc = float(y[mask].mean())
+        conf = float(p[mask].mean())
+        ece += abs(acc - conf) * (mask.sum() / p.size)
+    return float(ece)
+
+
 def flag_precision_recall(
     flags: Any, bad: Any
 ) -> Tuple[float, float, float]:

@@ -788,18 +788,29 @@ def build_floor_cache(
     }
 
 
+_FLAGS_SIDECAR_MEM: dict[str, dict[str, Any]] = {}
+
+
 def _load_flags_sidecar(cache_dir: Path) -> dict[str, Any]:
+    key = str(cache_dir.resolve())
+    cached = _FLAGS_SIDECAR_MEM.get(key)
+    if cached is not None:
+        return cached
     path = _flags_path(cache_dir)
     if not path.is_file():
-        return {"version": 1, "entries": {}}
-    with path.open(encoding="utf-8") as f:
-        return json.load(f)
+        data: dict[str, Any] = {"version": 1, "entries": {}}
+    else:
+        with path.open(encoding="utf-8") as f:
+            data = json.load(f)
+    _FLAGS_SIDECAR_MEM[key] = data
+    return data
 
 
 def _save_flags_sidecar(cache_dir: Path, data: dict[str, Any]) -> None:
     cache_dir.mkdir(parents=True, exist_ok=True)
     with _flags_path(cache_dir).open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
+    _FLAGS_SIDECAR_MEM[str(cache_dir.resolve())] = data
 
 
 def _treadmill_name_flag(rel_path: str) -> bool:

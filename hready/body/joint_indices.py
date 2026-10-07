@@ -51,6 +51,8 @@ LOWER_BODY_JOINTS: tuple[int, ...] = (1, 2, 4, 5, 7, 8, 10, 11)
 # SMPL-X ``body_pose`` indices for leg articulation (leak tests).
 LEG_BODY_AA_INDICES: tuple[int, ...] = (0, 1, 3, 4, 6, 7, 9, 10)
 FEET_JOINTS: tuple[int, ...] = (7, 8, 10, 11)
+# Foot-contact channels (L heel, L toe, R heel, R toe) for E3 heuristic + metrics.
+FOOT_CONTACT_CHANNEL_JOINTS: tuple[int, ...] = (7, 10, 8, 11)
 OBSERVED_BY_DESIGN_JOINTS: tuple[int, ...] = (15, 20, 21) + UPPER_BODY_JOINTS
 
 # SMPL-X FK ``joints`` layout (55 joints); eyes are not in the 22-joint keypoint table.
