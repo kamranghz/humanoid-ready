@@ -788,29 +788,41 @@ def build_floor_cache(
     }
 
 
-_FLAGS_SIDECAR_MEM: dict[str, dict[str, Any]] = {}
+# Per-process memo of the flags sidecar, revalidated against the file's (mtime_ns, size) on every
+# read so a rewrite by another process (or a DataLoader worker) is never served stale.
+_FLAGS_SIDECAR_MEM: dict[str, tuple[tuple[int, int] | None, dict[str, Any]]] = {}
+
+
+def _file_stamp(path: Path) -> tuple[int, int] | None:
+    try:
+        st = path.stat()
+    except FileNotFoundError:
+        return None
+    return (st.st_mtime_ns, st.st_size)
 
 
 def _load_flags_sidecar(cache_dir: Path) -> dict[str, Any]:
-    key = str(cache_dir.resolve())
-    cached = _FLAGS_SIDECAR_MEM.get(key)
-    if cached is not None:
-        return cached
     path = _flags_path(cache_dir)
-    if not path.is_file():
+    key = str(path.resolve())
+    stamp = _file_stamp(path)
+    cached = _FLAGS_SIDECAR_MEM.get(key)
+    if cached is not None and cached[0] == stamp:
+        return cached[1]
+    if stamp is None:
         data: dict[str, Any] = {"version": 1, "entries": {}}
     else:
         with path.open(encoding="utf-8") as f:
             data = json.load(f)
-    _FLAGS_SIDECAR_MEM[key] = data
+    _FLAGS_SIDECAR_MEM[key] = (stamp, data)
     return data
 
 
 def _save_flags_sidecar(cache_dir: Path, data: dict[str, Any]) -> None:
     cache_dir.mkdir(parents=True, exist_ok=True)
-    with _flags_path(cache_dir).open("w", encoding="utf-8") as f:
+    path = _flags_path(cache_dir)
+    with path.open("w", encoding="utf-8") as f:
         json.dump(data, f, indent=2)
-    _FLAGS_SIDECAR_MEM[str(cache_dir.resolve())] = data
+    _FLAGS_SIDECAR_MEM[str(path.resolve())] = (_file_stamp(path), data)
 
 
 def _treadmill_name_flag(rel_path: str) -> bool:

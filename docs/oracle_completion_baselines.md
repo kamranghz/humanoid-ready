@@ -69,7 +69,7 @@ Training is step-based with a seeded, resumable window sampler; `last.pt` / `bes
 - Physical metrics for **both** baselines on the 22-joint FK feet (7, 10, 8, 11). A joint is not a contact point, so each channel height is the joint height minus its rest-pose joint-to-sole offset (neutral locked_head, item-5 sole clusters):
   - foot skate: horizontal channel speed (m/s) while the item-5 label marks that channel in contact;
   - penetration: mean / max depth below z = 0 of the channel heights (mm), all frames;
-  - ground consistency (`docs/e0_audit.md`): fraction of frames with any labelled in-contact channel whose |height| > τ, τ = `ground_consistency_tolerance_m` (0.04947).
+  - ground consistency (`docs/e0_audit.md`): fraction of frames with any labelled in-contact channel whose |height| > τ, τ = `ground_consistency_tolerance_m` (0.04947, primary); a sensitivity column uses `ground_consistency_tolerance_sensitivity_m` (0.04453, singly grounded heights; `docs/pivot_log.md` 2026-10-07).
   A `gt_reference` row applies the same proxies to GT joints, so the proxy error itself is visible.
 - Flags: `exclude_contact` removes a clip from contact metrics, skate and ground consistency; `exclude_physical_eval` removes it from all physical metrics. Clips lost to each flag are counted per cohort.
 - Cohorts (frozen E1 definitions, reused code): `all`; `ordinary_locomotion` (BABEL segments ≥ 1 s whose first matching E1 cohort is ordinary locomotion); `floor_work_eligible` (kneel + lie confirmed segments); `sit_floor` and `sit_support` (descriptive only).
@@ -81,4 +81,4 @@ On a VAL window whose lower body is fully hidden: (a) `forward` parameters are e
 
 ## Known issue (not changed in E3)
 
-The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The frozen τ in `docs/e0_audit.md` is used unchanged here; changing it needs a dated owner decision recorded in `docs/ego_splits.md`.
+The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The frozen τ in `docs/e0_audit.md` stays the primary; the E3 table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).

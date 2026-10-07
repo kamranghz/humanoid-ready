@@ -751,14 +751,14 @@ def _fmt(v: Any, nd: int = 1) -> str:
 def print_rows(ctx: Ctx, split: str, table: dict[str, Any]) -> None:
     hdr = (
         "split | baseline | cohort | clips | MPJPE full/upper/lower/foot mm | full vis/hid mm | "
-        "skate m/s | pen mm | GC viol | contact F1 | ECE | overlap mm | lost c/p | disclaimer"
+        "skate m/s | pen mm | GC viol (tau) | GC viol (tau sens.) | contact F1 | ECE | overlap mm | lost c/p | disclaimer"
     )
     print(hdr)
     for base, cohorts in table.items():
         for c, row in cohorts.items():
             if row.get("n_clips", 0) == 0:
                 print(
-                    f"{split} | {base} | {c} | 0 | no frames | | | | | | | | | {ctx.disclaimer}"
+                    f"{split} | {base} | {c} | 0 | no frames | | | | | | | | | | {ctx.disclaimer}"
                 )
                 continue
             m = row["metrics"]
@@ -777,6 +777,10 @@ def print_rows(ctx: Ctx, split: str, table: dict[str, Any]) -> None:
                         _fmt(m.get("foot_skate_m_s"), 3),
                         _fmt(m.get("penetration_mean_mm"), 2),
                         _fmt(m.get("ground_consistency_violation_frac"), 3),
+                        _fmt(
+                            m.get("ground_consistency_violation_frac_tau_sensitivity"),
+                            3,
+                        ),
                         _fmt(m.get("contact_f1"), 3),
                         _fmt(m.get("contact_ece"), 3),
                         _fmt(row.get("overlap_disagree_mm"), 2),
@@ -792,6 +796,7 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
     model, mmeta = load_trained(ctx)
     ev = ctx.cfg["eval"]
     tau = float(ev["ground_consistency_tolerance_m"])
+    tau_s = float(ev["ground_consistency_tolerance_sensitivity_m"])
     cohorts = list(ev["cohorts"])
     rels_all = sorted(set(ctx.lists["val"]) | set(ctx.lists["test"]))
     masks = CohortMasks(
@@ -804,6 +809,9 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
         "disclaimer": ctx.disclaimer,
         "model": mmeta,
         "ground_consistency_tolerance_m": tau,
+        "ground_consistency_tolerance_sensitivity_m": tau_s,
+        "tau_note": "primary tau = frozen 0.04947 (docs/e0_audit.md); sensitivity tau = single floor "
+        "grounding (docs/pivot_log.md 2026-10-07)",
         "splits": {},
     }
     t0 = time.perf_counter()
@@ -822,11 +830,21 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
                 m = masks.mask(rel, t_len, c)
                 for b in BASELINES:
                     accumulate_clip(
-                        accs[b][c], evs[b], m, sole_offsets=ctx.sole, tau_m=tau
+                        accs[b][c],
+                        evs[b],
+                        m,
+                        sole_offsets=ctx.sole,
+                        tau_m=tau,
+                        tau_sensitivity_m=tau_s,
                     )
                     if c == "floor_work_eligible":
                         accumulate_clip(
-                            floor_union[b], evs[b], m, sole_offsets=ctx.sole, tau_m=tau
+                            floor_union[b],
+                            evs[b],
+                            m,
+                            sole_offsets=ctx.sole,
+                            tau_m=tau,
+                            tau_sensitivity_m=tau_s,
                         )
         table = {
             b: {
@@ -859,6 +877,7 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
         "foot_skate_m_s",
         "penetration_mean_mm",
         "ground_consistency_violation_frac",
+        "ground_consistency_violation_frac_tau_sensitivity",
     )
     result["floor_work_eligible_val_union_test"] = {
         "label": "indicative",

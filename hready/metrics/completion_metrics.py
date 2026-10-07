@@ -116,9 +116,14 @@ def accumulate_clip(
     *,
     sole_offsets: np.ndarray,
     tau_m: float,
+    tau_sensitivity_m: float | None = None,
     fps: float = 30.0,
 ) -> bool:
-    """Add one clip's cohort frames. Returns False when the clip has no frames in the cohort."""
+    """Add one clip's cohort frames. Returns False when the clip has no frames in the cohort.
+
+    ``tau_m`` is the primary (frozen) tolerance; ``tau_sensitivity_m`` adds a second ground-consistency
+    column (``ground_consistency_violation_frac_tau_sensitivity``) with the same frames.
+    """
     m = np.asarray(frame_mask, dtype=bool)
     if not m.any():
         return False
@@ -176,6 +181,14 @@ def accumulate_clip(
             float(viol[frames].sum()),
             int(frames.sum()),
         )
+        if tau_sensitivity_m is not None:
+            viol_s = (cg & (np.abs(h) > tau_sensitivity_m)).any(axis=1)
+            acc._add(
+                subj,
+                "ground_consistency_violation_frac_tau_sensitivity",
+                float(viol_s[frames].sum()),
+                int(frames.sum()),
+            )
     return True
 
 

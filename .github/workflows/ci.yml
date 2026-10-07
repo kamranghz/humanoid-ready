@@ -21,3 +21,12 @@ jobs:
         run: pip install -e .
       - name: Import smoke check
         run: python -c "import hready"
+      - name: Ruff (pinned)
+        run: |
+          pip install ruff==0.16.10
+          # Whole repo: syntax errors and undefined names only (older modules predate the full rule set).
+          ruff check --select E9,F63,F7,F82 .
+          # Track E3 modules: full project rule set.
+          ruff check hready/data/e3_clips.py hready/data/e3_dataset.py hready/data/e3_heading.py \
+            hready/data/e3_motion_memmap.py hready/baselines hready/eval hready/metrics/e3_eval.py \
+            hready/models/ego_complete_motion.py hready/train/e3_oracle_engine.py
