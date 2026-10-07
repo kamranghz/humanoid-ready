@@ -26,7 +26,7 @@ Head 6-DoF for tables is derived from `(camera_R, camera_t)`; it is **not** dupl
 | `joint_pos_3d` | `(T, 22, 3)` | float32 | Noisy 3D joint estimates in **world** frame; zero where not visible. |
 | `joint_visible` | `(T, 22)` | bool | Visibility after FOV, `z_cam > z_near`, capsule self-occlusion, dropout. |
 | `joint_confidence` | `(T, 22)` | float32 | `confidence_visible` if visible else `confidence_hidden` (then masked by dropout). |
-| `keypoints_2d` | `(T, 22, 3)` | float32 | Optional normalized `(nx, ny, conf)` from head camera via `project_joints`; conf zero if not visible. |
+| `keypoints_2d` | `(T, 22, 3)` | float32 | Normalized `(nx, ny, conf)` from `project_joints_egocentric` (bitmap `ny`, conf zero if not visible). |
 
 Joint order: `hready.body.joint_indices.JOINT_NAMES_22`.
 
@@ -45,10 +45,10 @@ From 55-joint positions:
 - `cam_pos = 0.5 * (j23 + j24)`
 - `right = normalize(j24 - j23)`
 - `up = orthogonalize(j15 - j12, right)`
-- `forward_geom = right × up` (`numpy.cross(right, up)`)
-- `R = stack([right, up, -forward_geom])`, `t = -R @ cam_pos`
+- `forward = right × up` (`numpy.cross(right, up)`)
+- `R = stack([right, up, -forward])`, `t = -R @ cam_pos` (**`det(R) ≈ -1`**, same pinhole as HR-Refine’s `project_joints` input)
 
-**Look axis (shared with walking checks and `project_joints`):** third row of `R`. For a world point `p`, `z_cam = (p @ R.T + t).z`; points in front of the camera have `z_cam > z_near` along this axis.
+**Bitmap convention (E2-A only):** after `project_joints`, **`ny ← -ny`** (equivalently `v_bitmap = 2·cy − v_pinhole`). Row 0 of `R` → **+u** (right); row 2 → **+z_cam** (look); bitmap row 0 is top, **+v down**.
 
 Does not use world gravity; supports lying / face-down poses.
 
@@ -68,6 +68,7 @@ Does not use world gravity; supports lying / face-down poses.
 **Pinhole limitation at default FOV:** the head-mounted camera sees mostly the lower visual field (hands, forearms, legs when visible). **Torso keypoints are almost never visible** at the default FOV (cohort `all` torso visibility ≈ 0.004 at `focal_px=120`, `stride=8` in the visibility report) because spine/collar joints sit behind the head and outside the wide-but downward-centered cone.
 
 - In-image: `|nx|, |ny| ≤ 1`; depth gate `z_cam > 0.1` (projection uses `z` clamp `min=0.05` in denominator only).
+- **E2-B renderer contract:** raster with `camera_R`/`camera_t` from `head_frame_from_joints` and the E2-A bitmap rule above (`ny` flipped vs raw `project_joints`); `keypoints_2d` in emitted evidence use the flipped `nx, ny`.
 
 ## Visibility phase 1
 

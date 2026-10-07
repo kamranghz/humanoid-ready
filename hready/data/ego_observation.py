@@ -155,7 +155,7 @@ def occlusion_config_from_dict(data: dict[str, Any] | None) -> OcclusionCapsuleC
 def camera_look_axis(camera_R: Tensor) -> Tensor:
     """Unit look direction shared with ``project_joints``: positive ``z_cam`` ⇔ ``(p-cam)·look > 0``.
 
-    With ``R`` rows ``[right, up, -forward_geom]``, ``look`` is the third row (``-forward_geom``).
+    With E2-A ``R`` rows ``[right, up, -forward_geom]``, ``look`` is the third row (before optional ``ny`` flip).
     """
     look = camera_R[..., 2, :]
     return look / (torch.linalg.norm(look, dim=-1, keepdim=True) + 1e-8)
@@ -173,7 +173,10 @@ def head_frame_from_joints(
     neck: int = NECK,
     head: int = HEAD,
 ) -> tuple[Tensor, Tensor, Tensor]:
-    """Per-frame head camera: R rows [right, up, -forward]; t = -R @ cam_pos (no gravity)."""
+    """Per-frame head camera: R rows [right, up, -forward]; t = -R @ cam_pos (no gravity).
+
+    ``project_joints`` is called with this ``R``; E2-A then flips ``ny`` so bitmap +v is down.
+    """
     le = joints_55[..., left_eye, :]
     re = joints_55[..., right_eye, :]
     cam_pos = 0.5 * (le + re)
@@ -270,7 +273,14 @@ def project_joints_egocentric(
         noise_std_px=noise_std_px,
         rng=rng,
     )
-    return kp.squeeze(1)
+    kp = kp.squeeze(1).clone()
+    kp[..., 1] = -kp[..., 1]
+    return kp
+
+
+def pinhole_uv_to_bitmap(u: float, v: float, img_size: tuple[int, int]) -> tuple[float, float]:
+    """Map raw ``project_joints`` pixel coords to E2-A bitmap (row 0 top, +v down)."""
+    return u, float(2.0 * (img_size[1] * 0.5) - v)
 
 
 def base_visibility_from_keypoints(kp: Tensor, z_near: float) -> Tensor:
@@ -535,6 +545,8 @@ def _project_world_point_to_uv(
     z = xc[:, 2]
     u = focal_px * xc[:, 0] / np.clip(z, 0.05, None) + img_size[0] * 0.5
     v = focal_px * xc[:, 1] / np.clip(z, 0.05, None) + img_size[1] * 0.5
+    cy = img_size[1] * 0.5
+    v = 2.0 * cy - v
     return u, v, z
 
 
@@ -666,8 +678,7 @@ def cmd_verify_facts() -> None:
         "SMPL-X eye joint names: left_eye_smplhf / right_eye_smplhf (indices 23, 24)."
     )
     lines.append(
-        "Look axis = third row of R (positive z_cam in project_joints); forward_geom = cross(right, up); "
-        "R third row = -forward_geom."
+        "Look axis = third row of R; E2-A ny flip after project_joints for bitmap +v down."
     )
     print("\n".join(lines))
 
@@ -687,10 +698,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
         "conf = (z_cam > z_near). Look axis (world): third row of R (positive z_cam); "
         "walking check uses the same third row."
     )
-    print(
-        "det(R) = -1 is expected for R rows [right, up, -cross(right,up)] (matches project_joints, "
-        "not a proper SO(3) rotation but consistent pinhole z)."
-    )
+    print("E2-A: R rows [right, up, -forward], det(R)≈-1; keypoints ny flipped for bitmap.")
     sample_R, _, _ = head_frame_from_joints(torch.as_tensor(_fk_clip_dict(
         _load_segment_clip(_entry_by_rel(load_index(), cfg["head_frame_check_clips"]["walk"][0]["rel_path"]), None, None),
         body,
