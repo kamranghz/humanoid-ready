@@ -79,6 +79,16 @@ Training is step-based with a seeded, resumable window sampler; `last.pt` / `bes
 
 On a VAL window whose lower body is fully hidden: (a) `forward` parameters are exactly `obs, rig`; (b) leg rotations of the GT are perturbed and the evidence regenerated. Hidden slots of the raw evidence then differ (negative control: they do carry GT-dependent 2D projections), and the visible joints move slightly because joints are regressed from the posed mesh. The leak criterion: replacing only the hidden slots (from the perturbed evidence, or random values) must leave the model output bit-identical. (c) Positive control: moving one visible joint by 5 cm changes the output. (d) Negative controls: `targets=` / `init_body_aa=` keyword arguments, GT keys in `obs`, target keys in `rig`, and a missing rig must all be rejected.
 
+## Findings (oracle control; from `results/E/e3_oracle_run.json`)
+
+All numbers are pooled over VAL `all` (2223 clips) unless stated; disclaimer: oracle control; floor height given (world z = 0); head pose and gravity given (D1).
+
+- **Learned visible joints are not reproduced.** Learned visible-joint MPJPE is 59.5 mm vs 20.3 mm for the heuristic, which copies the evidence (hidden: 67.4 vs 153.5 mm; full: 66.7 vs 141.3 mm).
+- **Learned physical plausibility is worse than GT.** Learned vs `gt_reference`: penetration 5.98 vs 0.00 mm, ground-consistency violation 0.426 vs 0.169 (τ = 0.04947; 0.492 vs 0.263 at the 0.04453 sensitivity τ), foot skate 0.202 vs 0.027 m/s. TEST penetration is 16.88 mm.
+- **floor_work_eligible is indicative only:** 11 VAL clips and 2 TEST clips.
+- **Ground consistency is unreliable on floor work:** `gt_reference` scores 0.884 on VAL `floor_work_eligible`, i.e. the joint sole proxy does not represent kneeling/lying contact.
+- **Likely under-trained:** the best VAL selection metric (63.11 mm) is at the last step (40000 of 40000), and it was still decreasing.
+
 ## Known issue (not changed in E3)
 
 The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The frozen τ in `docs/e0_audit.md` stays the primary; the E3 table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).
