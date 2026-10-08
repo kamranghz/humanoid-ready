@@ -294,7 +294,7 @@ egocentric RGB/video (+ given head pose + gravity, v1)
 | E2-B3 | Train/adapt perception P-A / P-B / P-C (items 12–13 for P-A) | checkpoints under hready_data | ☐ |
 | E2-B4 | Select main-path model on VAL; emit schema evidence train/val/test | selection record + emitted schema | ☐ |
 | E3 | Completion baselines (heuristic, regression) — **oracle mode first** (control), then perceived after B4 | `results/E/` tables (oracle labeled control) | ☑ oracle mode, evidence: `results/E/e3_oracle_run.json` (VAL+TEST tables, heuristic check, leak check; commit `72d5c38`), `docs/e3_oracle.md`. Perceived mode after E2-B4: ☐ |
-| E4 | Generative prior on schema (visibility + confidence); trains on perceived evidence | logs/ckpts under hready_data | ☐ |
+| E4 | Generative prior on schema (visibility + confidence); trains on perceived evidence | logs/ckpts under hready_data | ☐ attempt 1: acceptance not met, see docs/e4_completion.md |
 | E5 | Eval command: perceived rows main; oracle control; perception-only row; decomposition; floor-work slice (kneel+lie) | `results/E/` + reliability plot | ☐ |
 | E5b | Real egocentric validation (dataset decision + download exception after first synthetic E5) | planned eval under `results/E/` | ☐ |
 | E6a | SMPL-X-skeleton humanoid asset; Newton acceptance (static pose ≥5 s) | `results/E/asset/` | ☐ |
