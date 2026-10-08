@@ -1,0 +1,120 @@
+# Track E4-v2 — post-hoc design after E4-v1 VAL results (docs/e4_v2_plan.md). Frozen 2026-10-08,
+# before any v2 run. Arms, hyperparameters, budgets and the decision rule must not change after
+# any v2 result is seen. configs/e4_completion.yaml (v1) stays untouched.
+version: e4_v2
+frozen_on: "2026-10-08"
+e3_config: configs/e3_oracle.yaml
+seed: 0
+
+disclaimer: >-
+  oracle control; floor height given (world z = 0); head pose and gravity given (D1)
+
+occlusion_cache:          # shared with v1 (bit-identical to the E3 evidence path)
+  rel_dir: e4_occlusion_30hz
+  verify_n_clips: 40
+  verify_n_train_items: 64
+
+# Base = E4-v1 values (model, lock, loss weights, optimiser), deterministic decoder.
+base:
+  model:
+    d_model: 256
+    n_heads: 8
+    n_layers: 4
+    dec_layers: 4
+    post_layers: 2
+    ff_dim: 1024
+    dropout: 0.1
+    max_len: 64
+    latent_dim: 32
+    generative: false
+  lock:
+    sigma_frames: 1.5
+    radius_frames: 4
+    kappa: 0.05
+  loss:
+    w_geodesic: 1.0
+    w_transl: 1.0
+    w_joints: 2.0
+    w_contact: 0.3
+    beta_kl: 0.001
+    w_phys: 0.0
+    phys_terms:
+      penetration: 100.0
+      skate: 1.0
+      balance: 1.0
+      balance_frames_per_step: 16
+  train:
+    batch_size: 64
+    lr: 4.0e-4
+    weight_decay: 0.01
+    warmup_steps: 2000
+    grad_clip: 1.0
+    bf16: true
+    num_workers: 16
+    log_every: 500
+    val_every: 5000
+    max_steps: 40000      # = E3 budget, same protocol (12309 clips, windows 64/32, seed 0, E3 sampler)
+
+# Arms trained fresh under this config (amended 2026-10-08, before any full run).
+# One configuration each; no sweep, no retune after results.
+arms:
+  det_w0:                 # deterministic + evidence lock, w_phys 0 (eligible; v1 setting retrained)
+    loss: {w_phys: 0.0}
+  det_wphys0p3:           # deterministic + evidence lock, w_phys 0.3
+    loss: {w_phys: 0.3}
+  det_wphys1p0:           # deterministic + evidence lock, w_phys 1.0
+    loss: {w_phys: 1.0}
+  gen_stab:               # stabilised generative arm + evidence lock, w_phys 0
+    model:
+      generative: true
+      latent_mode: window   # one latent per window (v1: per frame)
+      logvar_min: -4.0      # v1: -8.0
+      free_bits: 0.1        # nats per latent dimension (v1: none)
+    train:
+      lr: 1.0e-4            # v1: 4.0e-4
+      grad_clip: 0.5        # v1: 1.0
+      skip_nonfinite: true  # skip and log steps with non-finite loss or gradient norm
+
+# Reference row: v1 deterministic checkpoint (w_phys 0), reused without retraining.
+anchor:
+  name: v1_det_wphys0
+  checkpoint: checkpoints/e4/deterministic/best.pt   # under data_root
+  label: v1 anchor, post-hoc selected, not eligible, no TEST
+  eligible: false         # reported on VAL only; never selected; never evaluated on TEST
+
+decision_rule:
+  frozen_on: "2026-10-08"
+  amended_on: "2026-10-08"   # det_w0 added as eligible arm; before any full v2 run
+  checkpoint_selection: VAL only; per arm, best E3 selection metric (mean pooled MPJPE over VAL all + ordinary_locomotion, 200 seeded clips)
+  candidates: [det_w0, det_wphys0p3, det_wphys1p0, gen_stab]
+  comparison:
+    split: val
+    cohort: all
+    reference: e3_learned   # E3 checkpoint, same clips and evidence
+    method: paired subject-cluster bootstrap; per draw, subjects resampled with replacement and both models pooled over the same clips; statistic = pooled(arm) - pooled(e3)
+    n_boot: 2000
+    seed: 0
+    interval: two-sided 95% percentile interval; "upper bound" = its 97.5th percentile
+  gates:                  # an arm passes only if every gate holds
+    mpjpe_full_hidden_mm: {upper_bound_lt: 0.0}                 # hidden MPJPE must improve
+    mpjpe_full_all_mm: {upper_bound_lt: 0.0}                    # full MPJPE must improve (conservative decision)
+    penetration_mean_mm: {upper_bound_le_frac_of_e3: 0.05}      # penetration <= E3 + 5%
+    foot_skate_m_s: {upper_bound_le_frac_of_e3: 0.05}           # skate <= E3 + 5%
+    contact_ece: {upper_bound_le_frac_of_e3: 0.05}              # contact ECE <= E3 + 5%
+  reported_not_gating:    # report-only
+    - ground_consistency_violation_frac            # GC is NOT a gate (pivot_log 2026-10-07 tau issue; gt_reference 0.884 on VAL floor_work_eligible)
+    - ground_consistency_violation_frac_tau_sensitivity
+    - mpjpe_full_visible_mm
+    - contact_f1
+  select_among_passing: lowest VAL mpjpe_full_hidden_mm; tie -> lower VAL penetration_mean_mm
+  if_none_pass: E4-v2 fails and is reported as failed; TEST is not evaluated
+  test: evaluated once at the end, for the selected arm and e3_learned only; never used for any choice
+
+preflight:
+  overfit_steps: 300
+  resume_steps: 20
+  benchmark_steps: 100
+
+paths:
+  results_json: results/E/e4_v2_run.json
+  checkpoint_root: checkpoints/e4_v2   # under data_root

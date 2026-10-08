@@ -1,0 +1,239 @@
+{
+ "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+ "config": "configs/e4_v2_completion.yaml",
+ "seed": 0,
+ "verify_occ": {
+  "eval_clips_checked": 40,
+  "eval_frames_checked": 16254,
+  "eval_bit_identical": true,
+  "train_items_checked": 64,
+  "train_bit_identical": true,
+  "pass": true,
+  "mismatches": []
+ },
+ "preflight": {
+  "verify_occ": {
+   "eval_clips_checked": 40,
+   "eval_frames_checked": 16254,
+   "eval_bit_identical": true,
+   "train_items_checked": 64,
+   "train_bit_identical": true,
+   "pass": true,
+   "mismatches": []
+  },
+  "det_w0": {
+   "n_train_windows": 133316,
+   "overfit_first": {
+    "loss": 6.566711902618408,
+    "joints_m": 1.019476294517517,
+    "kl_nats": 0.0
+   },
+   "overfit_last": {
+    "loss": 0.6896001100540161,
+    "joints_m": 0.09734812378883362,
+    "kl_nats": 0.0
+   },
+   "resume_max_param_diff": 0.0,
+   "leak_check_pass": true,
+   "leak_check": {
+    "model": {
+     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_w0/preflight.pt",
+     "step": 300,
+     "best_selection_metric": null
+    },
+    "window": {
+     "rel_path": "Eyes_Japan_Dataset/kaiwa/throw_toss-12-dart-kaiwa_stageii.npz",
+     "start": 507,
+     "length": 64,
+     "all_lower_body_hidden": true
+    },
+    "forward_parameters": [
+     "obs",
+     "rig"
+    ],
+    "a_signature_obs_rig_only": true,
+    "b_negative_control_raw_hidden_keypoints_2d_max_abs_diff": 11.730012893676758,
+    "b_hidden_slots_from_perturbed_gt_output_max_abs_diff": 0.0,
+    "b_hidden_slots_random_output_max_abs_diff": 0.0,
+    "b_output_bit_identical": true,
+    "c_positive_control_visible_joint_5cm_output_diff": 0.019645273685455322,
+    "d_negative_controls": {
+     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
+     "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
+     "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
+     "rig_missing_head_pose": "rejected: ValueError: rig is mandatory; missing keys: ['head_pos_world']",
+     "rig_missing_gravity": "rejected: ValueError: rig is mandatory; missing keys: ['gravity_world']"
+    },
+    "note": "outputs compared: transl, rotations, contact logits and evidence-locked joints",
+    "pass": true
+   },
+   "s_per_step": 0.08945989700034261,
+   "steps_per_s": 11.178193062263086,
+   "selection_eval_s": 25.024803399981465,
+   "hours_total_estimate": 1.0496095297815433
+  },
+  "det_wphys0p3": {
+   "n_train_windows": 133316,
+   "overfit_first": {
+    "loss": 46.683353424072266,
+    "joints_m": 1.019476294517517,
+    "kl_nats": 0.0
+   },
+   "overfit_last": {
+    "loss": 1.0128653049468994,
+    "joints_m": 0.11964638531208038,
+    "kl_nats": 0.0
+   },
+   "resume_max_param_diff": 0.0,
+   "leak_check_pass": true,
+   "leak_check": {
+    "model": {
+     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys0p3/preflight.pt",
+     "step": 300,
+     "best_selection_metric": null
+    },
+    "window": {
+     "rel_path": "Eyes_Japan_Dataset/kaiwa/throw_toss-12-dart-kaiwa_stageii.npz",
+     "start": 507,
+     "length": 64,
+     "all_lower_body_hidden": true
+    },
+    "forward_parameters": [
+     "obs",
+     "rig"
+    ],
+    "a_signature_obs_rig_only": true,
+    "b_negative_control_raw_hidden_keypoints_2d_max_abs_diff": 11.730012893676758,
+    "b_hidden_slots_from_perturbed_gt_output_max_abs_diff": 0.0,
+    "b_hidden_slots_random_output_max_abs_diff": 0.0,
+    "b_output_bit_identical": true,
+    "c_positive_control_visible_joint_5cm_output_diff": 0.01956808567047119,
+    "d_negative_controls": {
+     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
+     "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
+     "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
+     "rig_missing_head_pose": "rejected: ValueError: rig is mandatory; missing keys: ['head_pos_world']",
+     "rig_missing_gravity": "rejected: ValueError: rig is mandatory; missing keys: ['gravity_world']"
+    },
+    "note": "outputs compared: transl, rotations, contact logits and evidence-locked joints",
+    "pass": true
+   },
+   "s_per_step": 0.19497002999996765,
+   "steps_per_s": 5.1289934150400756,
+   "selection_eval_s": 12.691849800001364,
+   "hours_total_estimate": 2.194537777332977
+  },
+  "det_wphys1p0": {
+   "n_train_windows": 133316,
+   "overfit_first": {
+    "loss": 140.28884887695312,
+    "joints_m": 1.019476294517517,
+    "kl_nats": 0.0
+   },
+   "overfit_last": {
+    "loss": 1.1823534965515137,
+    "joints_m": 0.09730123728513718,
+    "kl_nats": 0.0
+   },
+   "resume_max_param_diff": 0.0,
+   "leak_check_pass": true,
+   "leak_check": {
+    "model": {
+     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys1p0/preflight.pt",
+     "step": 300,
+     "best_selection_metric": null
+    },
+    "window": {
+     "rel_path": "Eyes_Japan_Dataset/kaiwa/throw_toss-12-dart-kaiwa_stageii.npz",
+     "start": 507,
+     "length": 64,
+     "all_lower_body_hidden": true
+    },
+    "forward_parameters": [
+     "obs",
+     "rig"
+    ],
+    "a_signature_obs_rig_only": true,
+    "b_negative_control_raw_hidden_keypoints_2d_max_abs_diff": 11.730012893676758,
+    "b_hidden_slots_from_perturbed_gt_output_max_abs_diff": 0.0,
+    "b_hidden_slots_random_output_max_abs_diff": 0.0,
+    "b_output_bit_identical": true,
+    "c_positive_control_visible_joint_5cm_output_diff": 0.019522279500961304,
+    "d_negative_controls": {
+     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
+     "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
+     "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
+     "rig_missing_head_pose": "rejected: ValueError: rig is mandatory; missing keys: ['head_pos_world']",
+     "rig_missing_gravity": "rejected: ValueError: rig is mandatory; missing keys: ['gravity_world']"
+    },
+    "note": "outputs compared: transl, rotations, contact logits and evidence-locked joints",
+    "pass": true
+   },
+   "s_per_step": 0.1978277980000712,
+   "steps_per_s": 5.054901333935083,
+   "selection_eval_s": 12.858759000024293,
+   "hours_total_estimate": 2.2266616644452895
+  },
+  "gen_stab": {
+   "n_train_windows": 133316,
+   "overfit_first": {
+    "loss": 6.670257091522217,
+    "joints_m": 1.112766981124878,
+    "kl_nats": 24.87616729736328
+   },
+   "overfit_last": {
+    "loss": 0.7325184345245361,
+    "joints_m": 0.09791961312294006,
+    "kl_nats": 7.376926422119141
+   },
+   "resume_max_param_diff": 0.0,
+   "leak_check_pass": true,
+   "leak_check": {
+    "model": {
+     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/gen_stab/preflight.pt",
+     "step": 300,
+     "best_selection_metric": null
+    },
+    "window": {
+     "rel_path": "Eyes_Japan_Dataset/kaiwa/throw_toss-12-dart-kaiwa_stageii.npz",
+     "start": 507,
+     "length": 64,
+     "all_lower_body_hidden": true
+    },
+    "forward_parameters": [
+     "obs",
+     "rig"
+    ],
+    "a_signature_obs_rig_only": true,
+    "b_negative_control_raw_hidden_keypoints_2d_max_abs_diff": 11.730012893676758,
+    "b_hidden_slots_from_perturbed_gt_output_max_abs_diff": 0.0,
+    "b_hidden_slots_random_output_max_abs_diff": 0.0,
+    "b_output_bit_identical": true,
+    "c_positive_control_visible_joint_5cm_output_diff": 0.019579574465751648,
+    "d_negative_controls": {
+     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
+     "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
+     "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
+     "rig_missing_head_pose": "rejected: ValueError: rig is mandatory; missing keys: ['head_pos_world']",
+     "rig_missing_gravity": "rejected: ValueError: rig is mandatory; missing keys: ['gravity_world']"
+    },
+    "note": "outputs compared: transl, rotations, contact logits and evidence-locked joints",
+    "pass": true
+   },
+   "s_per_step": 0.10163540599984117,
+   "steps_per_s": 9.839090916816556,
+   "selection_eval_s": 7.449797000037506,
+   "hours_total_estimate": 1.145837393331652
+  },
+  "hours_total_estimate_all_arms": 6.616646364891462,
+  "nonfinite_steps_seen": []
+ }
+}
