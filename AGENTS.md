@@ -46,6 +46,16 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 6. Blocked > 2 h → use the work package's fallback and log it in `docs/pivot_log.md` (it also records how the plan changed).
 7. Small scale is fine. State the scale honestly (e.g. "trained on 2 BEDLAM scenes").
 
+### 2a. Naming rules
+
+1. Names (files, modules, classes, config keys, result folders, CLI entry points, external cache and checkpoint folders) describe what the thing does. No step, attempt, version or track letters/numbers in any name (the old codes are listed only in the old-name column of `docs/experiments.md`).
+2. Each new experiment gets a descriptive name and one row in `docs/experiments.md` (new name, what it is, date). Old codes are never reintroduced.
+3. No version suffixes in file names; a newer result replaces the older one and git keeps the history.
+4. External cache/checkpoint folders on the data root use the same name as the config and code that reference them.
+5. Text uses "pre-registered" or "recorded", never the wording these replaced (listed in `docs/experiments.md`).
+6. A rename is its own commit with a string-only proof (masked text, numeric tokens, structure) and the model-output fingerprint check; renames are never mixed with logic changes.
+7. No employer-specific or application-process wording anywhere in the repository or its history.
+
 ---
 
 ### 2b. Environment decision (environment setup, Oct 1 2026)

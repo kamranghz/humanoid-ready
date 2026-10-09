@@ -115,6 +115,7 @@ Checklist item numbers (item 1 … item 20b) are kept; only the letter sub-steps
 | robot module (deferred) | Module B |
 | head-frame checks: camera convention, walking look, image plane, face-forward | review 1a, 1b, 1c, 1d |
 | split correction | P1c |
+| wording "pre-registered" / "recorded" | "frozen" / "freeze" (replaced everywhere; see `AGENTS.md` §2a rule 5) |
 
 The robot smoke-test metric files (`results/robot_smoke_test/*/metrics_*.json`) later had one note string edited
 (`6C` and `pass3` labels in the `time_to_fall_s` description and the `initial_root_velocity_convention` value); no
