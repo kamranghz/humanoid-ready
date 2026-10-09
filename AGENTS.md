@@ -165,6 +165,8 @@ humanoid-ready/
 
 ## 6. Paper track — CVPR 2027 (registration Nov 10, submission Nov 16, 2026, AoE)
 
+> **ON HOLD (2026-10-09).** Paper work is paused; the Track E checklist in §8 drives the work. This section and its checklist are kept unchanged for history. The paper direction will be decided after the literature check listed in §8 (pending decisions).
+
 The paper is written from the same code and results as the work packages. It does **not** need every checklist item.
 
 **Working title:** *Is Humanoid Executability a Reliable Benchmark for Human Motion Recovery?*
@@ -249,6 +251,8 @@ torque and robot clauses; 12–13 cover perception pretraining (E2-B3 prerequisi
 
 **Status:** active (Oct 4, 2026). **No G1** on this path (items 6/11 remain downstream).
 
+**Decision record (2026-10-09): switch from oracle evidence to realistic observations.** E3/E4 were developed and judged on oracle evidence (visible-joint 3D positions with small Gaussian noise, exact head pose, gravity and floor height). That path stays as a labelled upper-bound control, as defined in `docs/project_definition.md` (E2-A, [C2]). The main path moves to realistic observations, as already specified by D2/D3/[C3]: 2D keypoints with confidence and visibility, head pose from SLAM-like tracking, gravity, and floor height estimated rather than given. E4 is closed as a completed oracle-evidence study (see its row below). No acceptance rule of a completed experiment is changed.
+
 **Authoritative spec:** `docs/project_definition.md` (binding decisions **D1–D4**, stage contracts, evidence schema, controls, Track E order). Summary chain:
 
 ```
@@ -289,18 +293,22 @@ egocentric RGB/video (+ given head pose + gravity, v1)
 | E1 | Subject split + floor-work subset (kneel/lie eligible; crawl/yoga 0 confirmed; sit_floor separate) | reproducible, documented | ☑ evidence: `results/E/splits.json`, `results/E/cohort_counts.json`, `results/E/floor_work_clips.csv`, `docs/ego_splits.md` |
 | E1b | Support-region contact labels v2 (E1b; foot channel unchanged) | frozen thresholds + rates JSON | ☑ evidence: `docs/contact_labels_v2.md` (commit `b9dd8ce`) |
 | E2-A | Oracle-evidence control + evidence schema + leak-proof observation simulator | `docs/ego_observation_model.md` + oracle path config | ☑ evidence: `docs/ego_observation_model.md`, `configs/ego_observation.yaml`, `hready/data/ego_observation.py`, `hready/models/ego_completion.py`, `hready/body/joint_indices.py` |
+| E2-C | Realistic observation model: 2D keypoints + confidence + visibility, head pose from SLAM-like tracking, estimated floor height; noise/visibility model calibrated from measured detector errors (synthetic first); uncertainty-weighted evidence lock; leak check for the new schema; design note written and dated before any training | design doc + leak check + frozen pre-registration (primary arm, decision set, seeds, noise-derived margins) | ☐ |
 | E2-B1 | Ego render set (virtual head camera; E1 splits; camera/appearance spec recorded) | render manifest + spec doc | ☐ |
 | E2-B2 | Perception baseline measurement (pretrained zero-shot; ~50 frames then VAL) | measurement table (not a gate) | ☐ |
 | E2-B3 | Train/adapt perception P-A / P-B / P-C (items 12–13 for P-A) | checkpoints under hready_data | ☐ |
 | E2-B4 | Select main-path model on VAL; emit schema evidence train/val/test | selection record + emitted schema | ☐ |
 | E3 | Completion baselines (heuristic, regression) — **oracle mode first** (control), then perceived after B4 | `results/E/` tables (oracle labeled control) | ☑ oracle mode, evidence: `results/E/e3_oracle_run.json` (VAL+TEST tables, heuristic check, leak check; commit `72d5c38`), `docs/e3_oracle.md`. Perceived mode after E2-B4: ☐ |
-| E4 | Generative prior on schema (visibility + confidence); trains on perceived evidence | logs/ckpts under hready_data | ☐ attempt 1: acceptance not met, see docs/e4_completion.md |
+| E4 | Generative prior on schema (visibility + confidence); trains on perceived evidence | logs/ckpts under hready_data | CLOSED as an oracle-evidence study (2026-10-09). Attempt 1: acceptance not met, `docs/e4_completion.md`. Attempt 2 (E4-v2, frozen in commit `8e0adc5`): no arm passed the frozen rule (deterministic `det_w0` passed 4 of 5 gates and missed the contact-ECE gate; TEST not evaluated), recorded in `results/E/e4_v2_run.json`, `docs/e4_v2_plan.md`. Training on realistic evidence continues under E2-C / E4b. ☐ |
+| E4b | Decoupled grounding: accuracy-trained completion + contact-conditioned minimal-displacement foot-ground stage (candidate kinematic refinement K, D4) + calibrated contact probabilities; contact metrics computed on the predicted mesh with the same definition as the labels; calibration metric and margin fixed from measured noise before training | dated pre-registration, then `results/E/` | ☐ |
 | E5 | Eval command: perceived rows main; oracle control; perception-only row; decomposition; floor-work slice (kneel+lie) | `results/E/` + reliability plot | ☐ |
-| E5b | Real egocentric validation (dataset decision + download exception after first synthetic E5) | planned eval under `results/E/` | ☐ |
+| E5b | Real egocentric validation (dataset decision + download exception; data access and a 2D-detector pilot may start in parallel with E2-C, after the owner's decision) | planned eval under `results/E/` | ☐ |
 | E6a | SMPL-X-skeleton humanoid asset; Newton acceptance (static pose ≥5 s) | `results/E/asset/` | ☐ |
 | E6 | PPO stage-S tracking trains on Newton | envs + wall-clock logged | ☐ |
 | E7 | Refinement arms none / K / S / K+S on reconstructed motion | `results/E/` | ☐ |
 | E8 | Qualitative: ego RGB, perceived evidence, GT vs completion vs physics; ≥1 kneel/lie clip | local mp4 (not in repo) | ☐ |
 | E9 | Claims: perception vs completion vs physics separate; oracle vs perceived separate; D2 labeling | claims map with commands | ☐ |
+
+**Pending decisions (2026-10-09).** (1) Literature check outcome: closest prior work and what remains different. (2) Real egocentric dataset choice, license, size and the download exception (§1 freeze stays until then). (3) Calibration metric for gating (Brier score vs debiased ECE) and how its margin is derived from measured noise. (4) Decision set: the 19 untouched tune subjects vs more data; AMASS VAL is a development set only. (5) Training-seed policy for compared arms. (6) Paper direction (§6 on hold).
 
 **Integrity rules (apply to every E item).** Existing modules, commands and results keep working exactly as before (re-run the regression of §7 items 2–5; item 6 when robot code changes). No fabricated, estimated or placeholder numbers; a result not run is "not run". Negative or weak results are reported as found. Scratch checks follow rule 5. No large data, checkpoints or renders in the repo. All seeds fixed and recorded.
