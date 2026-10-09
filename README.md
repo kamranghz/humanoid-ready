@@ -43,7 +43,7 @@ All results below are an **oracle control**: the body evidence is simulated from
 - The learned model's best checkpoint was its last (step 40000 of 40000), so it is likely under-trained.
 - Floor-work results (kneel and lie) rest on 11 validation and 2 test clips and are indicative only. The ground-consistency metric is unreliable there: the ground truth itself scores 0.884.
 
-**Improved completion model, attempt 1 — did not meet its acceptance criteria** (`results/completion/evidence_locked_ablation.json`, `docs/evidence_locked_ablation.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The attempt is documented as failed.
+**Evidence-locked completion, ablation study — did not meet its acceptance criteria** (`results/completion/evidence_locked_ablation.json`, `docs/evidence_locked_ablation.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The study is documented as failed.
 
 **Evidence-locked completion, pre-registered comparison — did not pass its pre-registered rule** (`results/completion/evidence_locked_preregistered_comparison.json`, `docs/evidence_locked_preregistered_comparison.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/evidence_locked_preregistered_comparison.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/evidence_locked_preregistered_comparison.md` states explicitly.
 
@@ -73,11 +73,11 @@ hready/            Python package
   models/          completion and refinement models
   baselines/       heuristic completion baseline
   train/           training engines (DDP code path implemented, not yet tested on multiple GPUs)
-  eval/            evaluation CLIs for the completion experiments
+  experiments/     experiment CLIs for the completion studies
   robot/           humanoid retargeting and simulation smoke test
-configs/           experiment configs (paths.example.yaml is the template for local paths)
-docs/              design notes, data issues, decision and pivot logs
-results/           result files produced by the scripts (numbers above come from here)
+configs/           experiment configs (index: configs/README.md; paths.example.yaml is the template for local paths)
+docs/              design notes, data issues, decision and pivot logs (index: docs/README.md; experiment registry: docs/experiments.md)
+results/           result files produced by the scripts (index: results/README.md; numbers above come from here)
 scripts/           small inspection utilities
 ```
 

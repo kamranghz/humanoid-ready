@@ -265,7 +265,7 @@ def w_mpjpe(
     ``segment_length=None`` evaluates the **whole** sequence (not paper-default).
     Use ``segment_length=100`` for paper-comparable W-MPJPE. These definitions have
     not been validated against published EMDB numbers; that check is planned in
-    checklist item **R4**.
+    the paper's **method runs** task.
     """
     pred = _to_numpy(pred)
     gt = _to_numpy(gt)
@@ -309,7 +309,8 @@ def wa_mpjpe(
 
     Papers report **WA-MPJPE100** on **100-frame** segments; ``segment_length=None``
     uses the full sequence. Set ``segment_length=100`` for paper-comparable WA-MPJPE.
-    Not yet cross-checked against published results (planned **R4**).
+    Not yet cross-checked against published results (planned in the paper's
+    method runs).
     """
     pred = _to_numpy(pred)
     gt = _to_numpy(gt)
@@ -369,7 +370,8 @@ def rte(
     per-frame percentages ``(T,)`` or ``(..., T)``.
 
     Reported on the **full** trajectory in WHAM/GVHMR EMDB evaluation (not
-    chunked like W/WA-MPJPE). Not yet validated against published RTE (planned **R4**).
+    chunked like W/WA-MPJPE). Not yet validated against published RTE (planned in the
+    paper's method runs).
     """
     pred = _to_numpy(pred_root).astype(np.float64)
     gt = _to_numpy(gt_root).astype(np.float64)

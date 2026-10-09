@@ -84,4 +84,4 @@ Validation per-frame lines use **full-segment** hysteresis masks sliced per fram
 
 ## Regression
 
-`contact.py` unchanged; `contact_mism=0` vs `27cc2da` on 300 `foot_traj` clips (seed 0), recorded in rates JSON when `--report` runs.
+`contact.py` unchanged; `contact_mism=0` vs the earlier reference version of `contact.py` on 300 `foot_traj` clips (seed 0), recorded in rates JSON when `--report` runs.

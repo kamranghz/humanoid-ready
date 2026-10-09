@@ -1099,12 +1099,17 @@ def build_speed_amendment_2026_10_04(
     }
 
 
-def run_foot_regression_27cc2da(seed: int = 0, n_babel: int = 300) -> int:
+# Git revision of the earlier hready/data/contact.py that the foot channel is regression-checked against. It is a
+# functional argument to `git show`, not a citation; it does not resolve in a clone whose history was rewritten.
+FOOT_CONTACT_REFERENCE_REV = "27cc2da"
+
+
+def run_foot_regression_reference(seed: int = 0, n_babel: int = 300) -> int:
     from hready.data.contact import foot_traj_build_clip_list
 
     repo_root = Path(__file__).resolve().parents[2]
     proc = subprocess.run(
-        ["git", "show", "27cc2da:hready/data/contact.py"],
+        ["git", "show", f"{FOOT_CONTACT_REFERENCE_REV}:hready/data/contact.py"],
         cwd=repo_root,
         capture_output=True,
         text=True,
@@ -1427,9 +1432,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     rates["sensitivity_validation_clips"] = sens
     rates["validation_summaries"] = print_validation_frames(cfg, region_sets, fk)
 
-    mism = run_foot_regression_27cc2da()
-    rates["foot_regression_contact_mism_27cc2da"] = mism
-    print(f"FOOT_REGRESSION contact_mism={mism} (27cc2da, seed=0, n=300)")
+    mism = run_foot_regression_reference()
+    rates["foot_regression_contact_mism_reference"] = mism
+    print(f"FOOT_REGRESSION contact_mism={mism} (reference contact.py, seed=0, n=300)")
 
     out_path = (repo_root / cfg["output_json"]).resolve()
     out_path.parent.mkdir(parents=True, exist_ok=True)

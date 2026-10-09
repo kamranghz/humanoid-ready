@@ -243,7 +243,7 @@ Low mode **~0.01–0.06 m/s**; high mode **~0.63–3.5 m/s**.
 
 **`foot_traj/`:** **17,355** npz files (full index). Contact is computed **on demand** from cached positions when present (`compute_foot_contact` / `compute_skate_score`); **`amass_contact` npz cache not built.**
 
-**Contact thresholds (BABEL `frame_ann`, all non-excluded segments):** **5063** walk / **6269** stand / **517** jump / **666** sit segments. **Descriptive gait statistics** (medians over labeled segments; speed FD, 30 Hz, `min_run=3`; walk L/R/dbl use per-foot **any** heel|toe contact). Not automated regression targets — contact **code** is regression-checked against commit `27cc2da` on random `foot_traj` clips.
+**Contact thresholds (BABEL `frame_ann`, all non-excluded segments):** **5063** walk / **6269** stand / **517** jump / **666** sit segments. **Descriptive gait statistics** (medians over labeled segments; speed FD, 30 Hz, `min_run=3`; walk L/R/dbl use per-foot **any** heel|toe contact). Not automated regression targets — contact **code** is regression-checked against the earlier reference version of `contact.py` on random `foot_traj` clips.
 
 | h_on | v_on | walk L% | walk R% | alt% | dbl% | stand L% | stand R% | jump flight% | sit% | PASS |
 | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | :---: |
