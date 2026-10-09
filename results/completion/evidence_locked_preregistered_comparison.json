@@ -1,6 +1,6 @@
 {
- "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
- "config": "configs/e4_v2_completion.yaml",
+ "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+ "config": "configs/evidence_locked_preregistered_comparison.yaml",
  "seed": 0,
  "verify_occ": {
   "eval_clips_checked": 40,
@@ -58,8 +58,8 @@
     "b_output_bit_identical": true,
     "c_positive_control_visible_joint_5cm_output_diff": 0.019645273685455322,
     "d_negative_controls": {
-     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
-     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "targets_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'init_body_aa'",
      "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
      "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
      "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
@@ -111,8 +111,8 @@
     "b_output_bit_identical": true,
     "c_positive_control_visible_joint_5cm_output_diff": 0.01956808567047119,
     "d_negative_controls": {
-     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
-     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "targets_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'init_body_aa'",
      "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
      "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
      "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
@@ -164,8 +164,8 @@
     "b_output_bit_identical": true,
     "c_positive_control_visible_joint_5cm_output_diff": 0.019522279500961304,
     "d_negative_controls": {
-     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
-     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "targets_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'init_body_aa'",
      "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
      "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
      "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
@@ -217,8 +217,8 @@
     "b_output_bit_identical": true,
     "c_positive_control_visible_joint_5cm_output_diff": 0.019579574465751648,
     "d_negative_controls": {
-     "targets_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'targets'",
-     "init_pose_kwarg": "rejected: TypeError: EgoCompleteMotionE4.forward() got an unexpected keyword argument 'init_body_aa'",
+     "targets_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'targets'",
+     "init_pose_kwarg": "rejected: TypeError: EvidenceLockedCompletion.forward() got an unexpected keyword argument 'init_body_aa'",
      "gt_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['joints_gt_22']",
      "pose_key_in_obs": "rejected: ValueError: obs contains forbidden GT keys: ['pose_body']",
      "target_key_in_rig": "rejected: ValueError: rig has keys outside the rig schema: ['transl']",
@@ -843,57 +843,57 @@
   }
  },
  "eval_val": {
-  "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+  "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
   "split": "val",
-  "det_w0_vs_v1_anchor_informational": {
+  "det_w0_vs_ablation_anchor_informational": {
    "mpjpe_full_hidden_mm": {
     "det_w0": 64.84098376231302,
-    "v1_anchor": 64.84098376231302,
+    "ablation_anchor": 64.84098376231302,
     "diff": 0.0
    },
    "mpjpe_full_all_mm": {
     "det_w0": 60.01665795530992,
-    "v1_anchor": 60.01665795530992,
+    "ablation_anchor": 60.01665795530992,
     "diff": 0.0
    },
    "penetration_mean_mm": {
     "det_w0": 4.432460231741266,
-    "v1_anchor": 4.432460231741266,
+    "ablation_anchor": 4.432460231741266,
     "diff": 0.0
    },
    "foot_skate_m_s": {
     "det_w0": 0.1822837429827706,
-    "v1_anchor": 0.1822837429827706,
+    "ablation_anchor": 0.1822837429827706,
     "diff": 0.0
    },
    "contact_ece": {
     "det_w0": 0.012589873322999663,
-    "v1_anchor": 0.012589873322999663,
+    "ablation_anchor": 0.012589873322999663,
     "diff": 0.0
    },
    "mpjpe_full_visible_mm": {
     "det_w0": 12.205767372122935,
-    "v1_anchor": 12.205767372122935,
+    "ablation_anchor": 12.205767372122935,
     "diff": 0.0
    },
    "ground_consistency_violation_frac": {
     "det_w0": 0.4320201047337146,
-    "v1_anchor": 0.4320201047337146,
+    "ablation_anchor": 0.4320201047337146,
     "diff": 0.0
    },
    "ground_consistency_violation_frac_tau_sensitivity": {
     "det_w0": 0.503061691286028,
-    "v1_anchor": 0.503061691286028,
+    "ablation_anchor": 0.503061691286028,
     "diff": 0.0
    }
   },
   "models": {
-   "e3_learned": {
+   "oracle_transformer": {
     "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11110752473453
    },
-   "v1_det_wphys0": {
+   "ablation_det_wphys0": {
     "checkpoint": "D:/projects/hready_data/checkpoints/e4/deterministic/best.pt",
     "step": 40000,
     "best_selection_metric": 57.546497775488106,
@@ -943,7 +943,7 @@
       "max_steps": 40000
      }
     },
-    "label": "v1 anchor, post-hoc selected, not eligible, no TEST"
+    "label": "ablation-study anchor, post-hoc selected, not eligible, no TEST"
    },
    "det_w0": {
     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_w0/best.pt",
@@ -1153,7 +1153,7 @@
   "table": {
    "heuristic": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -1197,7 +1197,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -1241,7 +1241,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -1286,7 +1286,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -1331,7 +1331,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -1376,9 +1376,9 @@
      "descriptive_only": true
     }
    },
-   "e3_learned": {
+   "oracle_transformer": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -1422,7 +1422,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -1466,7 +1466,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -1511,7 +1511,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -1556,7 +1556,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -1601,9 +1601,9 @@
      "descriptive_only": true
     }
    },
-   "v1_det_wphys0": {
+   "ablation_det_wphys0": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -1647,7 +1647,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -1691,7 +1691,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -1736,7 +1736,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -1781,7 +1781,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -1828,7 +1828,7 @@
    },
    "det_w0": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -1872,7 +1872,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -1916,7 +1916,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -1961,7 +1961,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -2006,7 +2006,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -2053,7 +2053,7 @@
    },
    "det_wphys0p3": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -2097,7 +2097,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -2141,7 +2141,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -2186,7 +2186,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -2231,7 +2231,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -2278,7 +2278,7 @@
    },
    "det_wphys1p0": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -2322,7 +2322,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -2366,7 +2366,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -2411,7 +2411,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -2456,7 +2456,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -2503,7 +2503,7 @@
    },
    "gen_stab": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -2547,7 +2547,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -2591,7 +2591,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -2636,7 +2636,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -2681,7 +2681,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -2728,7 +2728,7 @@
    },
    "gt_reference": {
     "all": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 2223,
      "n_frames": 929889,
      "n_subjects": 46,
@@ -2772,7 +2772,7 @@
      }
     },
     "ordinary_locomotion": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 695,
      "n_frames": 148527,
      "n_subjects": 41,
@@ -2816,7 +2816,7 @@
      }
     },
     "floor_work_eligible": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 11,
      "n_frames": 2906,
      "n_subjects": 7,
@@ -2861,7 +2861,7 @@
      "label": "indicative"
     },
     "sit_floor": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 10,
      "n_frames": 1910,
      "n_subjects": 5,
@@ -2906,7 +2906,7 @@
      "descriptive_only": true
     },
     "sit_support": {
-     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (D1)",
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
      "n_clips": 22,
      "n_frames": 3080,
      "n_subjects": 14,
@@ -2952,8 +2952,8 @@
     }
    }
   },
-  "paired_vs_e3_learned": {
-   "v1_det_wphys0": {
+  "paired_vs_oracle_transformer": {
+   "ablation_det_wphys0": {
     "mpjpe_full_hidden_mm": {
      "model": 64.84098376231302,
      "reference": 67.40637656363573,
@@ -3432,7 +3432,7 @@
   },
   "passing": [],
   "selected": null,
-  "v2_failed": true,
+  "comparison_failed": true,
   "stopped_arms_counted_as_failed": {},
   "candidates_preregistered": [
    "det_w0",

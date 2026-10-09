@@ -12,11 +12,11 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Physics and biomechanics losses (foot skating, penetration, balance, smoothness, bone length, range of motion) | Built | `hready/losses/` |
 | Pose, physical and contact metrics; subject-cluster bootstrap statistics | Built | `hready/metrics/` |
 | AMASS + BABEL loaders, 30 Hz resampling, floor grounding, foot-contact labels, synthetic IMU | Built | `hready/data/`, `results/checks/` |
-| Subject-disjoint splits and motion cohorts (locomotion, kneel/lie floor work, sitting) | Built | `results/E/splits.json`, `results/E/cohort_counts.json`, `docs/ego_splits.md` |
-| Support-region contact labels | Built | `results/E/support_contact_v2_rates.json`, `docs/contact_labels_v2.md` |
+| Subject-disjoint splits and motion cohorts (locomotion, kneel/lie floor work, sitting) | Built | `results/splits/splits.json`, `results/splits/cohort_counts.json`, `docs/ego_splits.md` |
+| Support-region contact labels | Built | `results/support_contact/label_rates.json`, `docs/support_contact_labels.md` |
 | Simulated egocentric evidence (head camera, visibility, occlusion, noise) with leak checks | Built | `hready/data/ego_observation.py`, `docs/ego_observation_model.md` |
-| Full-body completion baselines under simulated evidence (heuristic + learned) | Built | `results/E/e3_oracle_run.json`, `docs/e3_oracle.md` |
-| Humanoid-robot smoke test (retarget one motion to a Unitree G1 in Isaac Lab + Newton) | Built | `results/D/smoke/` |
+| Full-body completion baselines under simulated evidence (heuristic + learned) | Built | `results/completion/oracle_baselines.json`, `docs/oracle_completion_baselines.md` |
+| Humanoid-robot smoke test (retarget one motion to a Unitree G1 in Isaac Lab + Newton) | Built | `results/robot_smoke_test/` |
 | Spatio-temporal refinement model and trainer (DDP code path implemented, not yet tested on multiple GPUs) | Building (code written; no reported result) | `hready/models/hr_refine.py`, `hready/train/` |
 | Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study failed acceptance; pre-registered comparison failed its pre-registered rule (below) |
 | Visual perception from egocentric RGB | Planned | — |
@@ -30,7 +30,7 @@ Built = code on `main` with evidence in `results/` and CI green. Building = star
 
 All results below are an **oracle control**: the body evidence is simulated from motion-capture ground truth (no image perception), the floor height is given (world z = 0), and the head pose and gravity are given. They measure completion error with perception error removed, not end-to-end accuracy.
 
-**Full-body completion baselines** (`results/E/e3_oracle_run.json`; validation split, 2223 clips; test split, 1272 clips):
+**Full-body completion baselines** (`results/completion/oracle_baselines.json`; validation split, 2223 clips; test split, 1272 clips):
 
 | | Full MPJPE (mm) | Visible joints | Hidden joints | Penetration (mm) | Foot skate (m/s) | Ground-consistency violation |
 |---|---|---|---|---|---|---|
@@ -43,9 +43,9 @@ All results below are an **oracle control**: the body evidence is simulated from
 - The learned model's best checkpoint was its last (step 40000 of 40000), so it is likely under-trained.
 - Floor-work results (kneel and lie) rest on 11 validation and 2 test clips and are indicative only. The ground-consistency metric is unreliable there: the ground truth itself scores 0.884.
 
-**Improved completion model, attempt 1 — did not meet its acceptance criteria** (`results/E/e4_completion_run.json`, `docs/e4_completion.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The attempt is documented as failed.
+**Improved completion model, attempt 1 — did not meet its acceptance criteria** (`results/completion/evidence_locked_ablation.json`, `docs/evidence_locked_ablation.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The attempt is documented as failed.
 
-**Evidence-locked completion, pre-registered comparison — did not pass its pre-registered rule** (`results/E/e4_v2_run.json`, `docs/e4_v2_plan.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/e4_v2_completion.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/e4_v2_plan.md` states explicitly.
+**Evidence-locked completion, pre-registered comparison — did not pass its pre-registered rule** (`results/completion/evidence_locked_preregistered_comparison.json`, `docs/evidence_locked_preregistered_comparison.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/evidence_locked_preregistered_comparison.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/evidence_locked_preregistered_comparison.md` states explicitly.
 
 ## Scale and limitations
 
@@ -92,7 +92,7 @@ cp configs/paths.example.yaml configs/paths.yaml   # then edit data_root, amass_
 python -c "import hready"
 
 # Full-body completion baselines (builds a motion cache under cache_dir, trains, evaluates)
-python -m hready.eval.e3_oracle run --config configs/e3_oracle.yaml
+python -m hready.experiments.oracle_baselines run --config configs/oracle_completion_baselines.yaml
 ```
 
 Installed package versions are recorded in `env/versions.lock`. Design decisions and their reasons are logged in `docs/decisions.md` and `docs/pivot_log.md`.

@@ -1,21 +1,21 @@
-# Track E3 — oracle completion baselines
+# Oracle completion baselines
 
-**Status:** oracle **control** only (`docs/project_definition.md` [C2]). The perceived-RGB completion table runs after E2-B4 on the same evidence schema. The oracle table is never described as the main system.
+**Status:** oracle **control** only (`docs/project_definition.md`, oracle evidence as a control). The perceived-RGB completion table runs after perception model selection on the same evidence schema. The oracle table is never described as the main system.
 
-**Disclaimer on every table row:** `oracle control; floor height given (world z = 0); head pose and gravity given (D1)`. An unknown floor offset is a later ablation, not E3.
+**Disclaimer on every table row:** `oracle control; floor height given (world z = 0); head pose and gravity given (rig input)`. An unknown floor offset is a later ablation, not part of these baselines.
 
-**Commands** (config `configs/e3_oracle.yaml`; every command merges its section into `results/E/e3_oracle_run.json`):
+**Commands** (config `configs/oracle_completion_baselines.yaml`; every command merges its section into `results/completion/oracle_baselines.json`):
 
 ```bash
-python -m hready.eval.e3_oracle train-list       # rule-derived training list, count + SHA256, split SHA256 check
-python -m hready.eval.e3_oracle build-cache      # memmap cache (resumable, worker pool, progress log)
-python -m hready.eval.e3_oracle verify-cache     # byte-equality vs load_clip + FK on 100 seeded clips
-python -m hready.eval.e3_oracle preflight        # FK exactness, 1-batch overfit, resume, throughput -> runtime estimate
-python -m hready.eval.e3_oracle train            # EgoCompleteMotion; selection on VAL; resumes from last.pt
-python -m hready.eval.e3_oracle eval-table       # VAL + TEST tables, both baselines + GT reference row
-python -m hready.eval.e3_oracle heuristic-check  # heuristic sanity on VAL ordinary_locomotion + rotation invariance
-python -m hready.eval.e3_oracle leak-check       # on the trained checkpoint, with negative controls
-python -m hready.eval.e3_oracle run              # all of the above in order
+python -m hready.experiments.oracle_baselines train-list       # rule-derived training list, count + SHA256, split SHA256 check
+python -m hready.experiments.oracle_baselines build-cache      # memmap cache (resumable, worker pool, progress log)
+python -m hready.experiments.oracle_baselines verify-cache     # byte-equality vs load_clip + FK on 100 seeded clips
+python -m hready.experiments.oracle_baselines preflight        # FK exactness, 1-batch overfit, resume, throughput -> runtime estimate
+python -m hready.experiments.oracle_baselines train            # EgoCompleteMotion; selection on VAL; resumes from last.pt
+python -m hready.experiments.oracle_baselines eval-table       # VAL + TEST tables, both baselines + GT reference row
+python -m hready.experiments.oracle_baselines heuristic-check  # heuristic sanity on VAL ordinary_locomotion + rotation invariance
+python -m hready.experiments.oracle_baselines leak-check       # on the trained checkpoint, with negative controls
+python -m hready.experiments.oracle_baselines run              # all of the above in order
 ```
 
 A config may add a `subset:` block (`seed`, `train_n`, `val_n`, `test_n`) and its own `paths.results_json` for a pipeline check on a few clips; subsets never move clips across splits and are never results.
@@ -24,9 +24,9 @@ A config may add a `subset:` block (`seed`, `train_n`, `val_n`, `test_n`) and it
 
 1. `assign_split(entry) == "train"`
 2. `clip_flags(entry)["skate_flag"]` is false
-3. `{subset}/{subject}` is not one of the 19 tune subjects in `results/E/splits.json`
+3. `{subset}/{subject}` is not one of the 19 tune subjects in `results/splits/splits.json`
 
-Count: **12309** clips (from `train-list`). The SHA256 of the sorted `rel_path` list (newline-terminated, same convention as the E1 split hashes) is stored in `results/E/e3_oracle_run.json` → `clip_lists.train_clip_list.train_clip_list_sha256`. `train-list` also recomputes the train/val/test split SHA256s from the AMASS index and compares them with `splits.json` and `docs/ego_splits.md`. `hr_refine_eligible_index.json` is not used.
+Count: **12309** clips (from `train-list`). The SHA256 of the sorted `rel_path` list (newline-terminated, same convention as the subject-split hashes) is stored in `results/completion/oracle_baselines.json` → `clip_lists.train_clip_list.train_clip_list_sha256`. `train-list` also recomputes the train/val/test split SHA256s from the AMASS index and compares them with `splits.json` and `docs/ego_splits.md`. `hr_refine_eligible_index.json` is not used.
 
 Evaluation uses all VAL and TEST clips; clip flags never remove a clip from MPJPE, only from the metrics they invalidate (see below).
 
@@ -37,7 +37,7 @@ Evaluation uses all VAL and TEST clips; clip flags never remove a clip from MPJP
 
 ## Evidence, rig and canonical frame
 
-Evidence comes from the E2-A simulator with the camera, noise and occlusion settings of `configs/ego_observation.yaml` (not duplicated in the E3 config). Evaluation draws one evidence sample per whole clip from a process-independent seed (`eval_noise_seed`, sha256 of `rel_path`), so all windows of a clip share it. Training draws fresh evidence per sample (`seed`, draw counter).
+Evidence comes from the observation simulator with the camera, noise and occlusion settings of `configs/ego_observation.yaml` (not duplicated in the baselines config). Evaluation draws one evidence sample per whole clip from a process-independent seed (`eval_noise_seed`, sha256 of `rel_path`), so all windows of a clip share it. Training draws fresh evidence per sample (`seed`, draw counter).
 
 Canonical frame per window: subtract the window-start head xy from all world xy (evidence, head, targets); keep z. Training applies one uniform z-rotation (±`z_rot_max_rad`) to evidence, rig and targets together (`camera_R` maps world→camera, so `R' = R Rz^T`; `camera_t` and `keypoints_2d` are invariant). Evaluation is unaugmented. Window predictions are mapped back to the clip frame (add the window origin) before stitching.
 
@@ -55,9 +55,9 @@ All offsets live in the per-frame **heading frame** (right, forward, up), never 
 
 ## Learned baseline: `EgoCompleteMotion`
 
-`forward(obs, rig)` is the only input path: evidence-schema tensors plus the mandatory rig (`head_pos_world`, `camera_R`, `gravity_world`; missing keys raise). Every per-joint channel is multiplied by visibility, including `keypoints_2d` (E2-A keeps the projected nx, ny of hidden joints). Per-frame encoder over all 22 joints + rig → temporal Transformer at HR-Refine width (d_model 256, 8 heads, 4 layers, ff 512) → `transl` (offset from the given head position), root and 21 body rotations in **6D**, 4 contact logits.
+`forward(obs, rig)` is the only input path: evidence-schema tensors plus the mandatory rig (`head_pos_world`, `camera_R`, `gravity_world`; missing keys raise). Every per-joint channel is multiplied by visibility, including `keypoints_2d` (the observation simulator keeps the projected nx, ny of hidden joints). Per-frame encoder over all 22 joints + rig → temporal Transformer at HR-Refine width (d_model 256, 8 heads, 4 layers, ff 512) → `transl` (offset from the given head position), root and 21 body rotations in **6D**, 4 contact logits.
 
-Loss: geodesic angle on root + body rotations, L1 on `transl`, mean per-joint L2 of FK joints, BCE on item-5 contact labels (masked by `exclude_contact`). `w_phys = 0` (E7 "none" arm). Predictions use the **neutral body shape** (betas 0): body shape is not given in the oracle control, so the `transl` target is `pelvis_gt − J0(betas 0)`. FK during training and evaluation uses `NeutralJointFK`, which applies the SMPL-X LBS only to the vertices the 22-joint regressor reads (same math as `SmplxBody.forward`; `preflight` reports the maximum difference).
+Loss: geodesic angle on root + body rotations, L1 on `transl`, mean per-joint L2 of FK joints, BCE on item-5 contact labels (masked by `exclude_contact`). `w_phys = 0` (refinement-comparison "none" arm). Predictions use the **neutral body shape** (betas 0): body shape is not given in the oracle control, so the `transl` target is `pelvis_gt − J0(betas 0)`. FK during training and evaluation uses `NeutralJointFK`, which applies the SMPL-X LBS only to the vertices the 22-joint regressor reads (same math as `SmplxBody.forward`; `preflight` reports the maximum difference).
 
 Training is step-based with a seeded, resumable window sampler; `last.pt` / `best.pt` under `<data_root>/checkpoints/e3_oracle/`. **Model selection:** VAL only, cohorts `all` + `ordinary_locomotion` (mean of the two pooled MPJPEs) on a seeded subset of `selection.n_val_clips` VAL clips, whole clips stitched. Never floor-work, never TEST.
 
@@ -69,19 +69,19 @@ Training is step-based with a seeded, resumable window sampler; `last.pt` / `bes
 - Physical metrics for **both** baselines on the 22-joint FK feet (7, 10, 8, 11). A joint is not a contact point, so each channel height is the joint height minus its rest-pose joint-to-sole offset (neutral locked_head, item-5 sole clusters):
   - foot skate: horizontal channel speed (m/s) while the item-5 label marks that channel in contact;
   - penetration: mean / max depth below z = 0 of the channel heights (mm), all frames;
-  - ground consistency (`docs/e0_audit.md`): fraction of frames with any labelled in-contact channel whose |height| > τ, τ = `ground_consistency_tolerance_m` (0.04947, primary); a sensitivity column uses `ground_consistency_tolerance_sensitivity_m` (0.04453, singly grounded heights; `docs/pivot_log.md` 2026-10-07).
+  - ground consistency (`docs/module_audit.md`): fraction of frames with any labelled in-contact channel whose |height| > τ, τ = `ground_consistency_tolerance_m` (0.04947, primary); a sensitivity column uses `ground_consistency_tolerance_sensitivity_m` (0.04453, singly grounded heights; `docs/pivot_log.md` 2026-10-07).
   A `gt_reference` row applies the same proxies to GT joints, so the proxy error itself is visible.
 - Flags: `exclude_contact` removes a clip from contact metrics, skate and ground consistency; `exclude_physical_eval` removes it from all physical metrics. Clips lost to each flag are counted per cohort.
-- Cohorts (recorded E1 definitions, reused code): `all`; `ordinary_locomotion` (BABEL segments ≥ 1 s whose first matching E1 cohort is ordinary locomotion); `floor_work_eligible` (kneel + lie confirmed segments); `sit_floor` and `sit_support` (descriptive only).
+- Cohorts (recorded subject-split definitions, reused code): `all`; `ordinary_locomotion` (BABEL segments ≥ 1 s whose first matching split cohort is ordinary locomotion); `floor_work_eligible` (kneel + lie confirmed segments); `sit_floor` and `sit_support` (descriptive only).
 - VAL and TEST are reported separately. Subject-cluster bootstrap 95% CIs (ratio of pooled sums, `bootstrap_n` resamples). `floor_work_eligible` is additionally reported as a per-subject table over VAL ∪ TEST with CIs, labelled **indicative** (8 subjects; kneel concentrated in Eyes_Japan; TEST has 2 segments).
 
 ## Leak check (`leak-check`, trained checkpoint)
 
 On a VAL window whose lower body is fully hidden: (a) `forward` parameters are exactly `obs, rig`; (b) leg rotations of the GT are perturbed and the evidence regenerated. Hidden slots of the raw evidence then differ (negative control: they do carry GT-dependent 2D projections), and the visible joints move slightly because joints are regressed from the posed mesh. The leak criterion: replacing only the hidden slots (from the perturbed evidence, or random values) must leave the model output bit-identical. (c) Positive control: moving one visible joint by 5 cm changes the output. (d) Negative controls: `targets=` / `init_body_aa=` keyword arguments, GT keys in `obs`, target keys in `rig`, and a missing rig must all be rejected.
 
-## Findings (oracle control; from `results/E/e3_oracle_run.json`)
+## Findings (oracle control; from `results/completion/oracle_baselines.json`)
 
-All numbers are pooled over VAL `all` (2223 clips) unless stated; disclaimer: oracle control; floor height given (world z = 0); head pose and gravity given (D1).
+All numbers are pooled over VAL `all` (2223 clips) unless stated; disclaimer: oracle control; floor height given (world z = 0); head pose and gravity given (rig input).
 
 - **Learned visible joints are not reproduced.** Learned visible-joint MPJPE is 59.5 mm vs 20.3 mm for the heuristic, which copies the evidence (hidden: 67.4 vs 153.5 mm; full: 66.7 vs 141.3 mm).
 - **Learned physical plausibility is worse than GT.** Learned vs `gt_reference`: penetration 5.98 vs 0.00 mm, ground-consistency violation 0.426 vs 0.169 (τ = 0.04947; 0.492 vs 0.263 at the 0.04453 sensitivity τ), foot skate 0.202 vs 0.027 m/s. TEST penetration is 16.88 mm.
@@ -89,6 +89,6 @@ All numbers are pooled over VAL `all` (2223 clips) unless stated; disclaimer: or
 - **Ground consistency is unreliable on floor work:** `gt_reference` scores 0.884 on VAL `floor_work_eligible`, i.e. the joint sole proxy does not represent kneeling/lying contact.
 - **Likely under-trained:** the best VAL selection metric (63.11 mm) is at the last step (40000 of 40000), and it was still decreasing.
 
-## Known issue (not changed in E3)
+## Known issue (not changed in these baselines)
 
-The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The recorded τ in `docs/e0_audit.md` stays the primary; the E3 table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).
+The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The recorded τ in `docs/module_audit.md` stays the primary; the baselines table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).

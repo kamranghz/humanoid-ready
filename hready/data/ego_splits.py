@@ -1725,7 +1725,7 @@ def _write_outputs(
 ) -> None:
     out_json = Path(cfg["output"]["splits_json"])
     out_csv = Path(cfg["output"]["floor_work_csv"])
-    out_counts = Path(cfg["output"].get("cohort_counts_json", "results/E/cohort_counts.json"))
+    out_counts = Path(cfg["output"].get("cohort_counts_json", "results/splits/cohort_counts.json"))
     for p in (out_json, out_csv, out_counts):
         p.parent.mkdir(parents=True, exist_ok=True)
 
@@ -1794,7 +1794,7 @@ def main() -> None:
                     "splits.json": _sha256_file(Path(out["splits_json"])),
                     "floor_work_clips.csv": _sha256_file(Path(out["floor_work_csv"])),
                     "cohort_counts.json": _sha256_file(
-                        Path(out.get("cohort_counts_json", "results/E/cohort_counts.json"))
+                        Path(out.get("cohort_counts_json", "results/splits/cohort_counts.json"))
                     ),
                 }
             )

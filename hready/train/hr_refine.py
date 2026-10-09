@@ -68,7 +68,7 @@ def train_main(cfg: dict[str, Any]) -> None:
     )
     loss_cfg = loss_config_from_dict(cfg.get("physics_loss"))
     corrupt_cfg = corruption_config_from_dict(cfg.get("corruption"))
-    ckpt_dir = repo_root() / cfg.get("checkpoint_dir", "results/A2/hr_refine")
+    ckpt_dir = repo_root() / cfg.get("checkpoint_dir", "results/hr_refine")
     ckpt_dir.mkdir(parents=True, exist_ok=True)
 
     model, body, parents = build_model_and_body(model_cfg, device)

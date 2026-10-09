@@ -810,7 +810,7 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
         "model": mmeta,
         "ground_consistency_tolerance_m": tau,
         "ground_consistency_tolerance_sensitivity_m": tau_s,
-        "tau_note": "primary tau = recorded 0.04947 (docs/e0_audit.md); sensitivity tau = single floor "
+        "tau_note": "primary tau = recorded 0.04947 (docs/module_audit.md); sensitivity tau = single floor "
         "grounding (docs/pivot_log.md 2026-10-07)",
         "splits": {},
     }
@@ -882,7 +882,7 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
     result["floor_work_eligible_val_union_test"] = {
         "label": "indicative",
         "disclaimer": ctx.disclaimer,
-        "note": "kneel + lie only; 8 subjects in VAL+TEST (E1); kneel concentrated in Eyes_Japan; TEST has 2 segments",
+        "note": "kneel + lie only; 8 subjects in VAL+TEST (subject splits); kneel concentrated in Eyes_Japan; TEST has 2 segments",
         "per_subject": {b: per_subject_table(floor_union[b], keys) for b in BASELINES},
         "pooled": {
             b: summarize_cohort(
@@ -1222,7 +1222,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
         description="Oracle completion baselines (control)"
     )
-    parser.add_argument("--config", type=Path, default=Path("configs/e3_oracle.yaml"))
+    parser.add_argument("--config", type=Path, default=Path("configs/oracle_completion_baselines.yaml"))
     parser.add_argument(
         "--device", default="cuda" if torch.cuda.is_available() else "cpu"
     )

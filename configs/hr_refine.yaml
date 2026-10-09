@@ -38,4 +38,4 @@ physics_loss:
   flight_consistency:
     enabled: false
 
-checkpoint_dir: results/A2/hr_refine
+checkpoint_dir: results/hr_refine

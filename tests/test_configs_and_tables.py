@@ -24,7 +24,7 @@ def test_all_tracked_configs_parse():
 
 
 def test_preregistered_decision_rule_lists_all_gates():
-    cfg = yaml.safe_load((ROOT / "configs" / "e4_v2_completion.yaml").read_text(encoding="utf-8"))
+    cfg = yaml.safe_load((ROOT / "configs" / "evidence_locked_preregistered_comparison.yaml").read_text(encoding="utf-8"))
     rule = cfg["decision_rule"]
     assert set(rule["gates"]) == {
         "mpjpe_full_hidden_mm",

@@ -1,6 +1,6 @@
-# Egocentric evidence schema and oracle simulator (Track E2-A)
+# Egocentric evidence schema and oracle observation simulator
 
-**Status:** oracle **control** path only. Perceived RGB (E2-B4) must emit the same tensor schema so downstream completion cannot distinguish oracle from perceived evidence.
+**Status:** oracle **control** path only. Perceived RGB (after perception model selection) must emit the same tensor schema so downstream completion cannot distinguish oracle from perceived evidence.
 
 **Seeds:** `configs/ego_observation.yaml` → `seed: 0`; per-clip RNG `base_seed + idx * 1_000_003` (`EgoOracleWindowDataset`); locomotion visibility sample `loco_sample.seed: 0`.
 
@@ -8,7 +8,7 @@
 
 ## Rig signals (given, not evidence)
 
-Separate from evidence tensors and from GT targets (project definition D1):
+Separate from evidence tensors and from GT targets (project definition: given head pose and gravity):
 
 | Field | Shape | Description |
 |--------|--------|-------------|
@@ -48,7 +48,7 @@ From 55-joint positions:
 - `forward = right × up` (`numpy.cross(right, up)`)
 - `R = stack([right, up, -forward])`, `t = -R @ cam_pos` (**`det(R) ≈ -1`**, same pinhole as HR-Refine’s `project_joints` input)
 
-**Bitmap convention (E2-A only):** after `project_joints`, **`ny ← -ny`** (equivalently `v_bitmap = 2·cy − v_pinhole`). Row 0 of `R` → **+u** (right); row 2 → **+z_cam** (look); bitmap row 0 is top, **+v down**.
+**Bitmap convention (observation simulator only):** after `project_joints`, **`ny ← -ny`** (equivalently `v_bitmap = 2·cy − v_pinhole`). Row 0 of `R` → **+u** (right); row 2 → **+z_cam** (look); bitmap row 0 is top, **+v down**.
 
 Does not use world gravity; supports lying / face-down poses.
 
@@ -68,7 +68,7 @@ Does not use world gravity; supports lying / face-down poses.
 **Pinhole limitation at default FOV:** the head-mounted camera sees mostly the lower visual field (hands, forearms, legs when visible). **Torso keypoints are almost never visible** at the default FOV (cohort `all` torso visibility ≈ 0.004 at `focal_px=120`, `stride=8` in the visibility report) because spine/collar joints sit behind the head and outside the wide-but downward-centered cone.
 
 - In-image: `|nx|, |ny| ≤ 1`; depth gate `z_cam > 0.1` (projection uses `z` clamp `min=0.05` in denominator only).
-- **E2-B renderer contract:** raster with `camera_R`/`camera_t` from `head_frame_from_joints` and the E2-A bitmap rule above (`ny` flipped vs raw `project_joints`); `keypoints_2d` in emitted evidence use the flipped `nx, ny`.
+- **Egocentric renderer contract:** raster with `camera_R`/`camera_t` from `head_frame_from_joints` and the simulator bitmap rule above (`ny` flipped vs raw `project_joints`); `keypoints_2d` in emitted evidence use the flipped `nx, ny`.
 
 ## Visibility phase 1
 
@@ -99,7 +99,7 @@ At **`focal_px=120`**, evidence is dominated by **head rig signals** plus **inte
 
 ## Leak-proof path
 
-- **Do not** use `HRRefine.encode_inputs`, `apply_corruption`, or `HRRefineWindowDataset` for Track E completion.
+- **Do not** use `HRRefine.encode_inputs`, `apply_corruption`, or `HRRefineWindowDataset` for egocentric completion.
 - Use `EgoOracleWindowDataset` + `collate_ego_oracle` → `obs`, `rig`, `targets`.
 - `EgoCompletion.forward(obs)` accepts **only** `obs` (random-init `nn.Module`; see `hready.models.ego_completion`).
 - Normalization stats: `compute_obs_normalization_stats` on **train** `obs` only.
@@ -122,4 +122,4 @@ python -m hready.data.ego_observation regression-2-5
 
 Visibility rates use `VISIBILITY_JOINT_GROUPS` in `joint_indices.py`: hands, forearms, torso, thighs, shins, feet.
 
-Cohorts: `all`, `ordinary_locomotion` (CMU sample, same count seed as E1b-style table), `floor_work_eligible` (kneel+lie segments from `floor_work_clips.csv`), plus descriptive `sit_floor` / `sit_support`.
+Cohorts: `all`, `ordinary_locomotion` (CMU sample, same count seed as the support-contact table), `floor_work_eligible` (kneel+lie segments from `floor_work_clips.csv`), plus descriptive `sit_floor` / `sit_support`.

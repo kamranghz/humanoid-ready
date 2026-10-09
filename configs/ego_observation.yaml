@@ -1,7 +1,7 @@
-# Track E2-A oracle egocentric evidence (control path). Seeds recorded in docs/ego_observation_model.md.
+# Observation simulator: oracle egocentric evidence (control path). Seeds recorded in docs/ego_observation_model.md.
 seed: 0
 paths_config: configs/paths.yaml
-floor_work_clips_csv: results/E/floor_work_clips.csv
+floor_work_clips_csv: results/splits/floor_work_clips.csv
 
 byte_stable_clip: CMU/132/132_35_stageii.npz
 leak_check_clip: CMU/132/132_35_stageii.npz

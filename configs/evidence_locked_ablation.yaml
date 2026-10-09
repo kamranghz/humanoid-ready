@@ -1,10 +1,10 @@
-# Track E4-v1 — improved oracle-evidence completion (control path; docs/e4_completion.md).
-# Same evidence schema, splits, windows, cohorts and metrics as E3 (read from e3_config).
-e3_config: configs/e3_oracle.yaml
+# Evidence-locked completion, ablation study — oracle-evidence completion (control path; docs/evidence_locked_ablation.md).
+# Same evidence schema, splits, windows, cohorts and metrics as the oracle baselines (read from baseline_config).
+baseline_config: configs/oracle_completion_baselines.yaml
 seed: 0
 
 disclaimer: >-
-  oracle control; floor height given (world z = 0); head pose and gravity given (D1)
+  oracle control; floor height given (world z = 0); head pose and gravity given (rig input)
 
 occlusion_cache:
   rel_dir: e4_occlusion_30hz
@@ -57,7 +57,7 @@ train:
 
 # Ablations: one factor changed from the reference row, identical budget.
 ablation:
-  max_steps: 40000   # = E3 training budget
+  max_steps: 40000   # = oracle-transformer training budget
   runs:
     ref_locked_gen_phys0: {}
     unlocked: {lock: null}
@@ -81,4 +81,4 @@ preflight:
   benchmark_steps: 100
 
 paths:
-  results_json: results/E/e4_completion_run.json
+  results_json: results/completion/evidence_locked_ablation.json

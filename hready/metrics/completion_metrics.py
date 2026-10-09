@@ -171,7 +171,7 @@ def accumulate_clip(
         sk[1:] = m[1:]
         c = ev.contact_gt & sk[:, None]
         acc._add(subj, "foot_skate_m_s", float(speed[c].sum()), int(c.sum()))
-        # Ground consistency (docs/e0_audit.md): frames with any GT in-contact channel |h| > tau.
+        # Ground consistency (docs/module_audit.md): frames with any GT in-contact channel |h| > tau.
         cg = ev.contact_gt & m[:, None]
         frames = cg.any(axis=1)
         viol = (cg & (np.abs(h) > tau_m)).any(axis=1)

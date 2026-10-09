@@ -9,7 +9,7 @@
     "min_run": 3
   },
   "mean_contact_fraction_definition": "Per-segment unweighted mean of each segment's per-frame contact fraction (ordinary_locomotion uses loco_frame_stride on segment frames).",
-  "total_duration_s_note": "total_s sums segment frame-window lengths (floor(start_s*fps)..ceil(end_s*fps) at 30 fps), not raw end-start; E1 cohort_counts uses end-start only (e.g. floor_work_eligible 100.803 vs 100.700).",
+  "total_duration_s_note": "total_s sums segment frame-window lengths (floor(start_s*fps)..ceil(end_s*fps) at 30 fps), not raw end-start; the split cohort_counts uses end-start only (e.g. floor_work_eligible 100.803 vs 100.700).",
   "loco_sample": {
     "seed": 0,
     "frame_stride": 4,

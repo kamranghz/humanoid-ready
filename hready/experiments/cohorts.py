@@ -3,7 +3,7 @@
 - ``ordinary_locomotion``: BABEL segments >= ``min_segment_duration_s`` whose first matching cohort
   (cohort order: floor_work, ordinary_locomotion, other_labelled) is ordinary_locomotion.
 - ``floor_work_eligible`` (kneel + lie), ``sit_floor``, ``sit_support``: confirmed segments in
-  ``results/E/floor_work_clips.csv``.
+  ``results/splits/floor_work_clips.csv``.
 Segment -> frame indices use the split module's ``_segment_frame_indices`` at 30 Hz.
 """
 

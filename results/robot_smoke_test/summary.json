@@ -1,13 +1,13 @@
 {
   "controller_label": "PD-only joint tracking with default G1_29DOF_CFG gains; not a balance controller",
-  "out_root": "D:\\projects\\humanoid-ready\\results\\D\\smoke",
+  "out_root": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test",
   "rows": [
     {
       "slug": "standing_calibration",
       "amass_clip": "standing_default_pose",
       "mode": "kin_root",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\run_kin_root.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\metrics_kin_root.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\run_kin_root.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\metrics_kin_root.json",
       "time_to_fall_s": null,
       "joint_rmse_rad": 0.09108111599164546,
       "root_pos_err_cm_mean": 0.05652210131250406,
@@ -16,14 +16,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.0,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.009325847029685974,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\replay_kin_root.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\replay_kin_root.mp4"
     },
     {
       "slug": "standing_calibration",
       "amass_clip": "standing_default_pose",
       "mode": "free",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\run_free.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\metrics_free.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\run_free.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\metrics_free.json",
       "time_to_fall_s": 0.89,
       "joint_rmse_rad": 0.079673577174283,
       "root_pos_err_cm_mean": 15.827307197825487,
@@ -32,14 +32,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.0,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.004741563927382231,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\standing_calibration\\replay_free.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\standing_calibration\\replay_free.mp4"
     },
     {
       "slug": "CMU_132_132_35",
       "amass_clip": "CMU/132/132_35",
       "mode": "kin_root",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\run_kin_root.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\metrics_kin_root.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\run_kin_root.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\metrics_kin_root.json",
       "time_to_fall_s": null,
       "joint_rmse_rad": 0.027007753535743386,
       "root_pos_err_cm_mean": 0.1814103650825043,
@@ -48,14 +48,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.0009514747859181732,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.009333081722376901,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\replay_kin_root.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\replay_kin_root.mp4"
     },
     {
       "slug": "CMU_132_132_35",
       "amass_clip": "CMU/132/132_35",
       "mode": "free",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\run_free.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\metrics_free.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\run_free.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\metrics_free.json",
       "time_to_fall_s": 0.8250000000000001,
       "joint_rmse_rad": 0.07093613183958926,
       "root_pos_err_cm_mean": 17.353473141368273,
@@ -64,14 +64,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.012048192771084338,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.013428465513414898,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\CMU_132_132_35\\replay_free.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\CMU_132_132_35\\replay_free.mp4"
     },
     {
       "slug": "ACCAD_run_to_jump",
       "amass_clip": "ACCAD/Female1Running_c3d/C20_-__run_to_jump_to_walk",
       "mode": "kin_root",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\run_kin_root.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\metrics_kin_root.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\run_kin_root.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\metrics_kin_root.json",
       "time_to_fall_s": null,
       "joint_rmse_rad": 0.11122751458771593,
       "root_pos_err_cm_mean": 0.8798261747830824,
@@ -80,14 +80,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.23551637279596976,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.7922953136012751,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\replay_kin_root.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\replay_kin_root.mp4"
     },
     {
       "slug": "ACCAD_run_to_jump",
       "amass_clip": "ACCAD/Female1Running_c3d/C20_-__run_to_jump_to_walk",
       "mode": "free",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\run_free.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\metrics_free.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\run_free.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\metrics_free.json",
       "time_to_fall_s": 0.97,
       "joint_rmse_rad": 0.2100772525663499,
       "root_pos_err_cm_mean": 136.2070331203894,
@@ -96,14 +96,14 @@
       "pd_demand_exceeds_limit_waist_step_fraction": 0.7282051282051282,
       "pd_demand_exceeds_limit_arms_step_fraction": 0.0,
       "waist_tracking_max_abs_err_rad": 0.2545003668983771,
-      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\ACCAD_run_to_jump\\replay_free.mp4"
+      "replay_mp4": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\ACCAD_run_to_jump\\replay_free.mp4"
     },
     {
       "slug": "BMLrub_rub001_treadmill",
       "amass_clip": "BMLrub/rub001/0000_treadmill_norm_stageii.npz",
       "mode": "kin_root",
-      "run_npz": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\BMLrub_rub001_treadmill\\run_kin_root.npz",
-      "metrics_json": "D:\\projects\\humanoid-ready\\results\\D\\smoke\\BMLrub_rub001_treadmill\\metrics_kin_root.json",
+      "run_npz": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\BMLrub_rub001_treadmill\\run_kin_root.npz",
+      "metrics_json": "D:\\projects\\humanoid-ready\\results\\robot_smoke_test\\BMLrub_rub001_treadmill\\metrics_kin_root.json",
       "time_to_fall_s": null,
       "joint_rmse_rad": 0.03356309089874551,
       "root_pos_err_cm_mean": 0.09578667468413365,

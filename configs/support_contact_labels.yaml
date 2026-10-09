@@ -160,9 +160,9 @@ validation_clips:
   - rel_path: CMU/05/05_01_stageii.npz
     start_s: null
     end_s: null
-output_json: results/E/support_contact_v2_rates.json
+output_json: results/support_contact/label_rates.json
 paths_config: configs/paths.yaml
-floor_work_clips_csv: results/E/floor_work_clips.csv
+floor_work_clips_csv: results/splits/floor_work_clips.csv
 standing_foot_characterisation_val:
   per_clip:
   - rel_path: ACCAD/Female1General_c3d/A1_-_Stand_stageii.npz

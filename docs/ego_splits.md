@@ -1,9 +1,9 @@
-# Track E1 — splits, cohorts, floor-work evaluation
+# Subject splits, cohorts and floor-work evaluation
 
 **Command:** `python -m hready.data.ego_splits --config configs/ego_splits.yaml --splits val,test`  
-**Outputs:** `results/E/splits.json`, `results/E/floor_work_clips.csv`, `results/E/cohort_counts.json`
+**Outputs:** `results/splits/splits.json`, `results/splits/floor_work_clips.csv`, `results/splits/cohort_counts.json`
 
-**Recorded:** geometry thresholds in `configs/ego_splits.yaml` (`floor_work.geometry_tree`, dated **2026-10-04**) before any E3 result.
+**Recorded:** geometry thresholds in `configs/ego_splits.yaml` (`floor_work.geometry_tree`, dated **2026-10-04**) before any completion result.
 
 ## Subject split
 
@@ -16,7 +16,7 @@ Uses existing `assign_split` on the AMASS index. Disjointness on `{subset}/{subj
 | Cohort | Keywords | Geometry |
 |--------|----------|----------|
 | `floor_work` | lie, crawl, kneel, sit, yoga | Decision tree → `lie`, `crawl`, `kneel`, `sit_floor`, `sit_support`, `yoga_like`, `none` |
-| `ordinary_locomotion` | walk, run, stand, turn | Listed for transparency (no floor geometry gate in E1) |
+| `ordinary_locomotion` | walk, run, stand, turn | Listed for transparency (no floor geometry gate at this stage) |
 | `other_labelled` | crouch, stretch | Never floor-work proposals |
 
 **BABEL → accepted geometry:** `sit` → `{sit_floor, sit_support}`; `yoga` → `yoga_like`; others map 1:1. Confirmed if ≥ `min_geometry_fraction` (0.5) of segment frames match the accepted set. **Geometry is authoritative;** disagreements excluded and counted.
@@ -30,9 +30,9 @@ On grounded SMPL-X FK, **pelvis joint height** (metres, floor z=0) splits seated
 
 **Amendment 2026-10-04:** `sit_support_pelvis_h_min` **0.68 → 0.43** (within **0.002 m** of the all-VAL percentile midpoint **0.4321 m**; kept as policy — see provenance below). At **0.68**, segment-dominant confirmed BABEL sit was **76** `sit_floor` / **19** `sit_support`; at **0.43** it is **17** / **78**.
 
-**Floor-work-eligible geometry** (metrics that assume floor support): **`kneel` and `lie` only** (E1 final). **`crawl` and `yoga_like`** have **0** confirmed segments in VAL ∪ TEST — not evaluable floor-work classes. **`sit_floor` and `sit_support` are excluded** from eligible metrics — both reported separately in `cohort_counts.json`; only kneel+lie feed `floor_work_eligible`.
+**Floor-work-eligible geometry** (metrics that assume floor support): **`kneel` and `lie` only** (final). **`crawl` and `yoga_like`** have **0** confirmed segments in VAL ∪ TEST — not evaluable floor-work classes. **`sit_floor` and `sit_support` are excluded** from eligible metrics — both reported separately in `cohort_counts.json`; only kneel+lie feed `floor_work_eligible`.
 
-**Amendment 2026-10-04 (eligibility):** `sit_floor` removed from floor-work-eligible because the class is **impure** for floor-contact metrics. Owner visual check: Eyes_Japan **09-squat_down** is a deep squat (no seat) but is labelled **`sit_floor`** (3 confirmed segments; median `pelvis_h` **0.33–0.34 m**, median hip/thigh mesh **`support_h` ~0.15 m**). Across **17** confirmed `sit_floor` segments, median `support_h` spans **0.048–0.31 m** and median `pelvis_h` **0.21–0.45 m**. **`foot_z_min`**, **`thigh_up_dot`**, and a mesh **`support_h`** gate (hips + left/right up-leg vertices, grounded FK) **do not** separate floor sitting from squats without discarding most of the class (**τ = 0.0495 m** keeps **1/17**; **τ = 0.07 m** keeps **4/17**); confirmed **`sit_support`** segment medians are all **≥ 0.278 m**. Contact-with-floor metrics do not apply to squats. A mesh-based support anchor remains a possible later refinement; **not** adopted in E1 (no tree/threshold change).
+**Amendment 2026-10-04 (eligibility):** `sit_floor` removed from floor-work-eligible because the class is **impure** for floor-contact metrics. Owner visual check: Eyes_Japan **09-squat_down** is a deep squat (no seat) but is labelled **`sit_floor`** (3 confirmed segments; median `pelvis_h` **0.33–0.34 m**, median hip/thigh mesh **`support_h` ~0.15 m**). Across **17** confirmed `sit_floor` segments, median `support_h` spans **0.048–0.31 m** and median `pelvis_h` **0.21–0.45 m**. **`foot_z_min`**, **`thigh_up_dot`**, and a mesh **`support_h`** gate (hips + left/right up-leg vertices, grounded FK) **do not** separate floor sitting from squats without discarding most of the class (**τ = 0.0495 m** keeps **1/17**; **τ = 0.07 m** keeps **4/17**); confirmed **`sit_support`** segment medians are all **≥ 0.278 m**. Contact-with-floor metrics do not apply to squats. A mesh-based support anchor remains a possible later refinement; **not** adopted for the splits (no tree/threshold change).
 
 ## Height units
 
@@ -62,7 +62,7 @@ Features: `pelvis_h`, `torso_up_dot` (neck−pelvis vs +Z), `wrist_h`, `head_h`,
 | `crawl_foot_h_max` | — | **removed** | Unsatisfiable on ankle heights |
 | Lie `wrist_h > 0.22` gate | — | **removed** | Excluded supine arms |
 
-Anchors unchanged from P1 (e.g. `torso_horizontal_max=0.45`, `crawl_pelvis_h_max=0.42`, `crawl_wrist_h_max=0.22`, `lie_pelvis_h_max=0.40`, kneel/sit/yoga anchors in `configs/ego_splits.yaml`).
+Anchors unchanged from the first split version (e.g. `torso_horizontal_max=0.45`, `crawl_pelvis_h_max=0.42`, `crawl_wrist_h_max=0.22`, `lie_pelvis_h_max=0.40`, kneel/sit/yoga anchors in `configs/ego_splits.yaml`).
 
 Each threshold has a matching entry in `threshold_provenance`. Thresholds were **not** tuned to maximize BABEL agreement.
 
@@ -78,7 +78,7 @@ Each threshold has a matching entry in `threshold_provenance`. Thresholds were *
 
 ### Indicative, N small (VAL ∪ TEST proposals vs confirmed subjects)
 
-Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows in `floor_work_clips.csv` (unique `{subset}/{subject}`).
+Counts from `results/splits/cohort_counts.json` (`val_union_test`) and confirmed rows in `floor_work_clips.csv` (unique `{subset}/{subject}`).
 
 | Category | Proposal segments | Proposal subjects | Confirmed segments | Confirmed subjects |
 |----------|-------------------|-------------------|--------------------|--------------------|
@@ -90,7 +90,7 @@ Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows
 
 **TEST split:** **2** `floor_work_eligible` segments (**1** subject, **4.421 s**); VAL holds the other **19** (**96.382 s**, **7** subjects). Eligible set is **kneel + lie** only.
 
-### E1 close run (`cohort_counts.json`, VAL ∪ TEST)
+### Split close run (`cohort_counts.json`, VAL ∪ TEST)
 
 **Per BABEL category:** confirmed / disagreements / unconfirmed — crawl **0 / 3 / 9**, kneel **12 / 3 / 4**, lie **9 / 2 / 9**, sit **95 / 2 / 44**, yoga **0 / 0 / 5** (116 confirmed proposals total).
 
@@ -127,7 +127,7 @@ On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the
 
 ## Eyes_Japan floor offset
 
-**E1b standing-foot characterisation (VAL, BABEL `stand` segments):** Eyes_Japan per-clip stand-foot medians are **p50 ≈ 0.0056 m**, **p95 ≈ 0.031 m**, **max ≈ 0.049 m** (`standing_foot_characterisation_val` in recorded `configs/support_contact_v2.yaml`, reported with `results/E/support_contact_v2_rates.json`). That does **not** support a blanket **0.07 m** standing residual on Eyes_Japan. With production thresholds, cohort **kneel** mean shin contact fraction is **≈ 0.911** from `results/E/support_contact_v2_rates.json` → `cohorts.kneel.mean_contact_fraction_per_region.shins` (**0.9107485747483427**, post patch-median non-foot speed amendment). **≈ 0.884** is the pre-amendment cohort mean: `amendment_2026_10_04_non_foot_speed.cohorts.kneel.regions.shins.mean_contact_fraction.before` (**0.8837845288980636**). **≈ 0.836** is the unweighted mean of the two recorded validation kneel clips at `h_on_m=0.05`, `z_shift_m=0` in `sensitivity_validation_clips` (`contact_fraction.shins` **0.6710526315789473** and **1.0**), not the full kneel cohort. Details: `docs/contact_labels_v2.md`.
+**Support-contact standing-foot characterisation (VAL, BABEL `stand` segments):** Eyes_Japan per-clip stand-foot medians are **p50 ≈ 0.0056 m**, **p95 ≈ 0.031 m**, **max ≈ 0.049 m** (`standing_foot_characterisation_val` in recorded `configs/support_contact_labels.yaml`, reported with `results/support_contact/label_rates.json`). That does **not** support a blanket **0.07 m** standing residual on Eyes_Japan. With production thresholds, cohort **kneel** mean shin contact fraction is **≈ 0.911** from `results/support_contact/label_rates.json` → `cohorts.kneel.mean_contact_fraction_per_region.shins` (**0.9107485747483427**, post patch-median non-foot speed amendment). **≈ 0.884** is the pre-amendment cohort mean: `amendment_2026_10_04_non_foot_speed.cohorts.kneel.regions.shins.mean_contact_fraction.before` (**0.8837845288980636**). **≈ 0.836** is the unweighted mean of the two recorded validation kneel clips at `h_on_m=0.05`, `z_shift_m=0` in `sensitivity_validation_clips` (`contact_fraction.shins` **0.6710526315789473** and **1.0**), not the full kneel cohort. Details: `docs/support_contact_labels.md`.
 
 ## Legacy acceptance (joint-index fix)
 
@@ -137,4 +137,4 @@ Legacy overlapping yaml on **160** TEST proposals (with stretch): wrong indices 
 
 Record SHA256 of `splits.json`, `floor_work_clips.csv`, `cohort_counts.json` after each mission run (`--verify-byte-stable`).
 
-**ACCEPTANCE F (geometry-only scan):** skipped in CLI by default (`skip_geometry_only=True`) — full-index FK over VAL clips is multi-hour; BABEL-gated evaluation above is authoritative for E1.
+**ACCEPTANCE F (geometry-only scan):** skipped in CLI by default (`skip_geometry_only=True`) — full-index FK over VAL clips is multi-hour; BABEL-gated evaluation above is authoritative for the splits.

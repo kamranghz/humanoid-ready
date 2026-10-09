@@ -70,7 +70,7 @@ from hready.train.evidence_locked_engine import (
 )
 
 MAIN = "main"
-TABLE_ROWS = ("heuristic", "e3_learned", "e4_same_budget", "e4_main", "gt_reference")
+TABLE_ROWS = ("heuristic", "oracle_transformer", "evidence_locked_same_budget", "evidence_locked_main", "gt_reference")
 
 
 def same_budget_run(ctx: EvidenceLockedContext) -> str:
@@ -99,8 +99,8 @@ class EvidenceLockedContext:
         self.cfg = cfg
         self.config_path = config_path
         self.device = device
-        oracle_cfg = yaml.safe_load(Path(cfg["e3_config"]).read_text(encoding="utf-8"))
-        self.oracle = Ctx(oracle_cfg, Path(cfg["e3_config"]), device)
+        oracle_cfg = yaml.safe_load(Path(cfg["baseline_config"]).read_text(encoding="utf-8"))
+        self.oracle = Ctx(oracle_cfg, Path(cfg["baseline_config"]), device)
         self.disclaimer = " ".join(cfg["disclaimer"].split())
         if self.disclaimer != self.oracle.disclaimer:
             raise ValueError("evidence-locked disclaimer must match the oracle-baselines disclaimer")
@@ -778,31 +778,31 @@ def cmd_eval_table(ctx: EvidenceLockedContext) -> dict[str, Any]:
 
     makers = {
         "heuristic": mk_heur,
-        "e3_learned": mk_transformer,
-        "e4_same_budget": model_maker(ctx, model_budget, rc_budget),
-        "e4_main": model_maker(ctx, model_main, rc_main),
+        "oracle_transformer": mk_transformer,
+        "evidence_locked_same_budget": model_maker(ctx, model_budget, rc_budget),
+        "evidence_locked_main": model_maker(ctx, model_main, rc_main),
         "gt_reference": mk_gt,
     }
     cohorts = list(oracle.cfg["eval"]["cohorts"])
     result: dict[str, Any] = {
         "disclaimer": ctx.disclaimer,
         "models": {
-            "e3_learned": meta_tf,
-            "e4_same_budget": {
+            "oracle_transformer": meta_tf,
+            "evidence_locked_same_budget": {
                 "run": sb,
                 "max_steps": rc_budget["train"]["max_steps"],
                 **meta_budget,
                 "run_cfg": rc_budget,
             },
-            "e4_main": {
+            "evidence_locked_main": {
                 "run": MAIN,
                 "max_steps": rc_main["train"]["max_steps"],
                 **meta_main,
                 "run_cfg": rc_main,
             },
         },
-        "note": "e4_same_budget = main-arm config trained for E3's budget (40000 steps, batch 64, "
-        "windows 64/32, seed 0); e4_main = same config, longer schedule",
+        "note": "evidence_locked_same_budget = main-arm config trained for the oracle transformer's budget (40000 steps, batch 64, "
+        "windows 64/32, seed 0); evidence_locked_main = same config, longer schedule",
         "ground_consistency_tolerance_m": oracle.cfg["eval"][
             "ground_consistency_tolerance_m"
         ],
@@ -815,7 +815,7 @@ def cmd_eval_table(ctx: EvidenceLockedContext) -> dict[str, Any]:
     for split in ("val", "test"):
         accs, wall = evaluate(ctx, split, makers, cohorts)
         result["splits"][split] = summarize(
-            ctx, accs, {"e3_learned", "e4_same_budget", "e4_main"}
+            ctx, accs, {"oracle_transformer", "evidence_locked_same_budget", "evidence_locked_main"}
         )
         result[f"wall_s_{split}"] = wall
         print_rows(oracle, split, result["splits"][split])
@@ -1161,7 +1161,7 @@ def main(argv: list[str] | None = None) -> None:
         description="Evidence-locked completion, ablation study (oracle control)"
     )
     parser.add_argument(
-        "--config", type=Path, default=Path("configs/e4_completion.yaml")
+        "--config", type=Path, default=Path("configs/evidence_locked_ablation.yaml")
     )
     parser.add_argument(
         "--device", default="cuda" if torch.cuda.is_available() else "cpu"

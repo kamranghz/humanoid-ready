@@ -14,20 +14,20 @@
 - **B6 smoke regression (item 7 acceptance):** 300 train steps with `shuffle=True`, `corrupt_step=step`, dropout **0.1**, and only **50/200** val windows evaluated left val MPJPE **worse than corrupt** (~116 mm vs ~36 mm). Root cause: **under-trained** model plus **train/eval corruption mismatch** (not zero-init: residual heads verified at **max |Δtransl| < 1e-5** at init). Item 8 gate uses **reconstruction-only**, **dropout 0**, longer training, and fixed **200**-window eval.
 - **`hr_refine_eval` units:** `mpjpe` / `pa_mpjpe` already return **mm**; eval must not multiply again (item-8 gate CSV on `wip/fast-loader` was ~1000× inflated before that fix).
 
-### Track E0 audit (Oct 4, 2026)
+### Module audit (Oct 4, 2026)
 
 | Area | Reuse | Conflicts / gaps |
 |------|--------|------------------|
 | AMASS index + `assign_split` | `hready/data/amass.py` — beta-group splits, `load_clip`, flags, foot-height-rise sidecar | Split key is **beta-connected folder group**, not raw subject string alone; `assert_no_subject_leakage` is group-level. |
 | BABEL | `hready/data/babel.py` — `act_cat_matches_keyword`, cached `babel_index.json` | Many test clips are `seq_ann` only; floor-work rules prefer `frame_ann` segments ≥1 s. |
 | Contact / skate / rise | `contact.py`, `foot_height_rise.py`, `refine_eligible_cache.py` | Rise >5 cm excluded from HR-Refine **eligible** train set; floor-work subset **annotates** rise, does not auto-drop. |
-| Ego sensors (E2) | `refine_corrupt.py`, virtual cam, `imu.py` | Corruption models **full-body** noise, not partial leg dropout; needs new encoder + observation mask. |
-| Regression baseline (E3) | `hready/models/hr_refine.py` backbone | Must **not** take corrupted legs; new observation encoder on E2 features only. |
+| Ego sensors (egocentric evidence) | `refine_corrupt.py`, virtual cam, `imu.py` | Corruption models **full-body** noise, not partial leg dropout; needs new encoder + observation mask. |
+| Regression baseline (oracle completion baselines) | `hready/models/hr_refine.py` backbone | Must **not** take corrupted legs; new observation encoder on egocentric-evidence features only. |
 | HR-Refine trainer | `hr_refine_engine.py`, `configs/hr_refine.yaml` | Item 8 / fast-loader on `wip/fast-loader` (motion memmap unfinished). |
 | Losses / metrics | `hready/losses/*`, `hready/metrics/*` | Lower-body/feet MPJPE slices and contact **ECE** not wired in one eval CLI yet. |
 | SMPL-X | `smplx_wrapper.load_body`, `batch_forward.smpl_forward_bt` | — |
-| G1 / Isaac | `hready/robot/*` | **Out of scope** for Track E preview (Module B deferred). |
-| Missing for E1–E3 | — | E1 floor-work CLI (this commit); E2 `ego_observation_model.md` + synth; E3 heuristic + ego-conditioned regression + shared metrics table. |
+| G1 / Isaac | `hready/robot/*` | **Out of scope** for the egocentric-track preview (Module B deferred). |
+| Missing for splits, evidence and completion | — | floor-work CLI (this commit); `ego_observation_model.md` + synth; flat-floor heuristic + ego-conditioned regression + shared metrics table. |
 
 ### Item 6C — G1 Newton smoke (Oct 2026)
 

@@ -307,7 +307,7 @@ def _makers(
         return learned_eval(pred, prob, dis, n_dis, common, thr)
 
     makers: dict[str, Callable[..., ClipEval]] = {}
-    metas: dict[str, Any] = {"e3_learned": meta_tf}
+    metas: dict[str, Any] = {"oracle_transformer": meta_tf}
     if with_fixed_rows:
 
         def mk_heur(obs, rig, common):
@@ -322,7 +322,7 @@ def _makers(
             )
 
         makers["heuristic"] = mk_heur
-    makers["e3_learned"] = mk_transformer
+    makers["oracle_transformer"] = mk_transformer
     for n in names:
         model, rc, meta = ctx.load_run(n)
         makers[n] = model_maker(ctx, model, rc)
@@ -350,8 +350,8 @@ def _makers(
 def _paired_vs_reference(ctx: PreregisteredContext, accs, bins, names: list[str]) -> dict[str, Any]:
     dr = ctx.cfg["decision_rule"]["comparison"]
     ref = {
-        "per_subject": accs["e3_learned"]["all"].per_subject,
-        "ece_bins": bins["e3_learned"],
+        "per_subject": accs["oracle_transformer"]["all"].per_subject,
+        "ece_bins": bins["oracle_transformer"],
     }
     return {
         n: paired_bootstrap(
@@ -370,7 +370,7 @@ def cmd_eval_val(ctx: PreregisteredContext) -> dict[str, Any]:
     makers, metas = _makers(ctx, names, with_fixed_rows=True)
     cohorts = list(ctx.oracle.cfg["eval"]["cohorts"])
     accs, bins, wall = evaluate_with_bins(ctx, "val", makers, cohorts)
-    table = summarize(ctx, accs, {"e3_learned", *names})
+    table = summarize(ctx, accs, {"oracle_transformer", *names})
     print_rows(ctx.oracle, "val", table)
     paired = _paired_vs_reference(ctx, accs, bins, names)
     # Informational only (no decision uses it): does the retrained det_w0 reproduce the ablation-study anchor?
@@ -378,16 +378,16 @@ def cmd_eval_val(ctx: PreregisteredContext) -> dict[str, Any]:
     if "det_w0" in names:
         mw, ma = table["det_w0"]["all"]["metrics"], table[ctx.anchor]["all"]["metrics"]
         repro = {
-            k: {"det_w0": mw[k], "v1_anchor": ma[k], "diff": mw[k] - ma[k]}
+            k: {"det_w0": mw[k], "ablation_anchor": ma[k], "diff": mw[k] - ma[k]}
             for k in REPORT_KEYS
         }
     out = {
         "disclaimer": ctx.disclaimer,
         "split": "val",
-        "det_w0_vs_v1_anchor_informational": repro,
+        "det_w0_vs_ablation_anchor_informational": repro,
         "models": metas,
         "table": table,
-        "paired_vs_e3_learned": paired,
+        "paired_vs_oracle_transformer": paired,
         "wall_s": wall,
     }
     print(json.dumps(paired, indent=1))
@@ -410,7 +410,7 @@ def apply_rule(cfg: dict[str, Any], paired: dict[str, Any]) -> dict[str, Any]:
                     "pass": p["hi"] < gate["upper_bound_lt"],
                 }
             else:
-                lim = gate["upper_bound_le_frac_of_e3"] * p["reference"]
+                lim = gate["upper_bound_le_frac_of_reference"] * p["reference"]
                 checks[key] = {
                     "upper_bound": p["hi"],
                     "limit": lim,
@@ -430,19 +430,19 @@ def apply_rule(cfg: dict[str, Any], paired: dict[str, Any]) -> dict[str, Any]:
         "per_arm": per_arm,
         "passing": passing,
         "selected": passing[0] if passing else None,
-        "v2_failed": not passing,
+        "comparison_failed": not passing,
     }
 
 
 def cmd_decide(ctx: PreregisteredContext) -> dict[str, Any]:
-    out = apply_rule(ctx.cfg, ctx.results()["eval_val"]["paired_vs_e3_learned"])
+    out = apply_rule(ctx.cfg, ctx.results()["eval_val"]["paired_vs_oracle_transformer"])
     print(json.dumps(out, indent=1))
     ctx.update("decision", out)
     return out
 
 
 def cmd_eval_test(ctx: PreregisteredContext) -> dict[str, Any]:
-    """TEST once: selected arm + e3_learned only. Refuses to run twice or without a selection."""
+    """TEST once: selected arm + oracle_transformer only. Refuses to run twice or without a selection."""
     if "eval_test" in ctx.results():
         raise RuntimeError("TEST already evaluated for the pre-registered comparison; it is evaluated once")
     sel = ctx.results().get("decision", {}).get("selected")
@@ -454,7 +454,7 @@ def cmd_eval_test(ctx: PreregisteredContext) -> dict[str, Any]:
     accs, bins, wall = evaluate_with_bins(
         ctx, "test", makers, ["all", "ordinary_locomotion", "floor_work_eligible"]
     )
-    table = summarize(ctx, accs, {"e3_learned", sel})
+    table = summarize(ctx, accs, {"oracle_transformer", sel})
     print_rows(ctx.oracle, "test", table)
     paired = _paired_vs_reference(ctx, accs, bins, [sel])
     out = {
@@ -463,7 +463,7 @@ def cmd_eval_test(ctx: PreregisteredContext) -> dict[str, Any]:
         "note": "evaluated once; not used for any choice",
         "models": metas,
         "table": table,
-        "paired_vs_e3_learned": paired,
+        "paired_vs_oracle_transformer": paired,
         "wall_s": wall,
     }
     ctx.update("eval_test", out)
@@ -493,7 +493,7 @@ def main(argv: list[str] | None = None) -> None:
         description="Evidence-locked completion, pre-registered comparison (oracle control)"
     )
     parser.add_argument(
-        "--config", type=Path, default=Path("configs/e4_v2_completion.yaml")
+        "--config", type=Path, default=Path("configs/evidence_locked_preregistered_comparison.yaml")
     )
     parser.add_argument(
         "--device", default="cuda" if torch.cuda.is_available() else "cpu"

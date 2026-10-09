@@ -1,17 +1,17 @@
-# Track E3 — oracle completion baselines (control path only; docs/e3_oracle.md).
-# Evidence (camera, noise, occlusion) is read from paths.ego_observation_yaml (E2-A), not duplicated here.
+# Oracle completion baselines (control path only; docs/oracle_completion_baselines.md).
+# Evidence (camera, noise, occlusion) is read from paths.ego_observation_yaml (observation simulator), not duplicated here.
 seed: 0
 eval_noise_seed: 1
 
 disclaimer: >-
-  oracle control; floor height given (world z = 0); head pose and gravity given (D1)
+  oracle control; floor height given (world z = 0); head pose and gravity given (rig input)
 
 window:
   length: 64
   stride: 32
 
 # Heuristic: offsets from the neutral locked_head rest skeleton (betas 0, symmetrised, arms
-# hanging), applied in the heading frame; nothing fitted to data (docs/e3_oracle.md).
+# hanging), applied in the heading frame; nothing fitted to data (docs/oracle_completion_baselines.md).
 heuristic:
   heading_min_horiz: 0.15   # |look_xy| below this -> heading fallback chain
 
@@ -29,7 +29,7 @@ loss:
   w_transl: 1.0   # metres, L1
   w_joints: 2.0   # metres, mean per-joint L2 (neutral-shape FK)
   w_contact: 0.3
-  w_phys: 0.0     # E7 "none" arm: no physics loss in E3
+  w_phys: 0.0     # refinement-comparison "none" arm: no physics loss in the oracle baselines
 
 train:
   batch_size: 64
@@ -62,7 +62,7 @@ memmap:
   build_workers: 12
 
 eval:
-  ground_consistency_tolerance_m: 0.04947  # primary, recorded (docs/e0_audit.md)
+  ground_consistency_tolerance_m: 0.04947  # primary, recorded (docs/module_audit.md)
   # Sensitivity column: same rule on singly grounded foot_traj heights (docs/pivot_log.md 2026-10-07).
   ground_consistency_tolerance_sensitivity_m: 0.04453
   contact_threshold: 0.5
@@ -78,9 +78,9 @@ leak_check:
   max_tries: 300
 
 paths:
-  splits_json: results/E/splits.json
-  floor_work_csv: results/E/floor_work_clips.csv
+  splits_json: results/splits/splits.json
+  floor_work_csv: results/splits/floor_work_clips.csv
   ego_observation_yaml: configs/ego_observation.yaml
   ego_splits_yaml: configs/ego_splits.yaml
   ego_splits_doc: docs/ego_splits.md
-  results_json: results/E/e3_oracle_run.json
+  results_json: results/completion/oracle_baselines.json

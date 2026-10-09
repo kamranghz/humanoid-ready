@@ -283,7 +283,7 @@ def run_smoke(out_root: Path, cfg: dict[str, Any] | None = None) -> dict[str, An
 def main(argv: list[str] | None = None) -> None:
     p = argparse.ArgumentParser(description="Item 6 G1 smoke: retarget + Newton + metrics + replay.")
     p.add_argument("--clip", default="CMU/132/132_35", help="Primary clip id (smoke suite is fixed)")
-    p.add_argument("--out", type=Path, default=Path("results/D/smoke"))
+    p.add_argument("--out", type=Path, default=Path("results/robot_smoke_test"))
     args = p.parse_args(argv)
     if args.clip.replace("\\", "/") not in ("CMU/132/132_35",):
         print(f"[run_smoke] note: full suite runs regardless of --clip={args.clip}", flush=True)

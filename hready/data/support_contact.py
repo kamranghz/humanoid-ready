@@ -1197,7 +1197,7 @@ def print_validation_frames(
 
 def main(argv: Optional[list[str]] = None) -> None:
     p = argparse.ArgumentParser(description="Support-contact labels")
-    p.add_argument("--config", type=Path, default=Path("configs/support_contact_v2.yaml"))
+    p.add_argument("--config", type=Path, default=Path("configs/support_contact_labels.yaml"))
     p.add_argument("--derive-config", action="store_true")
     p.add_argument("--report", action="store_true")
     p.add_argument("--all", action="store_true")
@@ -1293,7 +1293,7 @@ def main(argv: Optional[list[str]] = None) -> None:
         "total_duration_s_note": (
             "total_s sums segment frame-window lengths "
             "(floor(start_s*fps)..ceil(end_s*fps) at 30 fps), not raw end-start; "
-            "E1 cohort_counts uses end-start only (e.g. floor_work_eligible 100.803 vs 100.700)."
+            "the split cohort_counts uses end-start only (e.g. floor_work_eligible 100.803 vs 100.700)."
         ),
         "loco_sample": {
             "seed": anti.get("loco_sample_seed"),
