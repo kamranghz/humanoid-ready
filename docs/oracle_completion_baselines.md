@@ -20,7 +20,7 @@ python -m hready.eval.e3_oracle run              # all of the above in order
 
 A config may add a `subset:` block (`seed`, `train_n`, `val_n`, `test_n`) and its own `paths.results_json` for a pipeline check on a few clips; subsets never move clips across splits and are never results.
 
-## Training clip list (frozen rule)
+## Training clip list (pre-registered rule)
 
 1. `assign_split(entry) == "train"`
 2. `clip_flags(entry)["skate_flag"]` is false
@@ -33,7 +33,7 @@ Evaluation uses all VAL and TEST clips; clip flags never remove a clip from MPJP
 ## Memmap cache
 
 `<cache_dir>/e3_motion_30hz/clips/<rel_path>/`: uncompressed `.npy` per array, read with `np.load(..., mmap_mode="r")`:
-`root_orient`, `pose_body`, `transl` (grounded, floor at z = 0), `betas`, `joints_22`, `joints_55` (locked_head FK, CPU, single thread, fixed 512-frame chunks), `contact` (T, 4 bool; item-5 foot-channel labels from the grounded `foot_traj` cache with the frozen hysteresis rule), and `meta.json` (written last, so an interrupted build resumes cleanly). All arrays are float32/bool at 30 Hz. `verify-cache` recomputes every array from `load_clip(ground=True)` + FK + item-5 contact on a seeded sample and requires byte equality and `np.memmap` reads.
+`root_orient`, `pose_body`, `transl` (grounded, floor at z = 0), `betas`, `joints_22`, `joints_55` (locked_head FK, CPU, single thread, fixed 512-frame chunks), `contact` (T, 4 bool; item-5 foot-channel labels from the grounded `foot_traj` cache with the recorded hysteresis rule), and `meta.json` (written last, so an interrupted build resumes cleanly). All arrays are float32/bool at 30 Hz. `verify-cache` recomputes every array from `load_clip(ground=True)` + FK + item-5 contact on a seeded sample and requires byte equality and `np.memmap` reads.
 
 ## Evidence, rig and canonical frame
 
@@ -72,7 +72,7 @@ Training is step-based with a seeded, resumable window sampler; `last.pt` / `bes
   - ground consistency (`docs/e0_audit.md`): fraction of frames with any labelled in-contact channel whose |height| > τ, τ = `ground_consistency_tolerance_m` (0.04947, primary); a sensitivity column uses `ground_consistency_tolerance_sensitivity_m` (0.04453, singly grounded heights; `docs/pivot_log.md` 2026-10-07).
   A `gt_reference` row applies the same proxies to GT joints, so the proxy error itself is visible.
 - Flags: `exclude_contact` removes a clip from contact metrics, skate and ground consistency; `exclude_physical_eval` removes it from all physical metrics. Clips lost to each flag are counted per cohort.
-- Cohorts (frozen E1 definitions, reused code): `all`; `ordinary_locomotion` (BABEL segments ≥ 1 s whose first matching E1 cohort is ordinary locomotion); `floor_work_eligible` (kneel + lie confirmed segments); `sit_floor` and `sit_support` (descriptive only).
+- Cohorts (recorded E1 definitions, reused code): `all`; `ordinary_locomotion` (BABEL segments ≥ 1 s whose first matching E1 cohort is ordinary locomotion); `floor_work_eligible` (kneel + lie confirmed segments); `sit_floor` and `sit_support` (descriptive only).
 - VAL and TEST are reported separately. Subject-cluster bootstrap 95% CIs (ratio of pooled sums, `bootstrap_n` resamples). `floor_work_eligible` is additionally reported as a per-subject table over VAL ∪ TEST with CIs, labelled **indicative** (8 subjects; kneel concentrated in Eyes_Japan; TEST has 2 segments).
 
 ## Leak check (`leak-check`, trained checkpoint)
@@ -91,4 +91,4 @@ All numbers are pooled over VAL `all` (2223 clips) unless stated; disclaimer: or
 
 ## Known issue (not changed in E3)
 
-The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The frozen τ in `docs/e0_audit.md` stays the primary; the E3 table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).
+The `foot_traj` cache stores floor-grounded channel positions, and `compute_ground_consistency_tolerance_default` (`hready/data/ego_splits.py`) subtracts the floor offset a second time before taking the 95th percentile. The recorded τ in `docs/e0_audit.md` stays the primary; the E3 table adds the singly grounded value (0.04453) as a sensitivity column. Changing the primary needs a dated owner decision. Dependents are listed in `docs/pivot_log.md` (2026-10-07).

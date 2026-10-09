@@ -544,14 +544,14 @@ def derive_loco_region_envelope(
             "p0.5": float(np.quantile(a, 0.005)),
             "p1": float(np.quantile(a, 0.01)),
             "p50": float(np.quantile(a, 0.50)),
-            "contact_fraction_at_frozen_h_on": float(np.mean(a < h_on)),
+            "contact_fraction_at_recorded_h_on": float(np.mean(a < h_on)),
         }
     return out
 
 
-def freeze_config(cfg: dict[str, Any], *, standing_char: dict[str, Any], envelope: dict) -> None:
+def record_config(cfg: dict[str, Any], *, standing_char: dict[str, Any], envelope: dict) -> None:
     """All non-foot regions use foot contact constants (world z=0 floor)."""
-    cfg["frozen_date"] = date.today().isoformat()
+    cfg["recorded_date"] = date.today().isoformat()
     foot = cfg["foot"]
     for name in NON_FOOT_REGION_NAMES:
         reg = cfg["regions"][name]
@@ -1218,9 +1218,9 @@ def main(argv: Optional[list[str]] = None) -> None:
     fk = FkClipCache(body, str(dev))
 
     print("ORDER_OF_OPERATIONS:")
-    print("  1) derive-config: characterise standing-foot residual, loco envelope, freeze yaml")
-    print("  2) commit frozen config (manual step between CLI phases)")
-    print("  3) report: cohort rates / sensitivity / validation stdout (uses frozen thresholds)")
+    print("  1) derive-config: characterise standing-foot residual, loco envelope, record yaml")
+    print("  2) commit recorded config (manual step between CLI phases)")
+    print("  3) report: cohort rates / sensitivity / validation stdout (uses recorded thresholds)")
     print("")
 
     region_sets = resolve_region_vertex_sets(body)
@@ -1258,9 +1258,9 @@ def main(argv: Optional[list[str]] = None) -> None:
         )
         for name, st in envelope.items():
             print(f"  {name}: {st}")
-        freeze_config(cfg, standing_char=standing_char, envelope=envelope)
+        record_config(cfg, standing_char=standing_char, envelope=envelope)
         _save_yaml(cfg_path, cfg)
-        print(f"Wrote frozen config: {cfg_path} frozen_date={cfg['frozen_date']}")
+        print(f"Wrote recorded config: {cfg_path} recorded_date={cfg['recorded_date']}")
         if not do_report:
             return
 
@@ -1269,10 +1269,10 @@ def main(argv: Optional[list[str]] = None) -> None:
         return
 
     if cfg["regions"]["shins"]["h_on_m"] is None:
-        print("Config not frozen — run --derive-config first", file=sys.stderr)
+        print("Config not recorded — run --derive-config first", file=sys.stderr)
         sys.exit(1)
 
-    print("\n=== PHASE 2: report (post-freeze) ===")
+    print("\n=== PHASE 2: report (post-recording) ===")
     standing_char = cfg.get("standing_foot_characterisation_val") or {}
     uncertain_map = _floor_uncertain_by_rel(standing_char)
 
@@ -1287,7 +1287,7 @@ def main(argv: Optional[list[str]] = None) -> None:
     loco_clips = {s.rel_path for s in loco_segments}
 
     rates: dict[str, Any] = {
-        "frozen_date": cfg.get("frozen_date"),
+        "recorded_date": cfg.get("recorded_date"),
         "production_thresholds": cfg["foot"],
         "mean_contact_fraction_definition": _MEAN_FRAC_DEF,
         "total_duration_s_note": (

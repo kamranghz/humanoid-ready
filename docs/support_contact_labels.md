@@ -16,11 +16,11 @@ Each region = vertices whose **max LBS weight** is on the listed joint index (sa
 
 Vertices around the knee are **split by max-LBS assignment**: joint **4–5** → `shins`, joints **1–2** → `thighs`. There is no anatomical knee cap region. In kneel, the lowest points on the lower leg often sit on knee-joint-weighted geometry, so **shin vs thigh contact mostly reflects contact near the knee**, not independent shin and thigh surfaces.
 
-## Thresholds (frozen)
+## Thresholds (recorded)
 
 **All non-foot regions use foot constants:** `h_on=0.05 m`, `h_off=0.06 m`, `v_on=0.2 m/s`, `v_off=0.25 m/s`, `min_run=3`. Heights are **lowest-vertex world z** after clip `floor_offset` (pipeline floor **z=0**). Thresholds were **not** changed on 2026-10-04.
 
-**Rationale:** VAL stand-segment characterisation (`standing_foot_characterisation_val`, frozen with rates in `configs/support_contact_v2.yaml` / `results/E/support_contact_v2_rates.json`): subset **p50** medians — ACCAD **0.0055 m**, BMLmovi **0.0108 m**, MoSh **0.0038 m** (overall **p50 ≈ 0.0073 m**). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
+**Rationale:** VAL stand-segment characterisation (`standing_foot_characterisation_val`, recorded with rates in `configs/support_contact_v2.yaml` / `results/E/support_contact_v2_rates.json`): subset **p50** medians — ACCAD **0.0055 m**, BMLmovi **0.0108 m**, MoSh **0.0038 m** (overall **p50 ≈ 0.0073 m**). Using **0.07 m** as `h_on` would risk labelling **body-on-body** support (e.g. thigh on calves in kneel) as floor contact.
 
 ### Amendment 2026-10-04 — non-foot speed only (feet unchanged)
 
@@ -32,7 +32,7 @@ Vertices around the knee are **split by max-LBS assignment**: joint **4–5** �
 
 ## Floor calibration sensitivity
 
-Validation kneel clips (frozen production thresholds except grid overrides): at `h_on_m=0.05`, `z_shift_m=0`, `results/E/support_contact_v2_rates.json` → `sensitivity_validation_clips` entries with `cohort=kneel` report per-clip `contact_fraction.shins` **0.671** (`Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz`) and **1.0** (`Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz`); unweighted mean **≈ 0.836** (not the full kneel cohort). At `z_shift_m=0.035` on the aita clip, shins **0.329**; at `z_shift_m=0.07`, shins **0** on that clip. **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
+Validation kneel clips (recorded production thresholds except grid overrides): at `h_on_m=0.05`, `z_shift_m=0`, `results/E/support_contact_v2_rates.json` → `sensitivity_validation_clips` entries with `cohort=kneel` report per-clip `contact_fraction.shins` **0.671** (`Eyes_Japan_Dataset/aita/sitdown_standup-11-one_knee_drawn_up-aita_stageii.npz`) and **1.0** (`Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz`); unweighted mean **≈ 0.836** (not the full kneel cohort). At `z_shift_m=0.035` on the aita clip, shins **0.329**; at `z_shift_m=0.07`, shins **0** on that clip. **Interpretation:** support-region labels are only trustworthy when effective floor error is **below ~3 cm** relative to the grounded mesh; larger positive shifts remove most kneel shin contact.
 
 Sensitivity grid uses **synthetic `z_shift` only** at **0, +0.035, +0.07 m** (report-only; production **`z_shift=0`**).
 
@@ -40,7 +40,7 @@ Sensitivity grid uses **synthetic `z_shift` only** at **0, +0.035, +0.07 m** (re
 
 Per **VAL** clip: median of per-frame **min foot-channel z** over BABEL **`stand`** segment frames only, excluding segments whose labels include stand-up / transition-style act_cats. Clips with per-clip median **> 0.07 m** are flagged **`floor_uncertain`** for reporting/slicing only (counts per cohort in rates JSON; no automatic removal beyond E1 `exclude_contact`).
 
-**Eyes_Japan / 0.07 m premise:** A blanket “0.07 m standing residual on Eyes_Japan” is **not** supported by the VAL stand-segment characterisation in the frozen config. On **ordinary-locomotion VAL** clips with usable stand segments, per-clip stand-foot medians on Eyes_Japan are **at most ~0.030 m** in this run (worst listed Eyes_Japan stand clip in `standing_foot_characterisation_val`). High residuals on some other subsets (e.g. KIT, CMU on worst clips) remain **unexplained** without further evidence.
+**Eyes_Japan / 0.07 m premise:** A blanket “0.07 m standing residual on Eyes_Japan” is **not** supported by the VAL stand-segment characterisation in the recorded config. On **ordinary-locomotion VAL** clips with usable stand segments, per-clip stand-foot medians on Eyes_Japan are **at most ~0.030 m** in this run (worst listed Eyes_Japan stand clip in `standing_foot_characterisation_val`). High residuals on some other subsets (e.g. KIT, CMU on worst clips) remain **unexplained** without further evidence.
 
 ## Anti-circularity
 
@@ -76,7 +76,7 @@ Validation clips: `h_on ∈ {0.05, 0.07, 0.10}` × synthetic `z_shift ∈ {0, 0.
 
 ```text
 python -m hready.data.support_contact_v2 --derive-config
-# commit frozen configs/support_contact_v2.yaml
+# commit recorded configs/support_contact_v2.yaml
 python -m hready.data.support_contact_v2 --report
 ```
 

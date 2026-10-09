@@ -218,7 +218,7 @@ GPU-batched locked_head forward on native-fps frames every **10th** plus last; *
 
 **`skate_score`:** 30 Hz `foot_traj` **`(T,4,3)`**; per-channel horizontal speed from **FD on each channel's own xy** (not cross-channel); per frame `j = argmin_c z[t,c]`; if `z[t,j] ≤ 3 cm`, collect `speed[t,j]`; median over crop (**4 s** center, 120 frames). High non-BMLrub scores (e.g. MOYO yoga **28 m/s**) come from **1–2 near-floor frames** with **0.2–1.0 m** single-step xy jumps (floor/penetration artifacts), not cross-channel differencing.
 
-**`T_SKATE = 0.35 m/s` (frozen):** valley of the BMLrub bimodal histogram; **> p99** of non-BMLrub (**~0.265 m/s**); only **15** clips change flag between **0.35** and **0.5 m/s**.
+**`T_SKATE = 0.35 m/s` (recorded):** valley of the BMLrub bimodal histogram; **> p99** of non-BMLrub (**~0.265 m/s**); only **15** clips change flag between **0.35** and **0.5 m/s**.
 
 **BMLrub `skate_score` histogram (foot_traj sample, bimodal):**
 

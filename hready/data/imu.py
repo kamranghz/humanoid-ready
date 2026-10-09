@@ -201,7 +201,7 @@ def _gyro_from_rotations(rot: np.ndarray, fps: float) -> np.ndarray:
     return gyro
 
 
-def freeze_clip_at_frame(
+def hold_clip_at_frame(
     clip: dict[str, Any],
     frame: int = 0,
     n_frames: int = 90,
@@ -224,7 +224,7 @@ def static_verification_clip(
     cache_dir: Any | None = None,
     n_frames: int = 90,
 ) -> tuple[str, int, dict[str, Any]]:
-    """Idle / stand source clip + frozen frame for |acc| ≈ 9.81 m/s² checks."""
+    """Idle / stand source clip + held frame for |acc| ≈ 9.81 m/s² checks."""
     from hready.data.amass import load_index
 
     cache_dir = cache_dir or __import__(
@@ -242,8 +242,8 @@ def static_verification_clip(
         fi = int(np.argmin(step))
     else:
         fi = 0
-    frozen = freeze_clip_at_frame(clip, fi, n_frames=n_frames)
-    return rel, fi, frozen
+    held = hold_clip_at_frame(clip, fi, n_frames=n_frames)
+    return rel, fi, held
 
 
 def find_near_static_clip_rel(

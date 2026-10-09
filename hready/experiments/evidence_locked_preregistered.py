@@ -1,4 +1,4 @@
-"""Track E4-v2 CLI (post-hoc design after E4-v1; config ``configs/e4_v2_completion.yaml``, frozen rule).
+"""Track E4-v2 CLI (post-hoc design after E4-v1; config ``configs/e4_v2_completion.yaml``, pre-registered rule).
 
 Commands: verify-occ, preflight, train, eval-val, decide, eval-test, leak-check.
 Reuses the E4-v1 / E3 code paths; v1 and E3 outputs are not touched.
@@ -426,7 +426,7 @@ def apply_rule(cfg: dict[str, Any], paired: dict[str, Any]) -> dict[str, Any]:
         )
     )
     return {
-        "rule_frozen_on": dr["frozen_on"],
+        "rule_preregistered_on": dr["preregistered_on"],
         "per_arm": per_arm,
         "passing": passing,
         "selected": passing[0] if passing else None,
@@ -490,7 +490,7 @@ COMMANDS = {
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Track E4-v2 (oracle control; frozen rule)"
+        description="Track E4-v2 (oracle control; pre-registered rule)"
     )
     parser.add_argument(
         "--config", type=Path, default=Path("configs/e4_v2_completion.yaml")

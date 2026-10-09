@@ -18,7 +18,7 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Full-body completion baselines under simulated evidence (heuristic + learned) | Built | `results/E/e3_oracle_run.json`, `docs/e3_oracle.md` |
 | Humanoid-robot smoke test (retarget one motion to a Unitree G1 in Isaac Lab + Newton) | Built | `results/D/smoke/` |
 | Spatio-temporal refinement model and trainer (DDP code path implemented, not yet tested on multiple GPUs) | Building (code written; no reported result) | `hready/models/hr_refine.py`, `hready/train/` |
-| Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study failed acceptance; pre-registered comparison failed its frozen rule (below) |
+| Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study failed acceptance; pre-registered comparison failed its pre-registered rule (below) |
 | Visual perception from egocentric RGB | Planned | — |
 | Evaluation on perceived (not simulated) evidence | Planned | — |
 | Physics-aware refinement (kinematic, then simulation tracking) | Planned | — |
@@ -45,7 +45,7 @@ All results below are an **oracle control**: the body evidence is simulated from
 
 **Improved completion model, attempt 1 — did not meet its acceptance criteria** (`results/E/e4_completion_run.json`, `docs/e4_completion.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The attempt is documented as failed.
 
-**Evidence-locked completion, pre-registered comparison — did not pass its frozen rule** (`results/E/e4_v2_run.json`, `docs/e4_v2_plan.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/e4_v2_completion.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/e4_v2_plan.md` states explicitly.
+**Evidence-locked completion, pre-registered comparison — did not pass its pre-registered rule** (`results/E/e4_v2_run.json`, `docs/e4_v2_plan.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/e4_v2_completion.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/e4_v2_plan.md` states explicitly.
 
 ## Scale and limitations
 
@@ -53,7 +53,7 @@ All results below are an **oracle control**: the body evidence is simulated from
 - Evidence is simulated from ground truth; no image-based perception is part of any reported number.
 - Physical metrics on the 22 FK joints use a foot-sole height proxy; a ground-truth row is reported so the proxy's own error is visible.
 - Floor-work cohorts are small (kneel and lie only; 8 subjects across validation and test).
-- A known issue in the frozen ground-consistency tolerance is recorded in `docs/pivot_log.md` (2026-10-07); tables report both the frozen and a corrected tolerance.
+- A known issue in the recorded ground-consistency tolerance is recorded in `docs/pivot_log.md` (2026-10-07); tables report both the recorded and a corrected tolerance.
 
 ## What is not claimed
 
@@ -96,3 +96,11 @@ python -m hready.eval.e3_oracle run --config configs/e3_oracle.yaml
 ```
 
 Installed package versions are recorded in `env/versions.lock`. Design decisions and their reasons are logged in `docs/decisions.md` and `docs/pivot_log.md`.
+
+## License
+
+The code in this repository is released under the MIT License (see `LICENSE`). The license does not cover SMPL-X, AMASS, BABEL, BEDLAM or any other third-party data, body models or pretrained models used with this code; those remain under their own licenses and must be obtained from their providers.
+
+## Citation
+
+If you use this code, please cite it using the metadata in `CITATION.cff`.

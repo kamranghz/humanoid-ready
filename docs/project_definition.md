@@ -1,7 +1,7 @@
 # HumanoidReady — project definition v2 and Track E interpretation (2026-10-04)
 
 Status: APPROVED 2026-10-04 by the owner, with three clarifications (marked [C1], [C2], [C3] below). Docs-only. Implementation has not started.
-Written against the tracker (v19), AGENTS.md v8.1 and the project history. The real AGENTS.md §8 text was not available to the author; E-sync must reconcile this file with it, keep every frozen E0/E1 fact, and fix the existing §8 header contradiction.
+Written against the tracker (v19), AGENTS.md v8.1 and the project history. The real AGENTS.md §8 text was not available to the author; E-sync must reconcile this file with it, keep every recorded E0/E1 fact, and fix the existing §8 header contradiction.
 
 ---
 
@@ -65,7 +65,7 @@ E2-B sub-steps (each is one Cursor step):
 - **B1 Ego render set.** Virtual head camera on AMASS/SMPL-X; E1 splits inherited (no leakage); per-frame GT for 2D/3D joints, per-joint visibility, camera pose, gravity. Camera spec and appearance/background spec recorded. Stated limit: train and test use the same renderer, so synthetic-only results are optimistic about real footage.
 - **B2 Baseline measurement.** Labeled pretrained detector(s) zero-shot: first ~50 frames, then VAL. Visible-joint error and visibility recall. This is a measurement, not a gate: the outcome sets how much B3 must do, not whether B3 exists.
 - **B3 Train/adapt.** P-A, P-B, and P-C if needed. Items 12-13 (BEDLAM loader, HR-HMR from scratch, BEDLAM-CLIFF baseline) are prerequisites of P-A.
-- **B4 Select and emit.** Select the main-path model on VAL with a criterion frozen before TEST; emit schema evidence for train/val/test; report all variants with their pretrained/from-scratch labels.
+- **B4 Select and emit.** Select the main-path model on VAL with a criterion pre-registered before TEST; emit schema evidence for train/val/test; report all variants with their pretrained/from-scratch labels.
 
 E5b (new, planned): real egocentric validation. Depends on the first synthetic end-to-end result in E5. Needs a dataset decision and a download exception, to be made then.
 
@@ -91,12 +91,12 @@ E5b (new, planned): real egocentric validation. Depends on the first synthetic e
 | Item 20 | EgoBody/H36M/PROX "later" | EgoBody moves to E5b; Human3.6M and PROX stay later. |
 | E-sync | structure sync | Must record this definition, the E2-B sub-steps, E5b, the rule amendments below, and the section 8 header fix. Its prompt is rewritten before use. |
 
-Unchanged: P0, E0, E1 cohort definitions and frozen thresholds, E1b work content, the leak-proof principle, item 17, items 15-16, paper-last order.
+Unchanged: P0, E0, E1 cohort definitions and recorded thresholds, E1b work content, the leak-proof principle, item 17, items 15-16, paper-last order.
 
 ## 7. Rule amendments needed (for E-sync to apply)
 
 - **Rule 2** (from scratch): "From scratch = random init for HR-HMR and HR-Refine. Other models (pretrained baselines, and the adapted variant P-C) are allowed, always labeled 'pretrained' in every table row and figure."
-- **Data/downloads note:** frozen for the current stage; real egocentric data (E5b) is decided after the first synthetic end-to-end result.
+- **Data/downloads note:** paused for the current stage; real egocentric data (E5b) is decided after the first synthetic end-to-end result.
 - **Goal paragraph (section 0):** replaced by Section 1. The G1 executability check is described as downstream/supporting.
 - Rule 0 (Newton only), rule 1 (no fabricated numbers), rule 5 (checks not saved) and the section 8 integrity rule are unchanged.
 
@@ -104,7 +104,7 @@ Unchanged: P0, E0, E1 cohort definitions and frozen thresholds, E1b work content
 
 1. **Completion training data** (E3/E4). [C3] Recorded direction (owner): the final completion model is trained on evidence whose error distribution approximates the real perception stage, preferably simulated evidence with noise calibrated from held-out perception errors. Perfect oracle evidence is a control, not the final training distribution, and perception predictions on training clips must not introduce leakage. Constraints that follow (to be fixed in the E2-B4/E3 prompts): the calibration errors must come from clips the perception model was not trained on (held-out subjects or cross-fitting) and never from TEST; and because a parametric noise model can miss structured errors (temporal correlation, visibility-dependent failures), perceived evidence on held-out data remains the main test row.
 2. **K implementation** (E7): learned HR-Refine (needs a new input path, because its current inputs include GT rotations and keypoints) or loss-based optimization. Stated in the E7 prompt.
-3. **B4 selection criterion**: exact metric, frozen before TEST.
+3. **B4 selection criterion**: exact metric, pre-registered before TEST.
 4. **Virtual camera and appearance spec** (B1): placement, FOV, resolution, background.
 5. **Scale statement**: all results are synthetic-egocentric, small-scale, floor-work cohort "indicative" (kneel + lie only, 8 subjects in VAL union TEST).
 

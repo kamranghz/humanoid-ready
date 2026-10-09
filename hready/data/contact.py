@@ -52,7 +52,7 @@ CONTACT_V_OFF_M_S = 0.25
 _CONTACT_MIN_RUN = 3
 SKATE_NEAR_FLOOR_M = 0.03
 SKATE_MAX_FRAMES_30HZ = 120  # 4 s center crop at 30 Hz for belt-skate score
-# Frozen at the BMLrub skate_score histogram valley (Oct 2026); > p99 non-BMLrub (~0.265 m/s).
+# Recorded at the BMLrub skate_score histogram valley (Oct 2026); > p99 non-BMLrub (~0.265 m/s).
 T_SKATE = 0.35
 
 _foot_channel_clusters: Optional[dict[str, np.ndarray]] = None

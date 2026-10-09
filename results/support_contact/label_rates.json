@@ -1,5 +1,5 @@
 {
-  "frozen_date": "2026-10-04",
+  "recorded_date": "2026-10-04",
   "production_thresholds": {
     "source": "hready.data.contact",
     "h_on_m": 0.05,

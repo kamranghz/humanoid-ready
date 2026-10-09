@@ -1,4 +1,4 @@
-frozen_date: '2026-10-04'
+recorded_date: '2026-10-04'
 anti_circularity:
   rule: Thresholds are fixed to foot constants; not fitted on floor-work eval segments.
     Loco negative envelope and ordinary-locomotion rates use BABEL segment ranges
@@ -2359,48 +2359,48 @@ loco_negative_envelope:
     p0.5: 0.08293881937861443
     p1: 0.08456332162022591
     p50: 0.10628697276115417
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   thighs:
     n_frames: 3896
     p0.5: 0.24499984234571456
     p1: 0.3785649076104164
     p50: 0.46402207016944885
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   pelvis_seat:
     n_frames: 3896
     p0.5: 0.310138163715601
     p1: 0.45270496457815174
     p50: 0.7201543152332306
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   back_torso:
     n_frames: 3896
     p0.5: 0.531841477751732
     p1: 0.6972785085439682
     p50: 0.9843456745147705
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   head:
     n_frames: 3896
     p0.5: 0.797278867661953
     p1: 1.035453349351883
     p50: 1.4241588711738586
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   forearms:
     n_frames: 3896
     p0.5: 0.41112239584326743
     p1: 0.6054932236671448
     p50: 0.8492377698421478
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   wrists:
     n_frames: 3896
     p0.5: 0.36155446246266365
     p1: 0.5276567310094833
     p50: 0.7696823179721832
-    contact_fraction_at_frozen_h_on: 0.0
+    contact_fraction_at_recorded_h_on: 0.0
   hands:
     n_frames: 3896
     p0.5: 0.31122715622186664
     p1: 0.47627360224723814
     p50: 0.7082200348377228
-    contact_fraction_at_frozen_h_on: 0.0002566735112936345
+    contact_fraction_at_recorded_h_on: 0.0002566735112936345
 threshold_note: Non-foot h_on/h_off identical to foot (0.05/0.06 m); heights are lowest-vertex
   world z after clip floor_offset (pipeline floor z=0). Not fitted on floor-work eval.

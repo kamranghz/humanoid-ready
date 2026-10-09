@@ -55,7 +55,7 @@ floor_work:
   min_segment_duration_s: 1.0
   min_geometry_fraction: 0.5
   geometry_tree:
-    frozen_date: "2026-10-04"
+    recorded_date: "2026-10-04"
     use_normalized_height: false
     height_unit: metres
     cv_ordinary_loco_pelvis_raw: 0.089
@@ -114,7 +114,7 @@ floor_work:
         note: >-
           Primary (all VAL, stride_clips 1, frame stride 8): n=1896 sit-gate frames;
           floor_tail p90=0.3334 m (n=389); seat_band p10=0.5307 m (n=1162); midpoint=0.4321 m.
-          Frozen 0.43 m is within 0.002 m of this midpoint and kept as policy.
+          Recorded 0.43 m is within 0.002 m of this midpoint and kept as policy.
           derive_geometry_thresholds subsample (every 3rd clip): n=598; midpoint=0.402 m.
       yoga_pelvis_h_max:
         type: anchor

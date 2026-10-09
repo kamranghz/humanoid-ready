@@ -1,8 +1,8 @@
-# Track E4-v2 — post-hoc design after E4-v1 VAL results (docs/e4_v2_plan.md). Frozen 2026-10-08,
+# Track E4-v2 — post-hoc design after E4-v1 VAL results (docs/e4_v2_plan.md). Pre-registered 2026-10-08,
 # before any v2 run. Arms, hyperparameters, budgets and the decision rule must not change after
 # any v2 result is seen. configs/e4_completion.yaml (v1) stays untouched.
 version: e4_v2
-frozen_on: "2026-10-08"
+preregistered_on: "2026-10-08"
 e3_config: configs/e3_oracle.yaml
 seed: 0
 
@@ -83,7 +83,7 @@ anchor:
   eligible: false         # reported on VAL only; never selected; never evaluated on TEST
 
 decision_rule:
-  frozen_on: "2026-10-08"
+  preregistered_on: "2026-10-08"
   amended_on: "2026-10-08"   # det_w0 added as eligible arm; before any full v2 run
   checkpoint_selection: VAL only; per arm, best E3 selection metric (mean pooled MPJPE over VAL all + ordinary_locomotion, 200 seeded clips)
   candidates: [det_w0, det_wphys0p3, det_wphys1p0, gen_stab]

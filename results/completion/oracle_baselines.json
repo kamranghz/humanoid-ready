@@ -41,7 +41,7 @@
   },
   "ground_consistency_tolerance_m": 0.04947,
   "ground_consistency_tolerance_sensitivity_m": 0.04453,
-  "tau_note": "primary tau = frozen 0.04947 (docs/e0_audit.md); sensitivity tau = single floor grounding (docs/pivot_log.md 2026-10-07)",
+  "tau_note": "primary tau = recorded 0.04947 (docs/e0_audit.md); sensitivity tau = single floor grounding (docs/pivot_log.md 2026-10-07)",
   "splits": {
    "val": {
     "heuristic": {

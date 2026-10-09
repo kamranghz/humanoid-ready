@@ -22,7 +22,7 @@ Evidence schema (`obs`, `rig`), E2-A simulator settings, splits and the 12309-cl
 ## Rows reported
 
 - Ablation table (VAL `all` + `ordinary_locomotion`, full VAL): `ref_locked_gen_phys0` and one row per changed factor (`unlocked`, `deterministic`, `phys`), identical 40000-step budget.
-- **Main-arm rule (frozen before any ablation result):** the main arm uses the `phys` arm's `w_phys` if, on VAL `all`, its penetration and skate are not worse than the reference and its full MPJPE is at most +1.0 mm worse; otherwise `w_phys = 0` (`choose-main`).
+- **Main-arm rule (pre-registered before any ablation result):** the main arm uses the `phys` arm's `w_phys` if, on VAL `all`, its penetration and skate are not worse than the reference and its full MPJPE is at most +1.0 mm worse; otherwise `w_phys = 0` (`choose-main`).
 - Main table (VAL and TEST separate): `heuristic`, `e3_learned` (E3 checkpoint), **`e4_same_budget`** (the ablation run with the main-arm config at E3's 40000-step budget, separating design from training length), **`e4_main`** (same config, 150000 steps), `gt_reference`.
 - `floor_work_eligible`: indicative only (11 VAL clips, 2 TEST clips), per-subject table, never used for selection.
 - `generative-check`: prior-sample spread on hidden vs visible joints and best-of-K (uses GT to pick a sample; a diversity diagnostic, never an accuracy claim).
@@ -35,7 +35,7 @@ All numbers below come from `results/E/e4_completion_run.json` except the KL his
 - `e4_same_budget` (main-arm config `ref_locked_gen_phys0`, 40000 steps = E3 budget) beats `e3_learned` on VAL full MPJPE (64.8 vs 66.7 mm), visible MPJPE (12.2 vs 59.5) and penetration (5.63 vs 5.98 mm), but **fails skate** (0.235 vs 0.202 m/s). Its hidden MPJPE is also worse (70.1 vs 67.4 mm).
 - `e4_main` is **not a 150000-step result**: it is the step-25000 checkpoint (best VAL selection metric 66.13 mm) of a 150000-step run that diverged. VAL selection metric by step: 5000: 74.3, 10000: 69.8, 15000: 68.3, 20000: 66.2, 25000: 66.1, 30000: 112.6, 35000: 191.1, 40000: 142.3, …, 150000: 185.0. It is worse than `e3_learned` on VAL full MPJPE (69.6), penetration (9.09) and skate (0.255).
 - KL term of the main run (training log, 500-step means): 34 nats at step 30000, 294 at step 40000, maximum 64,927,806 at step 44500, still 18,268 at step 90000 (it fluctuated, e.g. 33 at step 70000). The two generative 40000-step ablation arms stayed between 11 and 24 nats. **Unverified hypothesis:** the 150000-step cosine keeps the learning rate high for longer (3.77e-4 at step 25000 vs 1.40e-4 in the 40000-step reference arm, from the log), and the prior log-variance floor of −8 lets the KL term grow without bound. Neither cause was tested.
-- Main-arm rule (frozen before any ablation): the `phys` arm was excluded because its VAL full MPJPE (66.75 mm) exceeded the reference arm (64.82 mm) by more than +1.0 mm; its penetration and skate checks passed. Main arm therefore used `w_phys = 0`.
+- Main-arm rule (pre-registered before any ablation): the `phys` arm was excluded because its VAL full MPJPE (66.75 mm) exceeded the reference arm (64.82 mm) by more than +1.0 mm; its penetration and skate checks passed. Main arm therefore used `w_phys = 0`.
 
 #### Main table — VAL `all`
 
@@ -82,7 +82,7 @@ Every table row carries the disclaimer: oracle control; floor height given (worl
 
 The deterministic arm is a v1 ablation, not the v1 main arm; its numbers are VAL only (TEST not evaluated).
 
-**`w_phys = 1` arm vs `e3_learned` (VAL):** full MPJPE ties at 0.1 mm (66.75 vs 66.68 mm, 0.07 mm higher); beats E3 on penetration (1.03 vs 5.98 mm), skate (0.192 vs 0.202 m/s) and GC violation (0.331 vs 0.426); loses on hidden MPJPE (72.2 vs 67.4 mm) and ECE (0.077 vs 0.013). It was excluded only by the frozen +1.0 mm-vs-reference rule.
+**`w_phys = 1` arm vs `e3_learned` (VAL):** full MPJPE ties at 0.1 mm (66.75 vs 66.68 mm, 0.07 mm higher); beats E3 on penetration (1.03 vs 5.98 mm), skate (0.192 vs 0.202 m/s) and GC violation (0.331 vs 0.426); loses on hidden MPJPE (72.2 vs 67.4 mm) and ECE (0.077 vs 0.013). It was excluded only by the pre-registered +1.0 mm-vs-reference rule.
 
 **floor_work_eligible (indicative only; VAL 11 clips, TEST 2 clips):** VAL full MPJPE e3_learned 125.3, e4_same_budget 136.0, e4_main 147.2 mm; VAL penetration 7.79, 27.09, 47.39 mm.
 

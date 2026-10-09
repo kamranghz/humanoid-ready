@@ -305,7 +305,7 @@ def classify_frame_decision_tree(f: FrameFeatures, th: dict[str, float]) -> str:
 
 
 def trace_decision_branch(f: FrameFeatures, th: dict[str, float]) -> str:
-    """Read-only exit trace for diagnosis (frozen tree; not a geometry label)."""
+    """Read-only exit trace for diagnosis (recorded tree; not a geometry label)."""
     horiz = f.torso_up_dot <= th["torso_horizontal_max"]
     upright = f.torso_up_dot >= th["torso_upright_min"]
 
@@ -743,7 +743,7 @@ def derive_geometry_thresholds(
         "cv_ordinary_loco_pelvis_norm": cv_norm,
         "thresholds": th,
         "threshold_provenance": prov,
-        "frozen_date": "2026-10-04",
+        "recorded_date": "2026-10-04",
     }
 
 
@@ -1265,7 +1265,7 @@ def run_ego_splits(
         after_mat, feat_store, seg_mat = _confusion_and_distributions(
             val_floor, body, fps, min_geom, geom_meta
         )
-        print("ACCEPTANCE A VAL confusion (frames) AFTER frozen tree:")
+        print("ACCEPTANCE A VAL confusion (frames) AFTER recorded tree:")
         _print_confusion(after_mat)
         print("ACCEPTANCE A VAL confusion (segments, dominant geo):")
         _print_confusion(seg_mat)
@@ -1488,7 +1488,7 @@ def _print_threshold_provenance(
     geom_meta: dict[str, Any],
 ) -> None:
     th = geom_meta["thresholds"]
-    print("ACCEPTANCE D threshold provenance (VAL evidence beside frozen value):")
+    print("ACCEPTANCE D threshold provenance (VAL evidence beside recorded value):")
     cv_raw = geom_meta.get("cv_ordinary_loco_pelvis_raw")
     cv_norm = geom_meta.get("cv_ordinary_loco_pelvis_norm")
     if cv_raw is not None:

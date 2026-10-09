@@ -64,7 +64,7 @@ ablation:
     deterministic: {model: {generative: false}}
     phys: {loss: {w_phys: 1.0}}
 
-# Main run: locked + generative, longer schedule. w_phys rule frozen before any ablation result:
+# Main run: locked + generative, longer schedule. w_phys rule pre-registered before any ablation result:
 # use the "phys" arm's w_phys if, on VAL all, its penetration and skate are not worse than the
 # reference and its full MPJPE is at most +1.0 mm worse; otherwise w_phys = 0.
 main:

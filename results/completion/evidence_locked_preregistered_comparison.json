@@ -3287,7 +3287,7 @@
   "wall_s": 959.7471678999718
  },
  "decision": {
-  "rule_frozen_on": "2026-10-08",
+  "rule_preregistered_on": "2026-10-08",
   "per_arm": {
    "det_w0": {
     "checks": {
@@ -3434,7 +3434,7 @@
   "selected": null,
   "v2_failed": true,
   "stopped_arms_counted_as_failed": {},
-  "candidates_frozen": [
+  "candidates_preregistered": [
    "det_w0",
    "det_wphys0p3",
    "det_wphys1p0",

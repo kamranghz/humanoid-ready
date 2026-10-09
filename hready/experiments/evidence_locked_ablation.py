@@ -70,7 +70,7 @@ TABLE_ROWS = ("heuristic", "e3_learned", "e4_same_budget", "e4_main", "gt_refere
 
 
 def same_budget_run(ctx: E4Ctx) -> str:
-    """Ablation run with the main arm's config at E3's budget (the frozen rule picks w_phys)."""
+    """Ablation run with the main arm's config at E3's budget (the pre-registered rule picks w_phys)."""
     dec = ctx.results().get("main_decision")
     if dec is None:
         raise RuntimeError("run `choose-main` first")

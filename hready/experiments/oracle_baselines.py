@@ -810,7 +810,7 @@ def cmd_eval_table(ctx: Ctx) -> dict[str, Any]:
         "model": mmeta,
         "ground_consistency_tolerance_m": tau,
         "ground_consistency_tolerance_sensitivity_m": tau_s,
-        "tau_note": "primary tau = frozen 0.04947 (docs/e0_audit.md); sensitivity tau = single floor "
+        "tau_note": "primary tau = recorded 0.04947 (docs/e0_audit.md); sensitivity tau = single floor "
         "grounding (docs/pivot_log.md 2026-10-07)",
         "splits": {},
     }

@@ -1,6 +1,6 @@
-# E4-v2 — plan and frozen rule
+# E4-v2 — plan and pre-registered rule
 
-**Status:** owner decisions taken 2026-10-08. Arms, hyperparameters and decision rule are frozen in `configs/e4_v2_completion.yaml` (frozen 2026-10-08; amended 2026-10-08 to add the eligible arm `det_w0`, before any full v2 run). Code: `hready/eval/e4_v2.py`, `hready/metrics/paired_bootstrap.py`. Only preflight has run; the full v2 run starts on owner go. The v1 config (`configs/e4_completion.yaml`) and its frozen rule stay untouched.
+**Status:** owner decisions taken 2026-10-08. Arms, hyperparameters and decision rule are pre-registered in `configs/e4_v2_completion.yaml` (pre-registered 2026-10-08; amended 2026-10-08 to add the eligible arm `det_w0`, before any full v2 run). Code: `hready/eval/e4_v2.py`, `hready/metrics/paired_bootstrap.py`. Only preflight has run; the full v2 run starts on owner go. The v1 config (`configs/e4_completion.yaml`) and its pre-registered rule stay untouched.
 
 **Post-hoc design.** v2 is designed **after seeing E4-v1 VAL results** (`docs/e4_completion.md`, `results/E/e4_completion_run.json`). Its arm choices are informed by those results, so v2 VAL numbers carry selection bias and the single v2 TEST evaluation is the only unbiased comparison. The v1 `deterministic` arm numbers are **VAL only**; its TEST has not been evaluated.
 
@@ -26,7 +26,7 @@ Protocol identical to E3/E4-v1: 12309-clip training list, batch 64, window 64 / 
 
 `eval-val` reports, for information only, the difference between `det_w0` and the v1 anchor on VAL (same settings retrained; GPU nondeterminism may make them differ). Nothing is changed based on it.
 
-## Decision rule (frozen; `decision_rule` in the config)
+## Decision rule (pre-registered; `decision_rule` in the config)
 
 - **Checkpoint selection per arm:** VAL only; best E3 selection metric (mean pooled MPJPE over VAL `all` + `ordinary_locomotion`, 200 seeded clips).
 - **Comparison:** VAL `all`, each eligible arm vs `e3_learned` (same clips, same evidence), paired subject-cluster bootstrap, 2000 draws, seed 0. On each draw subjects are resampled with replacement and both models are pooled over the same resampled clips; the statistic is pooled(arm) − pooled(E3), the same pooled estimator as the tables (contact ECE recomputed from pooled calibration bins). **"Upper bound" = the 97.5th percentile of the two-sided 95% bootstrap interval.**
@@ -44,7 +44,7 @@ Protocol identical to E3/E4-v1: 12309-clip training list, batch 64, window 64 / 
 
 ## Owner decisions (2026-10-08)
 
-1. A deterministic arm may be the v2 main candidate, named **"E4 point-estimate completion"**; the stabilised generative arm is also run and reported; the frozen rule picks between them.
+1. A deterministic arm may be the v2 main candidate, named **"E4 point-estimate completion"**; the stabilised generative arm is also run and reported; the pre-registered rule picks between them.
 2. **GC is reported but not a gate.** Reasons that predate E4 results: the τ double floor-offset issue (`docs/pivot_log.md` 2026-10-07) and `gt_reference` GC violation of 0.884 on VAL `floor_work_eligible` (`results/E/e3_oracle_run.json`).
 3. **"Not worse than E3"** = paired subject-cluster bootstrap vs `e3_learned`; hidden MPJPE upper bound < 0; penetration, skate, ECE upper bound ≤ +5% of the E3 value; margins fixed in the config.
 4. Generative-arm hyperparameters fixed in the config before the first run: one configuration, no sweep, no retune; a failure is reported as a failure.

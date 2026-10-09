@@ -62,7 +62,7 @@ memmap:
   build_workers: 12
 
 eval:
-  ground_consistency_tolerance_m: 0.04947  # primary, frozen (docs/e0_audit.md)
+  ground_consistency_tolerance_m: 0.04947  # primary, recorded (docs/e0_audit.md)
   # Sensitivity column: same rule on singly grounded foot_traj heights (docs/pivot_log.md 2026-10-07).
   ground_consistency_tolerance_sensitivity_m: 0.04453
   contact_threshold: 0.5

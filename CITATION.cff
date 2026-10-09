@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "HumanoidReady: egocentric full-body human motion estimation with physical-plausibility evaluation"
+type: software
+authors:
+  - given-names: Kamran
+    family-names: Gholizadeh HamlAbadi
+    affiliation: University of Ottawa
+version: 0.1.0
+license: MIT
+repository-code: "https://github.com/kamranghz/humanoid-ready"

@@ -1,4 +1,4 @@
-"""E3 cohort frame masks, reproducing the frozen E1 definitions (``hready.data.ego_splits``).
+"""E3 cohort frame masks, reproducing the recorded E1 definitions (``hready.data.ego_splits``).
 
 - ``ordinary_locomotion``: BABEL segments >= ``min_segment_duration_s`` whose first matching cohort
   (E1 order: floor_work, ordinary_locomotion, other_labelled) is ordinary_locomotion.

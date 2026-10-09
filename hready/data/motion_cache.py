@@ -91,7 +91,7 @@ def compute_clip_arrays(
     clip = load_clip(entry, ground=True, amass_root=amass_root, cache_dir=cache_dir)
     j55 = fk_joints_55(body, clip)
     t_len = j55.shape[0]
-    # Item-5 contact labels: grounded vertex foot channels (foot_traj cache), frozen hysteresis.
+    # Item-5 contact labels: grounded vertex foot channels (foot_traj cache), recorded hysteresis.
     foot = load_foot_positions(entry, cache_dir=cache_dir)
     if foot.shape[0] != t_len:
         raise ValueError(f"{rel_path}: foot_traj T={foot.shape[0]} != clip T={t_len}")

@@ -3,7 +3,7 @@
 **Command:** `python -m hready.data.ego_splits --config configs/ego_splits.yaml --splits val,test`  
 **Outputs:** `results/E/splits.json`, `results/E/floor_work_clips.csv`, `results/E/cohort_counts.json`
 
-**Frozen:** geometry thresholds in `configs/ego_splits.yaml` (`floor_work.geometry_tree`, dated **2026-10-04**) before any E3 result.
+**Recorded:** geometry thresholds in `configs/ego_splits.yaml` (`floor_work.geometry_tree`, dated **2026-10-04**) before any E3 result.
 
 ## Subject split
 
@@ -36,7 +36,7 @@ On grounded SMPL-X FK, **pelvis joint height** (metres, floor z=0) splits seated
 
 ## Height units
 
-Ordinary-locomotion VAL frames: pelvis height CV raw **0.089** vs normalized **0.112** (`use_normalized_height: false` in frozen config). **Use metres** on raw pelvis height.
+Ordinary-locomotion VAL frames: pelvis height CV raw **0.089** vs normalized **0.112** (`use_normalized_height: false` in recorded config). **Use metres** on raw pelvis height.
 
 ## Geometry decision tree (mutually exclusive)
 
@@ -54,7 +54,7 @@ Features: `pelvis_h`, `torso_up_dot` (neck−pelvis vs +Z), `wrist_h`, `head_h`,
 
 ### Threshold amendments (old → new, provenance)
 
-| Threshold | Frozen | Previous / removed | Provenance type |
+| Threshold | Recorded | Previous / removed | Provenance type |
 |-----------|--------|-------------------|-----------------|
 | `crawl_shoulder_h_min` | **0.30** | *(new)* | `policy` (see below) |
 | `lie_shoulder_h_max` | **0.30** | *(new)* | `policy` (same as `crawl_shoulder_h_min`) |
@@ -66,11 +66,11 @@ Anchors unchanged from P1 (e.g. `torso_horizontal_max=0.45`, `crawl_pelvis_h_max
 
 Each threshold has a matching entry in `threshold_provenance`. Thresholds were **not** tuned to maximize BABEL agreement.
 
-#### Provenance detail (label-free VAL; frozen values unchanged)
+#### Provenance detail (label-free VAL; recorded values unchanged)
 
 **`crawl_shoulder_h_min` / `lie_shoulder_h_max` (0.30 m).** **Policy value** — not a histogram valley and **no derived physical anchor**. Reference horiz+low-pelvis pool (all VAL clips, frame stride 4): **q55 = 0.280 m**; histogram mode in **[0.25, 0.30)** (279 of 828 frames). This threshold **only** decides **lie vs crawl** within the horizontal low-pelvis band; per-class lie/crawl frame counts and BABEL confirmation of lie/crawl segments **depend on it**; **sensitivity to this value was not measured**.
 
-**`sit_support_pelvis_h_min` (0.43 m).** **Primary evidence (all VAL, `stride_clips` 1, frame stride 8):** **1896** sit-gate frames; **floor_tail** (`pelvis_h ≤ 0.35`) **p90 = 0.3334 m** (**n = 389**); **seat_band** (`0.45 ≤ pelvis_h ≤ 0.65`) **p10 = 0.5307 m** (**n = 1162**); midpoint **0.4321 m**. Frozen **0.43 m** is **within 0.002 m** of this all-VAL midpoint and is **kept as policy**. **`derive_geometry_thresholds` code path** (every 3rd VAL clip): **598** frames, **37** clips, **17** subjects; midpoint **0.402 m** (floor_tail p90 **0.305 m**, seat_band p10 **0.499 m**).
+**`sit_support_pelvis_h_min` (0.43 m).** **Primary evidence (all VAL, `stride_clips` 1, frame stride 8):** **1896** sit-gate frames; **floor_tail** (`pelvis_h ≤ 0.35`) **p90 = 0.3334 m** (**n = 389**); **seat_band** (`0.45 ≤ pelvis_h ≤ 0.65`) **p10 = 0.5307 m** (**n = 1162**); midpoint **0.4321 m**. Recorded **0.43 m** is **within 0.002 m** of this all-VAL midpoint and is **kept as policy**. **`derive_geometry_thresholds` code path** (every 3rd VAL clip): **598** frames, **37** clips, **17** subjects; midpoint **0.402 m** (floor_tail p90 **0.305 m**, seat_band p10 **0.499 m**).
 
 ## Floor-work evaluation set
 
@@ -111,11 +111,11 @@ Counts from `results/E/cohort_counts.json` (`val_union_test`) and confirmed rows
 
 On **all 2223 VAL clips** (frame stride **8**, raw-metre features), crawl **pre-filter** frames (`torso_up_dot ≤ 0.45`, `pelvis_h ≤ 0.42`): **416** frames from **26** clips / **7** subjects. Of those, **`shoulder_h > 0.30`**: **145** frames from **17** clips / **7** subjects. `shoulder_h` on pre-filter frames (0.05 m bins): 54 in [0.15,0.20), 76 in [0.20,0.25), **141 in [0.25,0.30)**, 57 in [0.30,0.35), 43 in [0.35,0.40), 29 in [0.40,0.45), 8 in [0.45,0.50), 8 in [0.50,0.55).
 
-On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the frozen tree classifies most as **`lie`** (**419** frames) vs **`crawl`** (**6** frames) — BABEL crawl labels rarely match the crawl geometry gate. **0** crawl proposals reach segment confirmation (VAL ∪ TEST).
+On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the recorded tree classifies most as **`lie`** (**419** frames) vs **`crawl`** (**6** frames) — BABEL crawl labels rarely match the crawl geometry gate. **0** crawl proposals reach segment confirmation (VAL ∪ TEST).
 
 **Quadruped-like frames without BABEL crawl:** the stride-**8** diagnostic scan finds **145** frames (**17** clips, **7** subjects) with horizontal low pelvis and `shoulder_h > 0.30` that need not fall inside a BABEL crawl segment.
 
-**Conclusion:** **not** “no quadruped-like horizontal low-pelvis frames in VAL.” **Crawl confirmed = 0** because **BABEL crawl segments do not match** the frozen crawl shoulder/wrist gates at ≥50% frame fraction (disagreements → `yoga_like` / `lie` / `none`), not because VAL lacks low horizontal posture.
+**Conclusion:** **not** “no quadruped-like horizontal low-pelvis frames in VAL.” **Crawl confirmed = 0** because **BABEL crawl segments do not match** the recorded crawl shoulder/wrist gates at ≥50% frame fraction (disagreements → `yoga_like` / `lie` / `none`), not because VAL lacks low horizontal posture.
 
 ## Tune set
 
@@ -127,7 +127,7 @@ On BABEL-**crawl** VAL segments (~**1440** labelled frames in ACCEPTANCE A), the
 
 ## Eyes_Japan floor offset
 
-**E1b standing-foot characterisation (VAL, BABEL `stand` segments):** Eyes_Japan per-clip stand-foot medians are **p50 ≈ 0.0056 m**, **p95 ≈ 0.031 m**, **max ≈ 0.049 m** (`standing_foot_characterisation_val` in frozen `configs/support_contact_v2.yaml`, reported with `results/E/support_contact_v2_rates.json`). That does **not** support a blanket **0.07 m** standing residual on Eyes_Japan. With production thresholds, cohort **kneel** mean shin contact fraction is **≈ 0.911** from `results/E/support_contact_v2_rates.json` → `cohorts.kneel.mean_contact_fraction_per_region.shins` (**0.9107485747483427**, post patch-median non-foot speed amendment). **≈ 0.884** is the pre-amendment cohort mean: `amendment_2026_10_04_non_foot_speed.cohorts.kneel.regions.shins.mean_contact_fraction.before` (**0.8837845288980636**). **≈ 0.836** is the unweighted mean of the two frozen validation kneel clips at `h_on_m=0.05`, `z_shift_m=0` in `sensitivity_validation_clips` (`contact_fraction.shins` **0.6710526315789473** and **1.0**), not the full kneel cohort. Details: `docs/contact_labels_v2.md`.
+**E1b standing-foot characterisation (VAL, BABEL `stand` segments):** Eyes_Japan per-clip stand-foot medians are **p50 ≈ 0.0056 m**, **p95 ≈ 0.031 m**, **max ≈ 0.049 m** (`standing_foot_characterisation_val` in recorded `configs/support_contact_v2.yaml`, reported with `results/E/support_contact_v2_rates.json`). That does **not** support a blanket **0.07 m** standing residual on Eyes_Japan. With production thresholds, cohort **kneel** mean shin contact fraction is **≈ 0.911** from `results/E/support_contact_v2_rates.json` → `cohorts.kneel.mean_contact_fraction_per_region.shins` (**0.9107485747483427**, post patch-median non-foot speed amendment). **≈ 0.884** is the pre-amendment cohort mean: `amendment_2026_10_04_non_foot_speed.cohorts.kneel.regions.shins.mean_contact_fraction.before` (**0.8837845288980636**). **≈ 0.836** is the unweighted mean of the two recorded validation kneel clips at `h_on_m=0.05`, `z_shift_m=0` in `sensitivity_validation_clips` (`contact_fraction.shins` **0.6710526315789473** and **1.0**), not the full kneel cohort. Details: `docs/contact_labels_v2.md`.
 
 ## Legacy acceptance (joint-index fix)
 

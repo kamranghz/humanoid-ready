@@ -36,7 +36,7 @@
   "floor_work_geometry_tree": {
     "cv_ordinary_loco_pelvis_norm": 0.112,
     "cv_ordinary_loco_pelvis_raw": 0.089,
-    "frozen_date": "2026-10-04",
+    "recorded_date": "2026-10-04",
     "height_unit": "metres",
     "threshold_provenance": {
       "crawl_pelvis_h_max": {
@@ -68,7 +68,7 @@
         "type": "policy"
       },
       "sit_support_pelvis_h_min": {
-        "note": "Primary (all VAL, stride_clips 1, frame stride 8): n=1896 sit-gate frames; floor_tail p90=0.3334 m (n=389); seat_band p10=0.5307 m (n=1162); midpoint=0.4321 m. Frozen 0.43 m is within 0.002 m of this midpoint and kept as policy. derive_geometry_thresholds subsample (every 3rd clip): n=598; midpoint=0.402 m.",
+        "note": "Primary (all VAL, stride_clips 1, frame stride 8): n=1896 sit-gate frames; floor_tail p90=0.3334 m (n=389); seat_band p10=0.5307 m (n=1162); midpoint=0.4321 m. Recorded 0.43 m is within 0.002 m of this midpoint and kept as policy. derive_geometry_thresholds subsample (every 3rd clip): n=598; midpoint=0.402 m.",
         "type": "midpoint_percentiles"
       },
       "sit_thigh_up_min": {

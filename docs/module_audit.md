@@ -35,6 +35,6 @@ For each frame, let `C` be the set of foot contact channels labelled **in contac
 
 **Ground-consistency score** (per clip): fraction of frames with at least one violation.
 
-**Tolerance `τ`:** config key `ground_consistency_tolerance_m`. **Default (frozen Oct 4, 2026):** `0.04947` m — the 95th percentile of `|h|` over in-contact foot-channel samples on **VAL** clips that have ordinary-locomotion BABEL labels and `exclude_contact == false` (computed by `compute_ground_consistency_tolerance_default` in `ego_splits.py`).
+**Tolerance `τ`:** config key `ground_consistency_tolerance_m`. **Default (recorded Oct 4, 2026):** `0.04947` m — the 95th percentile of `|h|` over in-contact foot-channel samples on **VAL** clips that have ordinary-locomotion BABEL labels and `exclude_contact == false` (computed by `compute_ground_consistency_tolerance_default` in `ego_splits.py`).
 
 This formula is authoritative for E3; implementers read `τ` from config (default above) unless a dated override is recorded in `docs/ego_splits.md`.

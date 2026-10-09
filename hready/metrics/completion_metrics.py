@@ -62,7 +62,7 @@ def foot_channel_points(joints_22: np.ndarray, sole_offsets: np.ndarray) -> np.n
 
 
 def proxy_foot_contact(joints_22: np.ndarray, sole_offsets: np.ndarray) -> np.ndarray:
-    """Item-5 hysteresis rule (frozen thresholds) on the joint channel proxies, ``(T, 4)`` bool."""
+    """Item-5 hysteresis rule (recorded thresholds) on the joint channel proxies, ``(T, 4)`` bool."""
     return compute_foot_contact_from_positions(
         foot_channel_points(joints_22, sole_offsets)
     )
@@ -121,7 +121,7 @@ def accumulate_clip(
 ) -> bool:
     """Add one clip's cohort frames. Returns False when the clip has no frames in the cohort.
 
-    ``tau_m`` is the primary (frozen) tolerance; ``tau_sensitivity_m`` adds a second ground-consistency
+    ``tau_m`` is the primary (recorded) tolerance; ``tau_sensitivity_m`` adds a second ground-consistency
     column (``ground_consistency_violation_frac_tau_sensitivity``) with the same frames.
     """
     m = np.asarray(frame_mask, dtype=bool)

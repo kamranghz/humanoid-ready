@@ -27,7 +27,7 @@ def load_tune_subject_ids(splits_json: Path) -> set[str]:
 
 
 def build_train_clip_list(*, splits_json: Path) -> tuple[list[str], dict[str, Any]]:
-    """Frozen rule: ``assign_split == train``, ``skate_flag`` false, not one of the tune subjects."""
+    """Recorded rule: ``assign_split == train``, ``skate_flag`` false, not one of the tune subjects."""
     tune = load_tune_subject_ids(splits_json)
     rels: list[str] = []
     n_split = n_skate = n_tune = 0
