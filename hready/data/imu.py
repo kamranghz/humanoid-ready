@@ -1,4 +1,4 @@
-"""Synthetic body-worn IMU from AMASS clips (item 5c-2)."""
+"""Synthetic body-worn IMU from AMASS clips (item 5, synthetic IMU and QA)."""
 
 from __future__ import annotations
 

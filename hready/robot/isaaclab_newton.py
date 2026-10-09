@@ -1,4 +1,4 @@
-"""WSL-only Isaac Lab + Newton G1 tracker (item 6C). Run as ``__main__``; do not import from hready."""
+"""WSL-only Isaac Lab + Newton G1 tracker (item 6 smoke test). Run as ``__main__``; do not import from hready."""
 
 from __future__ import annotations
 
@@ -461,7 +461,7 @@ def _run() -> None:
         dt=np.float64(SIM_DT),
         assist_wrench_note=np.asarray(
             "Not measured: Newton path has no reliable foot contact force readback; "
-            "pelvis pin / assist wrench dropped after 6B (see docs/pivot_log.md).",
+            "pelvis pin / assist wrench dropped after the tracking-mode trials (see docs/pivot_log.md).",
             dtype=object,
         ),
     )

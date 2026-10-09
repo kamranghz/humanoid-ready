@@ -1,4 +1,4 @@
-"""MuJoCo kinematic replay of Newton run archives (Windows / hready-gmr, item 6C)."""
+"""MuJoCo kinematic replay of Newton run archives (Windows / hready-gmr, item 6 smoke test)."""
 
 from __future__ import annotations
 

@@ -32,7 +32,7 @@
   "foot_slip_rms_m_s": 0.03505036163339528,
   "foot_slip_contact_frames": 330,
   "definitions": {
-    "time_to_fall_s": "Free mode only: sim time at fall_step (base_z < 0.4 m or |roll|/|pitch| > 45 deg); null if no fall or kin_root mode. Not comparable across solver settings (e.g. pass3 jump free 0.55 s at 8 substeps + scratch motion vs 6C 0.97 s at 1 substep + retargeted motion); see sim_settings in metrics JSON.",
+    "time_to_fall_s": "Free mode only: sim time at fall_step (base_z < 0.4 m or |roll|/|pitch| > 45 deg); null if no fall or kin_root mode. Not comparable across solver settings (e.g. earlier scratch jump run free 0.55 s at 8 substeps + scratch motion vs smoke-test default 0.97 s at 1 substep + retargeted motion); see sim_settings in metrics JSON.",
     "joint_rmse_rad": "RMS over time and joints of |q - q_ref| (GMR 29-DoF order). Free mode: only steps t <= fall_step (inclusive); kin_root: full clip.",
     "root_pos_err_cm_mean": "Mean L2 distance (cm) between sim root_pos and root_pos_ref. Free mode: truncated at fall_step; kin_root: full clip.",
     "root_pos_err_cm_p95": "95th percentile of per-step root position error (cm); same truncation as mean.",
@@ -72,7 +72,7 @@
     "physics_num_substeps": 1,
     "njmax": 250,
     "nconmax": 80,
-    "initial_root_velocity_convention": "6C default: zero at spawn (inferred; re-run tracker for sim_settings blob)",
+    "initial_root_velocity_convention": "smoke-test default: zero at spawn (inferred; re-run tracker for sim_settings blob)",
     "fall_detector": "z<0.4 m or tilt>45 deg"
   }
 }

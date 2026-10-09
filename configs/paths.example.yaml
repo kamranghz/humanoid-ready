@@ -10,7 +10,7 @@ babel_root: /path/to/hready_data/datasets/babel/babel_v1.0_release
 gmr_root: /path/to/third_party/GMR
 gmr_python: /path/to/envs/hready-gmr/python
 
-# Isaac Lab + Newton (WSL only — item 6C; Windows hready launches via files)
+# Isaac Lab + Newton (WSL only — item 6 smoke test; Windows hready launches via files)
 isaaclab_root: /path/to/IsaacLab-Newton
 wsl_python: /path/to/isaaclab-newton-env/bin/python
 

@@ -692,7 +692,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
     noise_off.joint_dropout_prob = 0.0
     noise_off.frame_dropout_prob = 0.0
 
-    print("=== 1a camera convention ===")
+    print("=== camera convention ===")
     print(
         "project_joints: p_cam = p_world @ R.T + t; z_cam = p_cam[...,2]; "
         "conf = (z_cam > z_near). Look axis (world): third row of R (positive z_cam); "
@@ -707,7 +707,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
     print(json.dumps({"det_R_per_frame_min": float(det.min()), "det_R_per_frame_max": float(det.max())}))
 
     clips = cfg.get("head_frame_check_clips", {})
-    print("=== 1b walking look vs pelvis velocity (speed > 0.3 m/s) ===")
+    print("=== walking look vs pelvis velocity (speed > 0.3 m/s) ===")
     for spec in clips.get("walk", []):
         entry = _entry_by_rel(load_index(), spec["rel_path"])
         clip = _load_segment_clip(entry, spec.get("start_s"), spec.get("end_s"))
@@ -717,7 +717,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
         metrics["rel_path"] = spec["rel_path"]
         print(json.dumps(metrics, indent=2))
 
-    print("=== 1c image-plane checks (default camera) ===")
+    print("=== image-plane checks (default camera) ===")
     floor_specs = cfg.get("image_plane_floor_clips", [])
     for spec in floor_specs:
         entry = _entry_by_rel(load_index(), spec["rel_path"])
@@ -770,7 +770,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
         checks["cohort"] = "walk"
         print(json.dumps(checks, indent=2))
 
-    print("=== 1d face-forward (dot(look, eye_mid - head) > 0) ===")
+    print("=== face-forward (dot(look, eye_mid - head) > 0) ===")
     for cohort in ("walk", "lie", "kneel"):
         for spec in clips.get(cohort, []):
             entry = _entry_by_rel(load_index(), spec["rel_path"])
@@ -1140,7 +1140,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--config", type=Path, default=Path("configs/ego_observation.yaml"))
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("verify-facts", help="List code-fact verification / discrepancies")
-    sub.add_parser("head-frame-check", help="Head frame checks (review 1a–1d)")
+    sub.add_parser("head-frame-check", help="Head frame checks (camera convention, walking look, image plane, face-forward)")
     sub.add_parser("fov-report", help="Horizontal FOV degrees for focal sweep")
     sub.add_parser("visibility-report", help="Joint-group visibility by cohort + FOV sweep")
     p_byte = sub.add_parser("byte-stable", help="Seed byte-stability of obs tensors")

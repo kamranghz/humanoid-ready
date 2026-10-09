@@ -1,4 +1,4 @@
-"""BABEL v1.0 labels aligned to AMASS SMPL-X N index (stage 5b).
+"""BABEL v1.0 labels aligned to AMASS SMPL-X N index (item 5).
 
 No PyTorch at import time; numpy only for label tensors.
 """

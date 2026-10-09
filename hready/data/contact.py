@@ -1,4 +1,4 @@
-"""Foot contact labels on the 30 Hz AMASS grid (item 5c-1)."""
+"""Foot contact labels on the 30 Hz AMASS grid (item 5, foot-contact labels)."""
 
 from __future__ import annotations
 

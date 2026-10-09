@@ -204,7 +204,7 @@ Excluding treadmill `feat_p`, the same 300-clip sample gives run median **1.01 m
 
 `extra_train.json` / `extra_val.json`: `seq_ann` and `frame_ann` are JSON **null** on all **7921** / **2636** sequences (e.g. `extra_train` first row: `feat_p=BMLrub/.../0020_lifting_heavy2_poses.npz`, `dur=6.77`, annotations null; **0** labels with non-null `act_cat`).
 
-## Contact labels and clip flags (item 5c-1)
+## Contact labels and clip flags (item 5, foot-contact labels)
 
 Caches under `cache_dir`: `amass_floor.json`, `amass_clip_flags.json`, `foot_traj/` + `foot_traj_index.json`. Optional `amass_skate_scores.json` sidecar; contact is **not** cached as npz.
 
@@ -265,7 +265,7 @@ Left/right foot = LBS argmax joints **{7,10}** / **{8,11}** (**254** verts/side)
 
 30 Hz bool **`(T, 4)`** via `compute_foot_contact` / `load_contact` on demand from **`foot_traj`**.
 
-### Synthetic IMU and QA viewer (item 5c-2)
+### Synthetic IMU and QA viewer (item 5, synthetic IMU and QA)
 
 **`hready/data/imu.py`** synthesizes six body-worn IMUs (pelvis, head, wrists, ankles) from grounded 30 Hz SMPL-X kinematics: specific force `R^T (a_world − g)` with `g = (0,0,−9.81)`, and gyro `log(R_t^T R_{t+1}) × fps`. **`scripts/inspect_clip.py`** writes a contact-sheet PNG and a four-row time-series (foot heights, skate speed, IMU magnitudes, BABEL segments).
 

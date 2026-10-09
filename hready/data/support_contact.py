@@ -1099,9 +1099,9 @@ def build_speed_amendment_2026_10_04(
     }
 
 
-# Git revision of the earlier hready/data/contact.py that the foot channel is regression-checked against. It is a
-# functional argument to `git show`, not a citation; it does not resolve in a clone whose history was rewritten.
-FOOT_CONTACT_REFERENCE_REV = "27cc2da"
+# Git revision of the hready/data/contact.py version that introduced the foot-contact labels; the foot channel is
+# regression-checked against it (argument to `git show`).
+FOOT_CONTACT_REFERENCE_REV = "6d6f6c4"
 
 
 def run_foot_regression_reference(seed: int = 0, n_babel: int = 300) -> int:

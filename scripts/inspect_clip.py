@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Visual QA for one AMASS clip: contact sheet + time-series (item 5c-2).
+"""Visual QA for one AMASS clip: contact sheet + time-series (item 5, synthetic IMU and QA).
 
 Requires optional deps: ``pip install -e '.[viz]'`` (matplotlib). Not imported by CI or the
 ``hready`` package — run manually only.

@@ -11,10 +11,10 @@ Moved from `docs/decisions.md` for the egocentric motion track handoff. Module r
 | Contact / skate / rise | `contact.py`, `foot_height_rise.py`, `refine_eligible_cache.py` | Rise >5 cm excluded from HR-Refine **eligible** train set; floor-work subset **annotates** rise, does not auto-drop. |
 | Ego sensors (egocentric evidence) | `refine_corrupt.py`, virtual cam, `imu.py` | Corruption models **full-body** noise, not partial leg dropout; needs new encoder + observation mask. |
 | Regression baseline (oracle completion baselines) | `hready/models/hr_refine.py` backbone | Must **not** take corrupted legs; new observation encoder on egocentric-evidence features only. |
-| HR-Refine trainer | `hr_refine_engine.py`, `configs/hr_refine.yaml` | Item 8 / fast-loader on `wip/fast-loader` (motion memmap unfinished). |
+| HR-Refine trainer | `hr_refine_engine.py`, `configs/hr_refine.yaml` | Item 8 / fast-loader work kept only in a local backup (motion memmap unfinished). |
 | Losses / metrics | `hready/losses/*`, `hready/metrics/*` | Lower-body/feet MPJPE slices and contact **ECE** not wired in one eval CLI yet. |
 | SMPL-X | `smplx_wrapper.load_body`, `batch_forward.smpl_forward_bt` | — |
-| G1 / Isaac | `hready/robot/*` | **Out of scope** for the egocentric-track preview (Module B deferred). |
+| G1 / Isaac | `hready/robot/*` | **Out of scope** for the egocentric-track preview (robot module deferred). |
 | Split cohorts | `hready/data/ego_splits.py`, `configs/ego_splits.yaml` | Split correction: disjoint geometry tree, VAL∪TEST eval, tune subjects in `splits.json`. |
 | Missing for egocentric evidence and completion | — | `ego_observation_model.md` + synth; flat-floor heuristic + ego-conditioned regression + shared metrics table. |
 

@@ -97,6 +97,29 @@ Planned result folders named in `AGENTS.md`: `results/pose_model/` (was `results
 `results/refinement_comparison/` (all previously under `results/E/`). Refinement-model checkpoints default to
 `results/hr_refine/` (was `results/A2/hr_refine/`).
 
+## Checklist sub-steps and other labels
+
+Checklist item numbers (item 1 … item 20b) are kept; only the letter sub-steps and informal labels were renamed.
+
+| Descriptive name | Old name / code |
+|---|---|
+| item 5 (AMASS loader) | stage 5a, item 5a |
+| item 5 (BABEL labels) | stage 5b, item 5b |
+| item 5, foot-contact labels | item 5c-1, 5c |
+| item 5, synthetic IMU and QA; foot-height rise QA | item 5c-2, 5c-2 |
+| item 6 (retarget bridge) | item 6A |
+| tracking-mode trials (item 6) | 6B |
+| item 6 smoke test, smoke-test default | item 6C, 6C |
+| refinement smoke regression | B6 |
+| earlier scratch run, earlier scratch jump run | Pass4, pass3 |
+| robot module (deferred) | Module B |
+| head-frame checks: camera convention, walking look, image plane, face-forward | review 1a, 1b, 1c, 1d |
+| split correction | P1c |
+
+The robot smoke-test metric files (`results/robot_smoke_test/*/metrics_*.json`) later had one note string edited
+(`6C` and `pass3` labels in the `time_to_fall_s` description and the `initial_root_velocity_convention` value); no
+number changed.
+
 ## Renamed modules
 
 | New module | Old module |
@@ -166,6 +189,7 @@ Moved in place (no copy, nothing rebuilt). The only content change is the cache-
 | `<cache_dir>/self_occlusion_30hz/` | `<cache_dir>/e4_occlusion_30hz/` | per-frame self-occlusion masks (`occ.npy` per clip) |
 | `<cache_dir>/babel_gait_medians.json` | `<cache_dir>/babel_frame_ann_gait_median_v1.json` | BABEL gait statistics cache |
 | cache-format tag `grounded_motion_npy_mmap` | `e3_npy_mmap_v3` | `format` field of the motion cache |
+| `wip/split_correction_ego_splits_2026-10-04.patch` | `wip/p1c_ego_splits_2026-10-04.patch` | split-correction patch kept outside the repository (named in `docs/pivot_log.md`) |
 
 Absolute checkpoint paths recorded in `results/completion/*.json` were updated to the new folder names; the
 checkpoint files themselves are unchanged.

@@ -1,4 +1,4 @@
-"""AMASS SMPL-X N loader (stage 5a): index, 30 Hz resampling, Z-up floor, splits.
+"""AMASS SMPL-X N loader (item 5): index, 30 Hz resampling, Z-up floor, splits.
 
 No PyTorch import at module import time; SMPL-X / torch are loaded lazily for
 floor height and optional checks.

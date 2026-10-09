@@ -246,7 +246,7 @@ The paper is written from the same code and results as the work packages. It doe
 
 
 **Minimum milestone:** items 1–6 (and 7–8 if time). Items 1–11 cover the physics, loss, contact,
-torque and robot work; 12–13 cover perception pretraining (prerequisites of perception training); 14–19 complete the rest. The egocentric motion track main path is `docs/project_definition.md` (APPROVED 2026-10-04); item 8 ablation paused on `wip/fast-loader`.
+torque and robot work; 12–13 cover perception pretraining (prerequisites of perception training); 14–19 complete the rest. The egocentric motion track main path is `docs/project_definition.md` (APPROVED 2026-10-04); item 8 ablation is paused; its unfinished work is kept only in a local backup, not in this repository.
 
 ## 8. Egocentric motion track — egocentric RGB to physics-refined motion (main path)
 

@@ -1,4 +1,4 @@
-"""Robot rollout metrics from Isaac Newton run .npz (pure NumPy, item 6C)."""
+"""Robot rollout metrics from Isaac Newton run .npz (pure NumPy, item 6 smoke test)."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ DEFINITIONS: dict[str, str] = {
     "time_to_fall_s": (
         "Free mode only: sim time at fall_step (base_z < 0.4 m or |roll|/|pitch| > 45 deg); "
         "null if no fall or kin_root mode. Not comparable across solver settings "
-        "(e.g. pass3 jump free 0.55 s at 8 substeps + scratch motion vs 6C 0.97 s at "
+        "(e.g. earlier scratch jump run free 0.55 s at 8 substeps + scratch motion vs smoke-test default 0.97 s at "
         "1 substep + retargeted motion); see sim_settings in metrics JSON."
     ),
     "joint_rmse_rad": (
@@ -268,7 +268,7 @@ def compute_run_metrics(run_npz: Path | str) -> dict[str, Any]:
             "njmax": 250,
             "nconmax": 80,
             "initial_root_velocity_convention": (
-                "6C default: zero at spawn (inferred; re-run tracker for sim_settings blob)"
+                "smoke-test default: zero at spawn (inferred; re-run tracker for sim_settings blob)"
             ),
             "fall_detector": "z<0.4 m or tilt>45 deg",
         }
