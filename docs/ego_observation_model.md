@@ -89,7 +89,7 @@ Mesh z-buffer occlusion: deferred until after the first metrics table.
 | `frame_dropout_prob` | 0.02 | Whole frame |
 | `confidence_visible` / `confidence_hidden` | 0.92 / 0.0 | Confidence channel |
 
-Not measured hardware values; each key lives under `noise:` in `configs/ego_observation.yaml`.
+Not hardware-measured values; each key lives under `noise:` in `configs/ego_observation.yaml`.
 
 ## What the oracle obs looks like (default FOV)
 

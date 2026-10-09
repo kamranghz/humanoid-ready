@@ -18,7 +18,7 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Full-body completion baselines under simulated evidence (heuristic + learned) | Built | `results/E/e3_oracle_run.json`, `docs/e3_oracle.md` |
 | Humanoid-robot smoke test (retarget one motion to a Unitree G1 in Isaac Lab + Newton) | Built | `results/D/smoke/` |
 | Spatio-temporal refinement model and trainer (DDP code path implemented, not yet tested on multiple GPUs) | Building (code written; no reported result) | `hready/models/hr_refine.py`, `hready/train/` |
-| Improved completion model (evidence-locked; generative and deterministic variants) | Building | first attempt failed acceptance (below); second attempt frozen, full run not started |
+| Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study failed acceptance; pre-registered comparison failed its frozen rule (below) |
 | Visual perception from egocentric RGB | Planned | — |
 | Evaluation on perceived (not simulated) evidence | Planned | — |
 | Physics-aware refinement (kinematic, then simulation tracking) | Planned | — |
@@ -45,7 +45,7 @@ All results below are an **oracle control**: the body evidence is simulated from
 
 **Improved completion model, attempt 1 — did not meet its acceptance criteria** (`results/E/e4_completion_run.json`, `docs/e4_completion.md`). An evidence-locked conditional VAE trained for the same 40000-step budget improved validation full MPJPE (64.8 mm) and visible-joint MPJPE (12.2 mm) over the learned baseline, but had worse foot skate (0.235 vs 0.202 m/s) and worse hidden-joint MPJPE (70.1 vs 67.4 mm). Its longer 150000-step run diverged; the reported checkpoint is from step 25000. The attempt is documented as failed.
 
-**Improved completion model, attempt 2** — arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/e4_v2_completion.yaml` before any training; pre-run checks passed; the full run has not started. Its design was informed by attempt-1 validation results, which `docs/e4_v2_plan.md` states explicitly.
+**Evidence-locked completion, pre-registered comparison — did not pass its frozen rule** (`results/E/e4_v2_run.json`, `docs/e4_v2_plan.md`). Arms, hyperparameters and a statistical decision rule (paired subject-cluster bootstrap against the learned baseline) were fixed in `configs/e4_v2_completion.yaml` before training. No arm passed; TEST was not evaluated. The best arm (deterministic, no physics loss) improved validation full MPJPE (60.0 vs 66.7 mm) and hidden-joint MPJPE (64.8 vs 67.4 mm) over the learned baseline but missed the contact-calibration gate. Its design was informed by the earlier ablation study's validation results, which `docs/e4_v2_plan.md` states explicitly.
 
 ## Scale and limitations
 
@@ -60,7 +60,7 @@ All results below are an **oracle control**: the body evidence is simulated from
 - No accuracy on real egocentric video or images.
 - No end-to-end system: perception, physics refinement and real-data validation are planned, not built.
 - No robot control result beyond a single smoke test of retargeting one motion to a simulated humanoid.
-- No claim that the improved completion model works; attempt 1 failed and attempt 2 has not been run.
+- No claim that the improved completion model works; both the ablation study and the pre-registered comparison failed their acceptance rules.
 
 ## Repository layout
 

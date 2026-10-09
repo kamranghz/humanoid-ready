@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "hready"
 version = "0.1.0"
-description = "HumanoidReady: human video to physically verified, humanoid-ready motion"
+description = "HumanoidReady: egocentric full-body human motion estimation with physical-plausibility evaluation"
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [

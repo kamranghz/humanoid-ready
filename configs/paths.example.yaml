@@ -1,22 +1,22 @@
 # Copy to configs/paths.yaml (git-ignored) and adjust if needed.
 # All assets in AGENTS.md §1 live under data_root.
 
-data_root: D:/projects/hready_data
-amass_root: D:/projects/hready_data/datasets/amass/smplx_n
-cache_dir: D:/projects/hready_data/cache
-babel_root: D:/projects/hready_data/datasets/babel/babel_v1.0_release
+data_root: /path/to/hready_data
+amass_root: /path/to/hready_data/datasets/amass/smplx_n
+cache_dir: /path/to/hready_data/cache
+babel_root: /path/to/hready_data/datasets/babel/babel_v1.0_release
 
 # GMR retargeting (third-party MIT; subprocess only — see hready/robot/retarget.py)
-gmr_root: D:/projects/third_party/GMR
-gmr_python: C:/Users/kghol072/AppData/Local/anaconda3/envs/hready-gmr/python.exe
+gmr_root: /path/to/third_party/GMR
+gmr_python: /path/to/envs/hready-gmr/python
 
 # Isaac Lab + Newton (WSL only — item 6C; Windows hready launches via files)
-isaaclab_root: D:/RoboticsResearch/repositories/IsaacLab-Newton
-wsl_python: /mnt/d/RoboticsResearch/environments/isaaclab-newton-beta2/bin/python
+isaaclab_root: /path/to/IsaacLab-Newton
+wsl_python: /path/to/isaaclab-newton-env/bin/python
 
 # Example resolved paths (not required until loaders are implemented):
-# smplx_locked_head: D:/projects/hready_data/models/smplx/locked_head
-# smplx_v1_1: D:/projects/hready_data/models/smplx/v1_1
-# amass_smplx_n: D:/projects/hready_data/datasets/amass/smplx_n
-# bedlam_labels: D:/projects/hready_data/datasets/bedlam/labels/lockedhead_16b
-# bedlam_images: D:/projects/hready_data/datasets/bedlam/images
+# smplx_locked_head: /path/to/hready_data/models/smplx/locked_head
+# smplx_v1_1: /path/to/hready_data/models/smplx/v1_1
+# amass_smplx_n: /path/to/hready_data/datasets/amass/smplx_n
+# bedlam_labels: /path/to/hready_data/datasets/bedlam/labels/lockedhead_16b
+# bedlam_images: /path/to/hready_data/datasets/bedlam/images

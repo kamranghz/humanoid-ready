@@ -29,7 +29,7 @@ Evidence schema (`obs`, `rig`), E2-A simulator settings, splits and the 12309-cl
 
 ## Results — E4-v1 (attempt 1)
 
-All numbers below come from `results/E/e4_completion_run.json` except the KL history, which is only in the training log (`D:/projects/hready_data/e4_full_run.log`, outside the repo). Pooled over clips; full-MPJPE CIs are subject-cluster bootstrap 95%.
+All numbers below come from `results/E/e4_completion_run.json` except the KL history, which is only in the training log (not in the repository). Pooled over clips; full-MPJPE CIs are subject-cluster bootstrap 95%.
 
 **Acceptance NOT met.**
 - `e4_same_budget` (main-arm config `ref_locked_gen_phys0`, 40000 steps = E3 budget) beats `e3_learned` on VAL full MPJPE (64.8 vs 66.7 mm), visible MPJPE (12.2 vs 59.5) and penetration (5.63 vs 5.98 mm), but **fails skate** (0.235 vs 0.202 m/s). Its hidden MPJPE is also worse (70.1 vs 67.4 mm).

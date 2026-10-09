@@ -1,4 +1,4 @@
-# HumanoidReady v8.1 — project specification + CVPR 2027 paper track
+# HumanoidReady v8.1 — project specification and tracker (CVPR 2027 paper track on hold)
 
 > Save as `AGENTS.md` at the repo root (Cursor reads it; same file works as `CLAUDE.md`).
 > **Agent: read §0–§2 the paper track (§6) and the checklist (§7) before any task. Work on one checklist item at a time.
@@ -126,7 +126,7 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 
 ---
 
-## 4. "Who You Are" → evidence
+## 4. Capabilities → evidence
 
 | Capability | Evidence |
 |---|---|
@@ -136,8 +136,8 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 | PyTorch and scaling frameworks | DDP/FSDP, bf16, `torch.compile`, checkpoint/resume (WP-A2). **Scope:** DDP path verified on **1 GPU (Windows gloo) + Kaggle 2×T4**, not a large NCCL cluster. |
 | Multi-TB image/video data | Streaming shard pipeline + rolling-window processing (download → process → delete), measured throughput. **Scope:** multi-TB handled as a **measured streaming pipeline**, not a multi-TB training run *(full mirror run later)*. |
 | Fast-paced, shifting priorities | `docs/pivot_log.md` |
-| **Strong signal:** first-author top-tier paper | `paper/` draft from these results, working title "Pose Accuracy Is Not Physical Usability" |
-| **Strong signal:** AMASS, Human3.6M, EgoBody, PROX and their optimization challenges | AMASS used throughout; `docs/dataset_challenges.md` (SMPL-X version mismatch, frame rates, GT artifacts in AMASS, BEDLAM rotated images, motion leakage between AMASS and BEDLAM). *(later)* Human3.6M, EgoBody, PROX evaluation (item **20b**) |
+| First-author paper | `paper/` draft from these results, working title "Pose Accuracy Is Not Physical Usability" |
+| AMASS, Human3.6M, EgoBody, PROX and their optimization challenges | AMASS used throughout; `docs/dataset_challenges.md` (SMPL-X version mismatch, frame rates, GT artifacts in AMASS, BEDLAM rotated images, motion leakage between AMASS and BEDLAM). *(later)* Human3.6M, EgoBody, PROX evaluation (item **20b**) |
 
 ---
 
@@ -195,26 +195,26 @@ The paper is written from the same code and results as the work packages. It doe
 | # | Item | Work package | Data | Done when | ☐/☑ |
 |---|---|---|---|---|---|
 | 1 | Repo skeleton, `pyproject`, `.gitignore`, CPU CI, `paths.example.yaml` | — | none | CI green | ☑ evidence: `.github/workflows/ci.yml`, CI run on commit `10cab7b` |
-| 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Required: body models | SMPL-X | checks pass; raw output shown, check files not saved | ☑ evidence: `hready/body/rotations.py`, `hready/body/smplx_wrapper.py` |
+| 2 | Rotations + SMPL-X wrapper (locked_head; v1_1 only for baseline; mixing raises error) | Body models | SMPL-X | checks pass; raw output shown, check files not saved | ☑ evidence: `hready/body/rotations.py`, `hready/body/smplx_wrapper.py` |
 | 3 | Physics/biomech losses | WP-A3 | none | each loss checked analytically (0 on valid motion, >0 with correct gradient sign on violation); raw output shown, check files not saved | ☑ evidence: `hready/losses/physics.py`, `hready/losses/biomech.py`, `hready/losses/__init__.py` |
 | 4 | Metrics + bootstrap CI | all | none | checked against hand-computed values; raw output shown, check files not saved | ☑ evidence: `hready/metrics/pose.py`, `hready/metrics/physical.py`, `hready/metrics/contact.py`, `hready/metrics/stats.py`, `hready/metrics/__init__.py`, `hready/losses/_constants.py` |
 | 5 | AMASS + BABEL loader (30 fps, Z-up, floor z=0), contact labels, synthetic IMU | WP-A2, C1 | AMASS, BABEL | 3 clips visually checked | ☑ evidence: `hready/data/amass.py`, `hready/data/babel.py`, `hready/data/contact.py`, `hready/data/imu.py`, `hready/data/foot_height_rise.py`, `scripts/inspect_clip.py`, `scripts/babel_gait_stats.py`, `results/checks/` (CMU/132/132_35, ACCAD C20 run_to_jump, BMLrub treadmill), `docs/dataset_challenges.md`, `docs/pivot_log.md`; contact core vs `27cc2da` on 300 `foot_traj` clips (seed 0) |
 | 6 | **G1 smoke test:** one AMASS walk → G1 in Isaac Lab + Newton, metrics + video | WP-D | AMASS | video + JSON | ☑ evidence: `hready/robot/isaaclab_newton.py`, `hready/robot/run_smoke.py`, `hready/robot/metrics.py`, `hready/robot/replay.py`, `results/D/smoke/summary.json`, `results/D/smoke/*/metrics_*.json`, `results/D/smoke/*/replay_*.mp4`, `docs/decisions.md`, `docs/pivot_log.md`; visual sign-off CMU walk / ACCAD jump / BMLrub treadmill (`76bf7e2`) |
 | 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer — **candidate learned instance of refinement K** (not the Track E main path) | WP-A2, B2 | AMASS | overfits 1 batch; resume works | ☑ evidence: `hready/models/hr_refine.py`, `hready/train/`, `configs/hr_refine.yaml`, `docs/decisions.md` |
 | 8 | HR-Refine training + item-3 loss ablation (supporting evidence for K losses) | WP-A3 | AMASS | `results/A3/ablation.csv` | ☐ |
-| 9 | Contact, action, intent heads; IMU fusion ablation — contact overlaps E4; action/intent/IMU supporting (work package C1) | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1`; **affordance F1** (agreement with BABEL action labels) | ☐ |
+| 9 | Contact, action, intent heads; IMU fusion ablation — contact overlaps E4; action/intent/IMU supporting (WP-C1) | WP-B2, C1 | AMASS, BABEL | `results/B2`, `results/C1`; **affordance F1** (agreement with BABEL action labels) | ☐ |
 | 10 | Joint torques (inverse dynamics) on reconstructed body — supporting metric | WP-B2 | AMASS | torque plots | ☐ |
 | 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag (**downstream**, not Track E) | WP-D | AMASS | `results/D/`; end-to-end: one real video (**3DPW** test sequence) → HMR → HR-Refine → G1 rollout video in `results/D/e2e/` | ☐ |
 | 12 | **Perception pretraining (P-A):** BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations — prerequisite of E2-B3 | WP-A1, B1 | BEDLAM | training curves, overlays | ☐ |
 | 13 | **Perception pretraining (P-A):** BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people — prerequisite of E2-B3 | WP-A1, B1 | BEDLAM + ckpt | `results/A1`, `results/B1`; **tracking:** ID-switch count and jitter on `orbit_bigOffice`, temporal transformer vs per-frame baseline | ☐ |
 | 14 | Action-conditioned prior ± physics regularization, evaluated on G1 (**downstream**) | WP-B3 | AMASS, BABEL | `results/B3/` | ☐ |
 | 15 | DDP equivalence test + Kaggle 2×T4 run | WP-A2 | AMASS | scaling table | ☐ |
-| 16 | Loader bottleneck before/after; shard + rolling-window pipeline | WP-C2, Req. multi-TB | AMASS/BEDLAM | `results/C2/` | ☐ |
-| 17 | SOMA-X pivot SMPL-X ↔ MHR + `body_models.md` | Req. body models | SMPL-X | round-trip error reported. **SMPL-X ↔ MHR** goes through the **SOMA-X pivot** (`py-soma-x` tools convert **to** SOMA; no direct SMPL-X↔MHR API documented). Implement in a **separate conda env `hready-soma`** (chumpy conflicts with NumPy 2.x in `hready`); API verified from the installed package (rule 3). **GHUM** in `docs/body_models.md` only (not supported by SOMA-X). | ☐ |
+| 16 | Loader bottleneck before/after; shard + rolling-window pipeline | WP-C2, large-scale data | AMASS/BEDLAM | `results/C2/` | ☐ |
+| 17 | SOMA-X pivot SMPL-X ↔ MHR + `body_models.md` | Body models | SMPL-X | round-trip error reported. **SMPL-X ↔ MHR** goes through the **SOMA-X pivot** (`py-soma-x` tools convert **to** SOMA; no direct SMPL-X↔MHR API documented). Implement in a **separate conda env `hready-soma`** (chumpy conflicts with NumPy 2.x in `hready`); API verified from the installed package (rule 3). **GHUM** in `docs/body_models.md` only (not supported by SOMA-X). | ☐ |
 | 18 | README with §4 table linked to evidence; `dataset_challenges.md`; `pivot_log.md` | all | — | every number traced to `results/` | ☐ |
-| 19 | Paper draft + slides | Strong signal | — | compiles | ☐ |
-| 20a | File access requests for Human3.6M, EgoBody and PROX *(no downloads yet)* | Strong signal | — | requests filed | ☐ |
-| 20b | *(later)* Human3.6M / PROX eval on a small subset; multi-TB run; **EgoBody → Track E E5b** | Strong signal | needs download | — | ☐ |
+| 19 | Paper draft + slides | Publication | — | compiles | ☐ |
+| 20a | File access requests for Human3.6M, EgoBody and PROX *(no downloads yet)* | External datasets | — | requests filed | ☐ |
+| 20b | *(later)* Human3.6M / PROX eval on a small subset; multi-TB run; **EgoBody → Track E E5b** | External datasets | needs download | — | ☐ |
 
 ### Paper track checklist (interleaved with the items above; see the week plan)
 
@@ -245,7 +245,7 @@ The paper is written from the same code and results as the work packages. It doe
 
 
 **Minimum milestone:** items 1–6 (and 7–8 if time). Items 1–11 cover the physics, loss, contact,
-torque and robot clauses; 12–13 cover perception pretraining (E2-B3 prerequisites); 14–19 complete the rest. Track E main path is `docs/project_definition.md` (APPROVED 2026-10-04); item 8 ablation paused on `wip/fast-loader`.
+torque and robot work; 12–13 cover perception pretraining (E2-B3 prerequisites); 14–19 complete the rest. Track E main path is `docs/project_definition.md` (APPROVED 2026-10-04); item 8 ablation paused on `wip/fast-loader`.
 
 ## 8. Extension track E — egocentric RGB to physics-refined motion (main path)
 
