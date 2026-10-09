@@ -11,3 +11,7 @@ Every number in the README and docs comes from a file listed here, produced by a
 | `completion/evidence_locked_preregistered_comparison.json` | `python -m hready.experiments.evidence_locked_preregistered` | Evidence-locked completion, pre-registered comparison (no arm passed; TEST not evaluated) |
 | `robot_smoke_test/` | `python -m hready.robot.run_smoke` | Humanoid-robot smoke test metrics (rollout videos and run files are local only) |
 | `checks/` | `scripts/inspect_clip.py` | Contact sheets and time series of three visually checked AMASS clips |
+
+Checkpoint paths recorded in `completion/*.json` point to `checkpoints/oracle_completion_transformer/`,
+`checkpoints/evidence_locked_ablation/` and `checkpoints/evidence_locked_preregistered_comparison/` under the data
+root (not in the repository).

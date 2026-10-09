@@ -141,7 +141,7 @@ class Ctx:
         return (
             Path(p)
             if p
-            else Path(load_paths_config()["data_root"]) / "checkpoints" / "e3_oracle"
+            else Path(load_paths_config()["data_root"]) / "checkpoints" / "oracle_completion_transformer"
         )
 
     def new_model(self) -> EgoCompleteMotion:

@@ -37,7 +37,7 @@
    "leak_check_pass": true,
    "leak_check": {
     "model": {
-     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_w0/preflight.pt",
+     "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_w0/preflight.pt",
      "step": 300,
      "best_selection_metric": null
     },
@@ -90,7 +90,7 @@
    "leak_check_pass": true,
    "leak_check": {
     "model": {
-     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys0p3/preflight.pt",
+     "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys0p3/preflight.pt",
      "step": 300,
      "best_selection_metric": null
     },
@@ -143,7 +143,7 @@
    "leak_check_pass": true,
    "leak_check": {
     "model": {
-     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys1p0/preflight.pt",
+     "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys1p0/preflight.pt",
      "step": 300,
      "best_selection_metric": null
     },
@@ -196,7 +196,7 @@
    "leak_check_pass": true,
    "leak_check": {
     "model": {
-     "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/gen_stab/preflight.pt",
+     "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/gen_stab/preflight.pt",
      "step": 300,
      "best_selection_metric": null
     },
@@ -383,7 +383,7 @@
      "wall_s": 4239.29950100003
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_w0/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_w0/best.pt",
    "wall_s": 4240.791129600024,
    "nonfinite_steps": []
   },
@@ -533,7 +533,7 @@
      "wall_s": 7368.891221600003
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys0p3/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys0p3/best.pt",
    "wall_s": 7370.328892999969,
    "nonfinite_steps": []
   },
@@ -683,7 +683,7 @@
      "wall_s": 7335.105958500004
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys1p0/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys1p0/best.pt",
    "wall_s": 7336.443547000003,
    "nonfinite_steps": []
   },
@@ -837,7 +837,7 @@
      "wall_s": 4303.34756840003
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/gen_stab/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/gen_stab/best.pt",
    "wall_s": 4304.632709699974,
    "nonfinite_steps": []
   }
@@ -889,12 +889,12 @@
   },
   "models": {
    "oracle_transformer": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11110752473453
    },
    "ablation_det_wphys0": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/deterministic/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/deterministic/best.pt",
     "step": 40000,
     "best_selection_metric": 57.546497775488106,
     "run_cfg": {
@@ -946,7 +946,7 @@
     "label": "ablation-study anchor, post-hoc selected, not eligible, no TEST"
    },
    "det_w0": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_w0/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_w0/best.pt",
     "step": 40000,
     "best_selection_metric": 57.546497775488106,
     "run_cfg": {
@@ -996,7 +996,7 @@
     }
    },
    "det_wphys0p3": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys0p3/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys0p3/best.pt",
     "step": 40000,
     "best_selection_metric": 60.808583915972875,
     "run_cfg": {
@@ -1046,7 +1046,7 @@
     }
    },
    "det_wphys1p0": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/det_wphys1p0/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/det_wphys1p0/best.pt",
     "step": 40000,
     "best_selection_metric": 63.71479356963984,
     "run_cfg": {
@@ -1096,7 +1096,7 @@
     }
    },
    "gen_stab": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4_v2/gen_stab/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_preregistered_comparison/gen_stab/best.pt",
     "step": 40000,
     "best_selection_metric": 59.0205143513633,
     "run_cfg": {

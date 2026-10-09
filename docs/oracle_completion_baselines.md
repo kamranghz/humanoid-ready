@@ -32,7 +32,7 @@ Evaluation uses all VAL and TEST clips; clip flags never remove a clip from MPJP
 
 ## Memmap cache
 
-`<cache_dir>/e3_motion_30hz/clips/<rel_path>/`: uncompressed `.npy` per array, read with `np.load(..., mmap_mode="r")`:
+`<cache_dir>/grounded_motion_30hz/clips/<rel_path>/`: uncompressed `.npy` per array, read with `np.load(..., mmap_mode="r")`:
 `root_orient`, `pose_body`, `transl` (grounded, floor at z = 0), `betas`, `joints_22`, `joints_55` (locked_head FK, CPU, single thread, fixed 512-frame chunks), `contact` (T, 4 bool; item-5 foot-channel labels from the grounded `foot_traj` cache with the recorded hysteresis rule), and `meta.json` (written last, so an interrupted build resumes cleanly). All arrays are float32/bool at 30 Hz. `verify-cache` recomputes every array from `load_clip(ground=True)` + FK + item-5 contact on a seeded sample and requires byte equality and `np.memmap` reads.
 
 ## Evidence, rig and canonical frame
@@ -59,7 +59,7 @@ All offsets live in the per-frame **heading frame** (right, forward, up), never 
 
 Loss: geodesic angle on root + body rotations, L1 on `transl`, mean per-joint L2 of FK joints, BCE on item-5 contact labels (masked by `exclude_contact`). `w_phys = 0` (refinement-comparison "none" arm). Predictions use the **neutral body shape** (betas 0): body shape is not given in the oracle control, so the `transl` target is `pelvis_gt − J0(betas 0)`. FK during training and evaluation uses `NeutralJointFK`, which applies the SMPL-X LBS only to the vertices the 22-joint regressor reads (same math as `SmplxBody.forward`; `preflight` reports the maximum difference).
 
-Training is step-based with a seeded, resumable window sampler; `last.pt` / `best.pt` under `<data_root>/checkpoints/e3_oracle/`. **Model selection:** VAL only, cohorts `all` + `ordinary_locomotion` (mean of the two pooled MPJPEs) on a seeded subset of `selection.n_val_clips` VAL clips, whole clips stitched. Never floor-work, never TEST.
+Training is step-based with a seeded, resumable window sampler; `last.pt` / `best.pt` under `<data_root>/checkpoints/oracle_completion_transformer/`. **Model selection:** VAL only, cohorts `all` + `ordinary_locomotion` (mean of the two pooled MPJPEs) on a seeded subset of `selection.n_val_clips` VAL clips, whole clips stitched. Never floor-work, never TEST.
 
 ## Evaluation
 

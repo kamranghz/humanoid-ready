@@ -10,7 +10,7 @@ disclaimer: >-
   oracle control; floor height given (world z = 0); head pose and gravity given (rig input)
 
 occlusion_cache:          # shared with the ablation study (bit-identical to the oracle-baselines evidence path)
-  rel_dir: e4_occlusion_30hz
+  rel_dir: self_occlusion_30hz
   verify_n_clips: 40
   verify_n_train_items: 64
 
@@ -78,7 +78,7 @@ arms:
 # Reference row: ablation-study deterministic checkpoint (w_phys 0), reused without retraining.
 anchor:
   name: ablation_det_wphys0
-  checkpoint: checkpoints/e4/deterministic/best.pt   # under data_root
+  checkpoint: checkpoints/evidence_locked_ablation/deterministic/best.pt   # under data_root
   label: ablation-study anchor, post-hoc selected, not eligible, no TEST
   eligible: false         # reported on VAL only; never selected; never evaluated on TEST
 
@@ -117,4 +117,4 @@ preflight:
 
 paths:
   results_json: results/completion/evidence_locked_preregistered_comparison.json
-  checkpoint_root: checkpoints/e4_v2   # under data_root
+  checkpoint_root: checkpoints/evidence_locked_preregistered_comparison   # under data_root

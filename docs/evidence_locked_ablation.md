@@ -10,7 +10,7 @@
 
 Evidence schema (`obs`, `rig`), observation-simulator settings, splits and the 12309-clip training list, canonical frame, z-rotation augmentation, window 64 / stride 32 with overlap averaging, training sampler and seed, batch size 64, neutral-shape FK, cohorts, metrics (pooled MPJPE slices, sole-proxy physical metrics, τ 0.04947 primary + 0.04453 sensitivity, subject-cluster bootstrap CIs), VAL-only model selection on `all` + `ordinary_locomotion` (200 seeded VAL clips), and the leak protocol.
 
-**Occlusion cache.** The observation simulator's capsule self-occlusion test depends only on each frame's clean joints and head camera, and dominates simulation time. This study stores it per clip (`<cache_dir>/e4_occlusion_30hz/`) and runs the unchanged observation simulator with the mask served from that array. `verify-occ` checks that evaluation evidence (whole clips) and training items are bit-identical to the uncached path.
+**Occlusion cache.** The observation simulator's capsule self-occlusion test depends only on each frame's clean joints and head camera, and dominates simulation time. This study stores it per clip (`<cache_dir>/self_occlusion_30hz/`) and runs the unchanged observation simulator with the mask served from that array. `verify-occ` checks that evaluation evidence (whole clips) and training items are bit-identical to the uncached path.
 
 ## Design choices
 

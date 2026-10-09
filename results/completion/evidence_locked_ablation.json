@@ -213,7 +213,7 @@
      "wall_s": 4739.014839200012
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4/ref_locked_gen_phys0/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
    "wall_s": 4740.523175999988
   },
   "unlocked": {
@@ -359,7 +359,7 @@
      "wall_s": 4656.43429070001
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4/unlocked/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/unlocked/best.pt",
    "wall_s": 4657.936681799998
   },
   "deterministic": {
@@ -509,7 +509,7 @@
      "wall_s": 4313.787567799969
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4/deterministic/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/deterministic/best.pt",
    "wall_s": 4314.939083899953
   },
   "phys": {
@@ -659,7 +659,7 @@
      "wall_s": 7797.08462009998
     }
    ],
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4/phys/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/phys/best.pt",
    "wall_s": 7798.453004399955
   }
  },
@@ -669,7 +669,7 @@
   "budget_steps": 40000,
   "runs": {
    "ref_locked_gen_phys0": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/ref_locked_gen_phys0/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11659524102129,
     "lock": true,
@@ -677,7 +677,7 @@
     "w_phys": 0.0
    },
    "unlocked": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/unlocked/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/unlocked/best.pt",
     "step": 40000,
     "best_selection_metric": 66.88155421666367,
     "lock": false,
@@ -685,7 +685,7 @@
     "w_phys": 0.0
    },
    "deterministic": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/deterministic/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/deterministic/best.pt",
     "step": 40000,
     "best_selection_metric": 57.546497775488106,
     "lock": true,
@@ -693,7 +693,7 @@
     "w_phys": 0.0
    },
    "phys": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/phys/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/phys/best.pt",
     "step": 35000,
     "best_selection_metric": 64.47578795120243,
     "lock": true,
@@ -1434,21 +1434,21 @@
     "wall_s": 18074.27135679999
    }
   ],
-  "checkpoint": "D:/projects/hready_data/checkpoints/e4/main/best.pt",
+  "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/main/best.pt",
   "wall_s": 18075.237821599992
  },
  "eval_table": {
   "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
   "models": {
    "oracle_transformer": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11110752473453
    },
    "evidence_locked_same_budget": {
     "run": "ref_locked_gen_phys0",
     "max_steps": 40000,
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/ref_locked_gen_phys0/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11659524102129,
     "run_cfg": {
@@ -1501,7 +1501,7 @@
    "evidence_locked_main": {
     "run": "main",
     "max_steps": 150000,
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/main/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/main/best.pt",
     "step": 25000,
     "best_selection_metric": 66.13162973211297,
     "run_cfg": {
@@ -4153,7 +4153,7 @@
  "generative_check": {
   "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
   "model": {
-   "checkpoint": "D:/projects/hready_data/checkpoints/e4/main/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/main/best.pt",
    "step": 25000,
    "best_selection_metric": 66.13162973211297
   },
@@ -4172,7 +4172,7 @@
  "leak_check": {
   "ref_locked_gen_phys0": {
    "model": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/ref_locked_gen_phys0/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
     "step": 40000,
     "best_selection_metric": 63.11659524102129
    },
@@ -4206,7 +4206,7 @@
   },
   "main": {
    "model": {
-    "checkpoint": "D:/projects/hready_data/checkpoints/e4/main/best.pt",
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/main/best.pt",
     "step": 25000,
     "best_selection_metric": 66.13162973211297
    },

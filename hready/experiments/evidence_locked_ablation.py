@@ -139,7 +139,7 @@ class EvidenceLockedContext:
         root = (
             Path(root)
             if root
-            else Path(load_paths_config()["data_root"]) / "checkpoints" / "e4"
+            else Path(load_paths_config()["data_root"]) / "checkpoints" / "evidence_locked_ablation"
         )
         return root / name
 

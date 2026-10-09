@@ -43,7 +43,7 @@ train:
   num_workers: 12
   log_every: 100
   val_every: 2000
-  checkpoint_dir: null  # default <data_root>/checkpoints/e3_oracle
+  checkpoint_dir: null  # default <data_root>/checkpoints/oracle_completion_transformer
 
 # Model selection: VAL only, cohorts all + ordinary_locomotion (never floor-work, never TEST).
 selection:
@@ -57,7 +57,7 @@ preflight:
   benchmark_steps: 60
 
 memmap:
-  rel_dir: e3_motion_30hz
+  rel_dir: grounded_motion_30hz
   verify_n_clips: 100
   build_workers: 12
 

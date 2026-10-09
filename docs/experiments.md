@@ -152,6 +152,20 @@ is unchanged (checked by replaying the literal replacements on the old text and 
 | `results/D/smoke/standing_calibration/metrics_free.json` | `results/robot_smoke_test/standing_calibration/metrics_free.json` | `6acaf371b190a5c879e56e30834a8689b1653ab67884f39ba6de86f98c14bac7` (unchanged) |
 | `results/D/smoke/standing_calibration/metrics_kin_root.json` | `results/robot_smoke_test/standing_calibration/metrics_kin_root.json` | `2026349038cfb1368e5d18605ee31ec03743f4524546b8c893cdd7959cbc0d47` (unchanged) |
 
-External checkpoint and cache folders under the data root (`checkpoints/e3_oracle`, `checkpoints/e4`,
-`checkpoints/e4_v2`, `e3_motion_30hz`, `e4_occlusion_30hz`) keep their names until they are renamed in a separate
-step; configs and results refer to them by those names.
+## Renamed external folders (under the data root, not in the repository)
+
+Moved in place (no copy, nothing rebuilt). The only content change is the cache-format tag in each motion-cache
+`meta.json` and in its `index.json`; nothing reads the tag back when loading.
+
+| New name | Old name | Contents |
+|---|---|---|
+| `checkpoints/oracle_completion_transformer/` | `checkpoints/e3_oracle/` | oracle completion transformer (`best.pt`, `last.pt`) |
+| `checkpoints/evidence_locked_ablation/` | `checkpoints/e4/` | ablation-study arms (`deterministic`, `main`, `phys`, `ref_locked_gen_phys0`, `unlocked`) |
+| `checkpoints/evidence_locked_preregistered_comparison/` | `checkpoints/e4_v2/` | pre-registered comparison arms (`det_w0`, `det_wphys0p3`, `det_wphys1p0`, `gen_stab`) |
+| `<cache_dir>/grounded_motion_30hz/` | `<cache_dir>/e3_motion_30hz/` | 30 Hz floor-grounded motion cache (memory-mapped `.npy` per clip) |
+| `<cache_dir>/self_occlusion_30hz/` | `<cache_dir>/e4_occlusion_30hz/` | per-frame self-occlusion masks (`occ.npy` per clip) |
+| `<cache_dir>/babel_gait_medians.json` | `<cache_dir>/babel_frame_ann_gait_median_v1.json` | BABEL gait statistics cache |
+| cache-format tag `grounded_motion_npy_mmap` | `e3_npy_mmap_v3` | `format` field of the motion cache |
+
+Absolute checkpoint paths recorded in `results/completion/*.json` were updated to the new folder names; the
+checkpoint files themselves are unchanged.

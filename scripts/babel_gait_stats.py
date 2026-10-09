@@ -27,7 +27,7 @@ from hready.data.contact import (
     load_foot_positions,
 )
 
-_BABEL_GAIT_MEDIAN_CACHE = "babel_frame_ann_gait_median_v1.json"
+_BABEL_GAIT_MEDIAN_CACHE = "babel_gait_medians.json"
 
 
 def _gait_stats_from_contact_slice(contact: np.ndarray) -> dict[str, float]:

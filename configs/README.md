@@ -13,3 +13,10 @@
 
 Configs of completed experiments are kept as recorded; changes after a run are limited to names, paths and labels
 (see `docs/experiments.md`).
+
+## External folders named in configs
+
+Checkpoints and caches live outside the repository, under `data_root` and `cache_dir` from `paths.yaml`:
+`checkpoints/oracle_completion_transformer/`, `checkpoints/evidence_locked_ablation/`,
+`checkpoints/evidence_locked_preregistered_comparison/`, `<cache_dir>/grounded_motion_30hz/` (motion cache, config key
+`memmap.rel_dir`) and `<cache_dir>/self_occlusion_30hz/` (occlusion cache, config key `occlusion_cache.rel_dir`).

@@ -35,7 +35,7 @@
  "eval_table": {
   "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
   "model": {
-   "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
    "step": 40000,
    "best_selection_metric": 63.11110752473453
   },
@@ -1970,7 +1970,7 @@
  },
  "leak_check": {
   "model": {
-   "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
+   "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
    "step": 40000,
    "best_selection_metric": 63.11110752473453
   },
@@ -2213,7 +2213,7 @@
     "wall_s": 17313.94853950001
    }
   ],
-  "checkpoint": "D:/projects/hready_data/checkpoints/e3_oracle/best.pt",
+  "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
   "wall_s": 17313.948967200005
  }
 }

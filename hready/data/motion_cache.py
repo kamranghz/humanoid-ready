@@ -41,7 +41,7 @@ ARRAYS = (
     "joints_55",
     "contact",
 )
-FORMAT = "e3_npy_mmap_v3"
+FORMAT = "grounded_motion_npy_mmap"
 
 _WORKER: dict[str, Any] = {}
 
