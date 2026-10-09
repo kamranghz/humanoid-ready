@@ -1,4 +1,4 @@
-"""Track E2-A: oracle egocentric evidence simulator (control path, leak-proof batching)."""
+"""Observation simulator: oracle egocentric evidence (control path, leak-proof batching)."""
 
 from __future__ import annotations
 
@@ -155,7 +155,7 @@ def occlusion_config_from_dict(data: dict[str, Any] | None) -> OcclusionCapsuleC
 def camera_look_axis(camera_R: Tensor) -> Tensor:
     """Unit look direction shared with ``project_joints``: positive ``z_cam`` ⇔ ``(p-cam)·look > 0``.
 
-    With E2-A ``R`` rows ``[right, up, -forward_geom]``, ``look`` is the third row (before optional ``ny`` flip).
+    With simulator ``R`` rows ``[right, up, -forward_geom]``, ``look`` is the third row (before optional ``ny`` flip).
     """
     look = camera_R[..., 2, :]
     return look / (torch.linalg.norm(look, dim=-1, keepdim=True) + 1e-8)
@@ -175,7 +175,7 @@ def head_frame_from_joints(
 ) -> tuple[Tensor, Tensor, Tensor]:
     """Per-frame head camera: R rows [right, up, -forward]; t = -R @ cam_pos (no gravity).
 
-    ``project_joints`` is called with this ``R``; E2-A then flips ``ny`` so bitmap +v is down.
+    ``project_joints`` is called with this ``R``; the simulator then flips ``ny`` so bitmap +v is down.
     """
     le = joints_55[..., left_eye, :]
     re = joints_55[..., right_eye, :]
@@ -279,7 +279,7 @@ def project_joints_egocentric(
 
 
 def pinhole_uv_to_bitmap(u: float, v: float, img_size: tuple[int, int]) -> tuple[float, float]:
-    """Map raw ``project_joints`` pixel coords to E2-A bitmap (row 0 top, +v down)."""
+    """Map raw ``project_joints`` pixel coords to the simulator bitmap (row 0 top, +v down)."""
     return u, float(2.0 * (img_size[1] * 0.5) - v)
 
 
@@ -647,7 +647,7 @@ def cmd_verify_facts() -> None:
     vcam = VirtualCameraConfig()
     lines.append(
         f"VirtualCameraConfig: focal_px={vcam.focal_px}, img_size={vcam.img_size} "
-        f"(orbit camera; E2-A must not call sample_virtual_camera)."
+        f"(orbit camera; the observation simulator must not call sample_virtual_camera)."
     )
     enc = inspect.getsource(HRRefine.encode_inputs)
     lines.append(
@@ -662,7 +662,7 @@ def cmd_verify_facts() -> None:
         "(z clamp min 0.05 in denominator only)."
     )
     lines.append(
-        f"E1 JOINT_NAMES_22: wrists at {LEFT_WRIST},{RIGHT_WRIST}; neck={NECK}; head={HEAD}."
+        f"22-joint table JOINT_NAMES_22: wrists at {LEFT_WRIST},{RIGHT_WRIST}; neck={NECK}; head={HEAD}."
     )
     lines.append(
         f"SMPL-X 55-joint eyes: indices {SMPLX_LEFT_EYE},{SMPLX_RIGHT_EYE} "
@@ -678,7 +678,7 @@ def cmd_verify_facts() -> None:
         "SMPL-X eye joint names: left_eye_smplhf / right_eye_smplhf (indices 23, 24)."
     )
     lines.append(
-        "Look axis = third row of R; E2-A ny flip after project_joints for bitmap +v down."
+        "Look axis = third row of R; simulator ny flip after project_joints for bitmap +v down."
     )
     print("\n".join(lines))
 
@@ -698,7 +698,7 @@ def cmd_head_frame_check(cfg_path: Path) -> None:
         "conf = (z_cam > z_near). Look axis (world): third row of R (positive z_cam); "
         "walking check uses the same third row."
     )
-    print("E2-A: R rows [right, up, -forward], det(R)≈-1; keypoints ny flipped for bitmap.")
+    print("Observation simulator: R rows [right, up, -forward], det(R)≈-1; keypoints ny flipped for bitmap.")
     sample_R, _, _ = head_frame_from_joints(torch.as_tensor(_fk_clip_dict(
         _load_segment_clip(_entry_by_rel(load_index(), cfg["head_frame_check_clips"]["walk"][0]["rel_path"]), None, None),
         body,
@@ -1136,7 +1136,7 @@ print('regression_2_5_ok', r6[0,0].item(), lo, hi)
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description="Track E2-A oracle egocentric evidence")
+    parser = argparse.ArgumentParser(description="Observation simulator (oracle egocentric evidence)")
     parser.add_argument("--config", type=Path, default=Path("configs/ego_observation.yaml"))
     sub = parser.add_subparsers(dest="cmd", required=True)
     sub.add_parser("verify-facts", help="List code-fact verification / discrepancies")

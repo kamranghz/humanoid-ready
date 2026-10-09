@@ -1,4 +1,4 @@
-"""Track E1: subject split audit, cohorts, BABEL + geometry floor-work evaluation."""
+"""Subject splits and motion cohorts: subject split audit, cohorts, BABEL + geometry floor-work evaluation."""
 
 from __future__ import annotations
 
@@ -1758,7 +1758,7 @@ def _write_outputs(
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Track E1 ego splits + floor-work cohorts")
+    parser = argparse.ArgumentParser(description="Subject splits + floor-work cohorts")
     parser.add_argument("--config", type=str, default="configs/ego_splits.yaml")
     parser.add_argument(
         "--splits",

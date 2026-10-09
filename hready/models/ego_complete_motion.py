@@ -1,7 +1,7 @@
-"""E3 learned completion: evidence + rig -> SMPL-X motion (transl, 6D rotations) + 4 foot-contact logits.
+"""Oracle completion transformer: evidence + rig -> SMPL-X motion (transl, 6D rotations) + 4 foot-contact logits.
 
 ``forward(obs, rig)`` is the only input path: evidence-schema tensors plus the given rig (head pose,
-camera rotation, gravity; D1). No pose initialisation, no targets, no body shape.
+camera rotation, gravity; given rig). No pose initialisation, no targets, no body shape.
 Per-frame encoder (all 22 joints + rig) -> temporal Transformer (HR-Refine width) -> heads.
 """
 
@@ -46,7 +46,7 @@ def evidence_features(obs: dict[str, Tensor], rig: dict[str, Tensor]) -> Tensor:
     rel = (obs["joint_pos_3d"] - head.unsqueeze(2)) * vis
     conf = obs["joint_confidence"].to(head.dtype).unsqueeze(-1) * vis
     kp = obs.get("keypoints_2d")
-    # E2-A keeps (nx, ny) of hidden joints; masking here keeps hidden-joint projections out.
+    # The observation simulator keeps (nx, ny) of hidden joints; masking here keeps hidden-joint projections out.
     kp = torch.zeros_like(rel) if kp is None else kp.to(head.dtype) * vis
     joint = torch.cat([rel, vis, conf, kp], dim=-1).reshape(b, t, NUM_KP * _JOINT_FEATS)
     g = rig["gravity_world"].to(head.dtype)

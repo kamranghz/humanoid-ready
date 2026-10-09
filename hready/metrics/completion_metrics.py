@@ -1,4 +1,4 @@
-"""E3 evaluation: pooled MPJPE slices, foot-contact and physical metrics on the 22-joint feet.
+"""Completion evaluation: pooled MPJPE slices, foot-contact and physical metrics on the 22-joint feet.
 
 Physical metrics use the FK foot joints (L ankle 7, L foot 10, R ankle 8, R foot 11 = channels
 L heel, L toe, R heel, R toe). A joint is not a contact point, so each channel height is the joint

@@ -1,1 +1,1 @@
-"""Evaluation CLIs (Track E3 oracle baselines)."""
+"""Experiment CLIs: oracle completion baselines and evidence-locked completion studies."""

@@ -1,7 +1,7 @@
-"""Track E4-v2 CLI (post-hoc design after E4-v1; config ``configs/e4_v2_completion.yaml``, pre-registered rule).
+"""Evidence-locked completion, pre-registered comparison CLI (post-hoc design after the ablation study; pre-registered rule).
 
 Commands: verify-occ, preflight, train, eval-val, decide, eval-test, leak-check.
-Reuses the E4-v1 / E3 code paths; v1 and E3 outputs are not touched.
+Reuses the ablation-study and oracle-baselines code paths; their outputs are not touched.
 """
 
 from __future__ import annotations
@@ -18,17 +18,11 @@ import numpy as np
 import torch
 import yaml
 
-from hready.baselines.e3_heuristic import heuristic_foot_contact
+from hready.baselines.flat_floor_heuristic import heuristic_foot_contact
 from hready.data.amass import load_paths_config
-from hready.eval.e3_cohorts import CohortMasks
-from hready.eval.e3_oracle import (
-    load_trained,
-    predict_clip_heuristic,
-    predict_clip_model,
-    print_rows,
-)
-from hready.eval.e4_completion import (
-    E4Ctx,
+from hready.experiments.cohorts import CohortMasks
+from hready.experiments.evidence_locked_ablation import (
+    EvidenceLockedContext,
     _common,
     _leak_check_run,
     cmd_verify_occ,
@@ -43,19 +37,25 @@ from hready.eval.e4_completion import (
     summarize,
     train_run,
 )
-from hready.metrics.e3_eval import (
+from hready.experiments.oracle_baselines import (
+    load_trained,
+    predict_clip_heuristic,
+    predict_clip_model,
+    print_rows,
+)
+from hready.metrics.completion_metrics import (
     ClipEval,
     CohortAccumulator,
     accumulate_clip,
     proxy_foot_contact,
 )
 from hready.metrics.paired_bootstrap import ece_bins, paired_bootstrap
-from hready.train.e3_oracle_engine import (
+from hready.train.completion_engine import (
     load_checkpoint,
     save_checkpoint,
     seed_everything,
 )
-from hready.train.e4_engine import compute_loss_e4
+from hready.train.evidence_locked_engine import compute_loss_evidence_locked
 
 GATE_KEYS = [
     "mpjpe_full_hidden_mm",
@@ -71,7 +71,7 @@ REPORT_KEYS = GATE_KEYS + [
 ]
 
 
-class E4V2Ctx(E4Ctx):
+class PreregisteredContext(EvidenceLockedContext):
     def __init__(
         self, cfg: dict[str, Any], config_path: Path, device: torch.device
     ) -> None:
@@ -110,7 +110,7 @@ class E4V2Ctx(E4Ctx):
 # --------------------------------------------------------------------------- preflight
 
 
-def cmd_preflight(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_preflight(ctx: PreregisteredContext) -> dict[str, Any]:
     """Per new arm: 1-batch overfit, exact resume, leak check on the overfit model, throughput, hours."""
     pf = ctx.cfg["preflight"]
     out: dict[str, Any] = {"verify_occ": cmd_verify_occ(ctx)}
@@ -154,9 +154,9 @@ def cmd_preflight(ctx: E4V2Ctx) -> dict[str, Any]:
             for _ in range(int(pf["resume_steps"])):
                 m.eval()
                 o.zero_grad(set_to_none=True)
-                loss, _ = compute_loss_e4(
+                loss, _ = compute_loss_evidence_locked(
                     m,
-                    ctx.c3.fk,
+                    ctx.oracle.fk,
                     batch,
                     loss_w=rc["loss"],
                     lock=rc["lock"],
@@ -171,7 +171,7 @@ def cmd_preflight(ctx: E4V2Ctx) -> dict[str, Any]:
             float((p - q).detach().abs().max())
             for p, q in zip(model.parameters(), model_b.parameters())
         )
-        # Leak check on the (overfit) arm model, full E3 protocol.
+        # Leak check on the (overfit) arm model, full oracle-baselines protocol.
         ctx.ckpt_override[name] = path
         leak = _leak_check_run(ctx, name)
         t0 = time.perf_counter()
@@ -225,7 +225,7 @@ def cmd_preflight(ctx: E4V2Ctx) -> dict[str, Any]:
 # --------------------------------------------------------------------------- training
 
 
-def cmd_train(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_train(ctx: PreregisteredContext) -> dict[str, Any]:
     res = ctx.results().get("train", {})
     for name in ctx.cfg["arms"]:
         ctx.__dict__["nonfinite_steps"] = []
@@ -241,22 +241,22 @@ def cmd_train(ctx: E4V2Ctx) -> dict[str, Any]:
 
 
 def evaluate_with_bins(
-    ctx: E4V2Ctx,
+    ctx: PreregisteredContext,
     split: str,
     makers: dict[str, Callable[..., ClipEval]],
     cohorts: list[str],
 ):
-    """v1 ``evaluate`` plus per-subject calibration bins for cohort ``all`` (for the paired bootstrap)."""
-    c3 = ctx.c3
-    ev = c3.cfg["eval"]
+    """Ablation-study ``evaluate`` plus per-subject calibration bins for cohort ``all`` (for the paired bootstrap)."""
+    oracle = ctx.oracle
+    ev = oracle.cfg["eval"]
     tau, tau_s = (
         float(ev["ground_consistency_tolerance_m"]),
         float(ev["ground_consistency_tolerance_sensitivity_m"]),
     )
-    rels = c3.lists[split]
+    rels = oracle.lists[split]
     masks = CohortMasks(
-        Path(c3.cfg["paths"]["ego_splits_yaml"]),
-        Path(c3.cfg["paths"]["floor_work_csv"]),
+        Path(oracle.cfg["paths"]["ego_splits_yaml"]),
+        Path(oracle.cfg["paths"]["floor_work_csv"]),
         rels,
     )
     accs = {b: {c: CohortAccumulator() for c in cohorts} for b in makers}
@@ -278,7 +278,7 @@ def evaluate_with_bins(
                     accs[b][c],
                     ce,
                     m,
-                    sole_offsets=c3.sole,
+                    sole_offsets=oracle.sole,
                     tau_m=tau,
                     tau_sensitivity_m=tau_s,
                 )
@@ -296,25 +296,25 @@ def evaluate_with_bins(
 
 
 def _makers(
-    ctx: E4V2Ctx, names: list[str], *, with_fixed_rows: bool
+    ctx: PreregisteredContext, names: list[str], *, with_fixed_rows: bool
 ) -> tuple[dict[str, Callable[..., ClipEval]], dict[str, Any]]:
-    c3 = ctx.c3
-    thr = float(c3.cfg["eval"]["contact_threshold"])
-    m3, meta3 = load_trained(c3)
+    oracle = ctx.oracle
+    thr = float(oracle.cfg["eval"]["contact_threshold"])
+    model_tf, meta_tf = load_trained(oracle)
 
-    def mk_e3(obs, rig, common):
-        pred, prob, dis, n_dis = predict_clip_model(c3, m3, obs, rig)
+    def mk_transformer(obs, rig, common):
+        pred, prob, dis, n_dis = predict_clip_model(oracle, model_tf, obs, rig)
         return learned_eval(pred, prob, dis, n_dis, common, thr)
 
     makers: dict[str, Callable[..., ClipEval]] = {}
-    metas: dict[str, Any] = {"e3_learned": meta3}
+    metas: dict[str, Any] = {"e3_learned": meta_tf}
     if with_fixed_rows:
 
         def mk_heur(obs, rig, common):
-            hp, dis, n_dis, _ = predict_clip_heuristic(c3, obs, rig)
+            hp, dis, n_dis, _ = predict_clip_heuristic(oracle, obs, rig)
             return ClipEval(
                 pred=hp,
-                contact_pred=heuristic_foot_contact(hp, c3.sole),
+                contact_pred=heuristic_foot_contact(hp, oracle.sole),
                 contact_prob=None,
                 overlap_disagree_mm=dis,
                 n_overlap_frames=n_dis,
@@ -322,7 +322,7 @@ def _makers(
             )
 
         makers["heuristic"] = mk_heur
-    makers["e3_learned"] = mk_e3
+    makers["e3_learned"] = mk_transformer
     for n in names:
         model, rc, meta = ctx.load_run(n)
         makers[n] = model_maker(ctx, model, rc)
@@ -336,7 +336,7 @@ def _makers(
         def mk_gt(obs, rig, common):
             return ClipEval(
                 pred=common["gt"],
-                contact_pred=proxy_foot_contact(common["gt"], c3.sole),
+                contact_pred=proxy_foot_contact(common["gt"], oracle.sole),
                 contact_prob=None,
                 overlap_disagree_mm=0.0,
                 n_overlap_frames=0,
@@ -347,7 +347,7 @@ def _makers(
     return makers, metas
 
 
-def _paired_vs_e3(ctx: E4V2Ctx, accs, bins, names: list[str]) -> dict[str, Any]:
+def _paired_vs_reference(ctx: PreregisteredContext, accs, bins, names: list[str]) -> dict[str, Any]:
     dr = ctx.cfg["decision_rule"]["comparison"]
     ref = {
         "per_subject": accs["e3_learned"]["all"].per_subject,
@@ -365,15 +365,15 @@ def _paired_vs_e3(ctx: E4V2Ctx, accs, bins, names: list[str]) -> dict[str, Any]:
     }
 
 
-def cmd_eval_val(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_eval_val(ctx: PreregisteredContext) -> dict[str, Any]:
     names = [ctx.anchor, *ctx.cfg["arms"]]
     makers, metas = _makers(ctx, names, with_fixed_rows=True)
-    cohorts = list(ctx.c3.cfg["eval"]["cohorts"])
+    cohorts = list(ctx.oracle.cfg["eval"]["cohorts"])
     accs, bins, wall = evaluate_with_bins(ctx, "val", makers, cohorts)
     table = summarize(ctx, accs, {"e3_learned", *names})
-    print_rows(ctx.c3, "val", table)
-    paired = _paired_vs_e3(ctx, accs, bins, names)
-    # Informational only (no decision uses it): does the retrained det_w0 reproduce the v1 anchor?
+    print_rows(ctx.oracle, "val", table)
+    paired = _paired_vs_reference(ctx, accs, bins, names)
+    # Informational only (no decision uses it): does the retrained det_w0 reproduce the ablation-study anchor?
     repro = None
     if "det_w0" in names:
         mw, ma = table["det_w0"]["all"]["metrics"], table[ctx.anchor]["all"]["metrics"]
@@ -434,29 +434,29 @@ def apply_rule(cfg: dict[str, Any], paired: dict[str, Any]) -> dict[str, Any]:
     }
 
 
-def cmd_decide(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_decide(ctx: PreregisteredContext) -> dict[str, Any]:
     out = apply_rule(ctx.cfg, ctx.results()["eval_val"]["paired_vs_e3_learned"])
     print(json.dumps(out, indent=1))
     ctx.update("decision", out)
     return out
 
 
-def cmd_eval_test(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_eval_test(ctx: PreregisteredContext) -> dict[str, Any]:
     """TEST once: selected arm + e3_learned only. Refuses to run twice or without a selection."""
     if "eval_test" in ctx.results():
-        raise RuntimeError("TEST already evaluated for E4-v2; it is evaluated once")
+        raise RuntimeError("TEST already evaluated for the pre-registered comparison; it is evaluated once")
     sel = ctx.results().get("decision", {}).get("selected")
     if sel is None:
         raise RuntimeError(
-            "no selected arm (run `decide`; if v2 failed, TEST is not evaluated)"
+            "no selected arm (run `decide`; if the comparison failed, TEST is not evaluated)"
         )
     makers, metas = _makers(ctx, [sel], with_fixed_rows=False)
     accs, bins, wall = evaluate_with_bins(
         ctx, "test", makers, ["all", "ordinary_locomotion", "floor_work_eligible"]
     )
     table = summarize(ctx, accs, {"e3_learned", sel})
-    print_rows(ctx.c3, "test", table)
-    paired = _paired_vs_e3(ctx, accs, bins, [sel])
+    print_rows(ctx.oracle, "test", table)
+    paired = _paired_vs_reference(ctx, accs, bins, [sel])
     out = {
         "disclaimer": ctx.disclaimer,
         "split": "test",
@@ -470,7 +470,7 @@ def cmd_eval_test(ctx: E4V2Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_leak_check(ctx: E4V2Ctx) -> dict[str, Any]:
+def cmd_leak_check(ctx: PreregisteredContext) -> dict[str, Any]:
     res = {n: _leak_check_run(ctx, n) for n in ctx.cfg["arms"]}
     res["pass"] = all(r["pass"] for r in res.values())
     ctx.update("leak_check", res)
@@ -490,7 +490,7 @@ COMMANDS = {
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Track E4-v2 (oracle control; pre-registered rule)"
+        description="Evidence-locked completion, pre-registered comparison (oracle control)"
     )
     parser.add_argument(
         "--config", type=Path, default=Path("configs/e4_v2_completion.yaml")
@@ -501,7 +501,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("cmd", choices=sorted(COMMANDS))
     args = parser.parse_args(argv)
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    COMMANDS[args.cmd](E4V2Ctx(cfg, args.config, torch.device(args.device)))
+    COMMANDS[args.cmd](PreregisteredContext(cfg, args.config, torch.device(args.device)))
 
 
 if __name__ == "__main__":

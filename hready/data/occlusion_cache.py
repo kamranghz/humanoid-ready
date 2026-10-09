@@ -1,9 +1,9 @@
-"""E4 data path: per-frame self-occlusion masks precomputed once, E2-A evidence otherwise unchanged.
+"""Cached-occlusion data path: per-frame self-occlusion masks precomputed once, simulated evidence otherwise unchanged.
 
-The E2-A capsule occlusion test depends only on the clean joints and head camera of each frame
-and dominates simulation time. E4 stores it per clip (``<cache_dir>/<rel_dir>/clips/<clip>/occ.npy``,
+The simulator's capsule occlusion test depends only on the clean joints and head camera of each frame
+and dominates simulation time. This path stores it per clip (``<cache_dir>/<rel_dir>/clips/<clip>/occ.npy``,
 ``(T, 22)`` bool) and runs the unchanged ``simulate_oracle_evidence`` with
-``self_occlusion_mask`` served from that array, so evidence is bit-identical to the E3 path
+``self_occlusion_mask`` served from that array, so evidence is bit-identical to the uncached path
 (``verify-occ`` checks this against the uncached simulator).
 """
 
@@ -21,13 +21,13 @@ import numpy as np
 import torch
 
 from hready.data import ego_observation as eo
-from hready.data.e3_dataset import (
-    E3TrainDataset,
+from hready.data.completion_windows import (
+    CompletionTrainDataset,
     EvidenceConfig,
     clip_noise_rng,
     simulate_evidence,
 )
-from hready.data.e3_motion_memmap import (
+from hready.data.motion_cache import (
     cache_dir_from_config,
     clip_dir,
     load_clip_memmap,
@@ -149,7 +149,7 @@ def clip_world_evidence_cached(
     ev_cfg: EvidenceConfig,
     eval_noise_seed: int,
 ) -> tuple[dict[str, Any], dict[str, torch.Tensor], dict[str, torch.Tensor]]:
-    """E3 eval evidence (same per-clip seed) with cached occlusion."""
+    """Oracle-baseline eval evidence (same per-clip seed) with cached occlusion."""
     clip = load_clip_memmap(rel, rel_dir=motion_dir)
     with cached_occlusion(load_occ(rel, occ_dir)):
         obs, rig = simulate_evidence(
@@ -161,8 +161,8 @@ def clip_world_evidence_cached(
     return clip, obs, rig
 
 
-class E4TrainDataset(E3TrainDataset):
-    """E3 training windows (same sampler, noise, canonical frame, z-rotation) with cached occlusion."""
+class CachedOcclusionTrainDataset(CompletionTrainDataset):
+    """Oracle-baseline training windows (same sampler, noise, canonical frame, z-rotation) with cached occlusion."""
 
     def __init__(self, *args: Any, occ_dir: str, **kwargs: Any) -> None:
         super().__init__(*args, **kwargs)

@@ -1,12 +1,12 @@
-"""E4-v1 completion: conditional VAE over per-frame latents on the E3 evidence schema.
+"""Evidence-locked completion: conditional VAE over per-frame latents on the simulated evidence schema.
 
-``forward(obs, rig)`` is the only inference path (evidence + mandatory rig, D1) and decodes the
+``forward(obs, rig)`` is the only inference path (evidence + mandatory rig) and decodes the
 prior mean, i.e. a deterministic point estimate. ``sample(obs, rig, n, generator)`` draws from the
 learned conditional prior. ``forward_train(obs, rig, targets)`` is used by the training loss only:
 the posterior encoder reads GT targets there and nowhere else.
 With ``generative=False`` the latent is fixed at zero (no posterior, no KL): deterministic ablation.
 
-E4-v2 options (defaults reproduce v1 exactly): ``latent_mode="window"`` uses one latent per window
+Pre-registered-comparison options (defaults reproduce the ablation-study model exactly): ``latent_mode="window"`` uses one latent per window
 (prior and posterior read the time-mean of their tokens), ``logvar_min`` raises the log-variance
 floor, ``free_bits`` > 0 floors the KL of each latent dimension (nats).
 """
@@ -38,7 +38,7 @@ def _encoder(
     return nn.TransformerEncoder(layer, n_layers, enable_nested_tensor=False)
 
 
-class EgoCompleteMotionE4(nn.Module):
+class EvidenceLockedCompletion(nn.Module):
     def __init__(
         self,
         d_model: int = 256,
@@ -194,7 +194,7 @@ class EgoCompleteMotionE4(nn.Module):
                 + (logvar_q.exp() + (mu_q - mu_p).square()) / logvar_p.exp()
                 - 1.0
             ).sum(dim=-1)
-        # Window mode: one KL per window, repeated per frame so the loss masks it like v1.
+        # Window mode: one KL per window, repeated per frame so the loss masks it like per-frame mode.
         return self._decode(h, self._expand(z, h), rig), self._expand(
             kl.unsqueeze(-1), h
         ).squeeze(-1)

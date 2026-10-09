@@ -1,4 +1,4 @@
-"""Track E2-A: completion encoder (obs-only forward; training in E3/E4)."""
+"""Evidence encoder stub for the observation-simulator leak check (obs-only forward)."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ NUM_KP_JOINTS = 22
 
 
 class EgoCompletion(nn.Module):
-    """Fuse evidence tensors only -> per-joint 3D predictions (E3/E4 placeholder head)."""
+    """Fuse evidence tensors only -> per-joint 3D predictions (placeholder head)."""
 
     def __init__(self, d_model: int = 256, n_layers: int = 2) -> None:
         super().__init__()

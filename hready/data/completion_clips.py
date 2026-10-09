@@ -1,4 +1,4 @@
-"""E3 clip lists: rule-derived training list (SHA256 fingerprint) and VAL/TEST eval lists."""
+"""Completion clip lists: rule-derived training list (SHA256 fingerprint) and VAL/TEST eval lists."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ FLOOR_WORK_ELIGIBLE_CLASSES: tuple[str, ...] = ("kneel", "lie")
 
 
 def sha256_lines(lines: list[str]) -> str:
-    """Same convention as the E1 split hashes (``ego_splits._sha256_lines``): newline-terminated."""
+    """Same convention as the subject-split hashes (``ego_splits._sha256_lines``): newline-terminated."""
     payload = "\n".join(lines) + ("\n" if lines else "")
     return hashlib.sha256(payload.encode("utf-8")).hexdigest()
 

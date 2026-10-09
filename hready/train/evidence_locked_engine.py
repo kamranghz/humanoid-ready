@@ -1,5 +1,5 @@
-"""E4-v1 training/inference: evidence lock, loss (geodesic, transl, joints, contact, KL, optional
-ground-aware terms), and per-clip windowed prediction on the E3 evidence path."""
+"""Evidence-locked completion training/inference: evidence lock, loss (geodesic, transl, joints, contact, KL, optional
+ground-aware terms), and per-clip windowed prediction on the oracle-baselines evidence path."""
 
 from __future__ import annotations
 
@@ -9,16 +9,16 @@ import numpy as np
 import torch
 from torch import Tensor, nn
 
-from hready.data.e3_dataset import eval_window_batch, window_starts
+from hready.data.completion_windows import eval_window_batch, window_starts
 from hready.losses.physics import (
     balance_com_in_support,
     com_from_joints,
     foot_skating,
     ground_penetration,
 )
-from hready.models.ego_complete_e4 import EgoCompleteMotionE4
 from hready.models.ego_complete_motion import geodesic_pose_loss
-from hready.train.e3_oracle_engine import (
+from hready.models.evidence_locked_completion import EvidenceLockedCompletion
+from hready.train.completion_engine import (
     NeutralJointFK,
     _masked_mean,
     aa_to_matrix,
@@ -82,8 +82,8 @@ def output_joints(
     )
 
 
-def compute_loss_e4(
-    model: EgoCompleteMotionE4,
+def compute_loss_evidence_locked(
+    model: EvidenceLockedCompletion,
     fk: NeutralJointFK,
     batch: dict[str, Any],
     *,
@@ -172,8 +172,8 @@ def compute_loss_e4(
 
 
 @torch.no_grad()
-def predict_windows_e4(
-    model: EgoCompleteMotionE4,
+def predict_windows_evidence_locked(
+    model: EvidenceLockedCompletion,
     fk: NeutralJointFK,
     obs_w: dict[str, Tensor],
     rig_w: dict[str, Tensor],

@@ -1,4 +1,4 @@
-"""Support-contact labels v2 (Track E1b): LBS-region lowest-vertex contact beside foot channels."""
+"""Support-contact labels: LBS-region lowest-vertex contact beside foot channels."""
 
 from __future__ import annotations
 
@@ -1196,7 +1196,7 @@ def print_validation_frames(
 
 
 def main(argv: Optional[list[str]] = None) -> None:
-    p = argparse.ArgumentParser(description="Support-contact v2 (Track E1b)")
+    p = argparse.ArgumentParser(description="Support-contact labels")
     p.add_argument("--config", type=Path, default=Path("configs/support_contact_v2.yaml"))
     p.add_argument("--derive-config", action="store_true")
     p.add_argument("--report", action="store_true")

@@ -1,4 +1,4 @@
-"""E3 oracle completion: neutral-shape joint FK, loss, inference, stitched prediction, checkpoints."""
+"""Oracle completion transformer engine: neutral-shape joint FK, loss, inference, stitched prediction, checkpoints."""
 
 from __future__ import annotations
 
@@ -12,7 +12,7 @@ from smplx.lbs import batch_rigid_transform
 from torch import Tensor, nn
 
 from hready.body.rotations import axis_angle_to_matrix, rotation_6d_to_matrix
-from hready.data.e3_dataset import eval_window_batch, window_starts
+from hready.data.completion_windows import eval_window_batch, window_starts
 from hready.losses.physics import foot_skating, ground_penetration
 from hready.models.ego_complete_motion import (
     NUM_BODY,
@@ -144,7 +144,7 @@ def compute_loss(
     w_phys = float(loss_w.get("w_phys", 0.0))
     if (
         w_phys > 0
-    ):  # off by default (E7 "none" arm); item-3 losses on sole-proxy foot channels
+    ):  # off by default (refinement comparison "none" arm); item-3 losses on sole-proxy foot channels
         feet = joints[:, :, [7, 10, 8, 11], :] - torch.stack(
             [
                 torch.zeros_like(sole_offsets),

@@ -1,4 +1,4 @@
-"""Track E4-v1 CLI: improved oracle-evidence completion vs the E3 control (E3 code and results untouched).
+"""Evidence-locked completion, ablation study CLI: oracle-evidence completion vs the oracle baselines (baseline code and results untouched).
 
 Commands: build-occ, verify-occ, preflight, train-ablations, eval-ablation, choose-main, train-main,
 eval-table, generative-check, leak-check, run. Results: ``paths.results_json``.
@@ -21,23 +21,23 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from hready.baselines.e3_heuristic import heuristic_foot_contact
+from hready.baselines.flat_floor_heuristic import heuristic_foot_contact
 from hready.body.joint_indices import LEG_BODY_AA_INDICES, LOWER_BODY_JOINTS
 from hready.data.amass import clip_flags, load_index, load_paths_config
-from hready.data.e3_dataset import (
-    E3TrainDataset,
-    E3TrainSampler,
-    collate_e3,
+from hready.data.completion_windows import (
+    CompletionTrainDataset,
+    CompletionTrainSampler,
+    collate_completion_windows,
     window_starts,
 )
-from hready.data.e3_motion_memmap import load_cache_index, load_clip_memmap
-from hready.data.e4_occlusion import (
-    E4TrainDataset,
+from hready.data.motion_cache import load_cache_index, load_clip_memmap
+from hready.data.occlusion_cache import (
+    CachedOcclusionTrainDataset,
     build_occlusion_cache,
     clip_world_evidence_cached,
 )
-from hready.eval.e3_cohorts import CohortMasks
-from hready.eval.e3_oracle import (
+from hready.experiments.cohorts import CohortMasks
+from hready.experiments.oracle_baselines import (
     Ctx,
     _gt_window_evidence,
     _json_default,
@@ -48,7 +48,7 @@ from hready.eval.e3_oracle import (
     predict_clip_model,
     print_rows,
 )
-from hready.metrics.e3_eval import (
+from hready.metrics.completion_metrics import (
     ClipEval,
     CohortAccumulator,
     accumulate_clip,
@@ -56,21 +56,25 @@ from hready.metrics.e3_eval import (
     proxy_foot_contact,
     summarize_cohort,
 )
-from hready.models.ego_complete_e4 import EgoCompleteMotionE4
-from hready.train.e3_oracle_engine import (
+from hready.models.evidence_locked_completion import EvidenceLockedCompletion
+from hready.train.completion_engine import (
     load_checkpoint,
     save_checkpoint,
     seed_everything,
     stitch_windows,
 )
-from hready.train.e4_engine import compute_loss_e4, output_joints, predict_windows_e4
+from hready.train.evidence_locked_engine import (
+    compute_loss_evidence_locked,
+    output_joints,
+    predict_windows_evidence_locked,
+)
 
 MAIN = "main"
 TABLE_ROWS = ("heuristic", "e3_learned", "e4_same_budget", "e4_main", "gt_reference")
 
 
-def same_budget_run(ctx: E4Ctx) -> str:
-    """Ablation run with the main arm's config at E3's budget (the pre-registered rule picks w_phys)."""
+def same_budget_run(ctx: EvidenceLockedContext) -> str:
+    """Ablation run with the main arm's config at the oracle transformer's budget (the pre-registered rule picks w_phys)."""
     dec = ctx.results().get("main_decision")
     if dec is None:
         raise RuntimeError("run `choose-main` first")
@@ -88,25 +92,25 @@ def deep_merge(base: dict[str, Any], over: dict[str, Any]) -> dict[str, Any]:
     return out
 
 
-class E4Ctx:
+class EvidenceLockedContext:
     def __init__(
         self, cfg: dict[str, Any], config_path: Path, device: torch.device
     ) -> None:
         self.cfg = cfg
         self.config_path = config_path
         self.device = device
-        cfg3 = yaml.safe_load(Path(cfg["e3_config"]).read_text(encoding="utf-8"))
-        self.c3 = Ctx(cfg3, Path(cfg["e3_config"]), device)
+        oracle_cfg = yaml.safe_load(Path(cfg["e3_config"]).read_text(encoding="utf-8"))
+        self.oracle = Ctx(oracle_cfg, Path(cfg["e3_config"]), device)
         self.disclaimer = " ".join(cfg["disclaimer"].split())
-        if self.disclaimer != self.c3.disclaimer:
-            raise ValueError("E4 disclaimer must match E3")
+        if self.disclaimer != self.oracle.disclaimer:
+            raise ValueError("evidence-locked disclaimer must match the oracle-baselines disclaimer")
         self.occ_dir = cfg["occlusion_cache"]["rel_dir"]
-        self.sole_t = torch.as_tensor(self.c3.sole, device=device)
+        self.sole_t = torch.as_tensor(self.oracle.sole, device=device)
         self.entries = {e.rel_path: e for e in load_index()}
         self._flags: dict[str, dict[str, Any]] = {}
 
     def flags(self, rel: str) -> dict[str, Any]:
-        """``clip_flags`` via one index dict (E3's ``Ctx.flags`` reloads the index per call)."""
+        """``clip_flags`` via one index dict (the oracle-baselines ``Ctx.flags`` reloads the index per call)."""
         if rel not in self._flags:
             self._flags[rel] = clip_flags(self.entries[rel])
         return self._flags[rel]
@@ -139,12 +143,12 @@ class E4Ctx:
         )
         return root / name
 
-    def new_model(self, rc: dict[str, Any]) -> EgoCompleteMotionE4:
-        return EgoCompleteMotionE4(**rc["model"]).to(self.device)
+    def new_model(self, rc: dict[str, Any]) -> EvidenceLockedCompletion:
+        return EvidenceLockedCompletion(**rc["model"]).to(self.device)
 
     def load_run(
         self, name: str
-    ) -> tuple[EgoCompleteMotionE4, dict[str, Any], dict[str, Any]]:
+    ) -> tuple[EvidenceLockedCompletion, dict[str, Any], dict[str, Any]]:
         path = self.ckpt_dir(name) / "best.pt"
         if not path.is_file():
             raise FileNotFoundError(f"missing {path}; train run '{name}' first")
@@ -186,25 +190,25 @@ class E4Ctx:
     def evidence(self, rel: str):
         return clip_world_evidence_cached(
             rel,
-            motion_dir=self.c3.rel_dir,
+            motion_dir=self.oracle.rel_dir,
             occ_dir=self.occ_dir,
-            ev_cfg=self.c3.ev_cfg,
-            eval_noise_seed=int(self.c3.cfg["eval_noise_seed"]),
+            ev_cfg=self.oracle.ev_cfg,
+            eval_noise_seed=int(self.oracle.cfg["eval_noise_seed"]),
         )
 
 
 # --------------------------------------------------------------------------- occlusion cache
 
 
-def cmd_build_occ(ctx: E4Ctx) -> dict[str, Any]:
-    rels = ctx.c3.cache_rels()
+def cmd_build_occ(ctx: EvidenceLockedContext) -> dict[str, Any]:
+    rels = ctx.oracle.cache_rels()
     oc = ctx.cfg["occlusion_cache"]
     ego = yaml.safe_load(
-        Path(ctx.c3.cfg["paths"]["ego_observation_yaml"]).read_text(encoding="utf-8")
+        Path(ctx.oracle.cfg["paths"]["ego_observation_yaml"]).read_text(encoding="utf-8")
     )
     out = build_occlusion_cache(
         rels,
-        motion_dir=ctx.c3.rel_dir,
+        motion_dir=ctx.oracle.rel_dir,
         rel_dir=ctx.occ_dir,
         occ_cfg=ego.get("occlusion") or {},
         workers=int(oc["build_workers"]),
@@ -214,11 +218,11 @@ def cmd_build_occ(ctx: E4Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_verify_occ(ctx: E4Ctx) -> dict[str, Any]:
-    """Cached-occlusion evidence must be bit-identical to the E3 (uncached) evidence."""
+def cmd_verify_occ(ctx: EvidenceLockedContext) -> dict[str, Any]:
+    """Cached-occlusion evidence must be bit-identical to the uncached evidence."""
     oc = ctx.cfg["occlusion_cache"]
     rng = np.random.default_rng(int(ctx.cfg["seed"]))
-    val_test = ctx.c3.lists["val"] + ctx.c3.lists["test"]
+    val_test = ctx.oracle.lists["val"] + ctx.oracle.lists["test"]
     clips = [
         val_test[i]
         for i in rng.choice(
@@ -228,38 +232,38 @@ def cmd_verify_occ(ctx: E4Ctx) -> dict[str, Any]:
     eval_bad = []
     n_frames = 0
     for rel in clips:
-        _, o1, r1 = clip_world_evidence(ctx.c3, rel)
+        _, o1, r1 = clip_world_evidence(ctx.oracle, rel)
         _, o2, r2 = ctx.evidence(rel)
         n_frames += o1["joint_pos_3d"].shape[0]
         for d1, d2 in ((o1, o2), (r1, r2)):
             for k in d1:
                 if not torch.equal(d1[k], d2[k]):
                     eval_bad.append(f"{rel}:{k}")
-    c3 = ctx.c3
-    t_by_rel = load_cache_index(c3.rel_dir)
+    oracle = ctx.oracle
+    t_by_rel = load_cache_index(oracle.rel_dir)
     windows = [
         (r, st)
-        for r in c3.lists["train"]
-        for st in window_starts(t_by_rel[r], c3.window, c3.stride)
+        for r in oracle.lists["train"]
+        for st in window_starts(t_by_rel[r], oracle.window, oracle.stride)
     ]
     common_kw = {
-        "window": c3.window,
-        "rel_dir": c3.rel_dir,
-        "ev_cfg": c3.ev_cfg,
-        "seed": int(c3.cfg["seed"]),
-        "z_rot_max_rad": float(c3.cfg["train"]["z_rot_max_rad"]),
-        "j0_neutral": c3.j0,
-        "contact_valid": ctx.contact_valid(c3.lists["train"]),
+        "window": oracle.window,
+        "rel_dir": oracle.rel_dir,
+        "ev_cfg": oracle.ev_cfg,
+        "seed": int(oracle.cfg["seed"]),
+        "z_rot_max_rad": float(oracle.cfg["train"]["z_rot_max_rad"]),
+        "j0_neutral": oracle.j0,
+        "contact_valid": ctx.contact_valid(oracle.lists["train"]),
     }
-    ds3 = E3TrainDataset(windows, **common_kw)
-    ds4 = E4TrainDataset(windows, occ_dir=ctx.occ_dir, **common_kw)
+    ds_uncached = CompletionTrainDataset(windows, **common_kw)
+    ds_cached = CachedOcclusionTrainDataset(windows, occ_dir=ctx.occ_dir, **common_kw)
     train_bad = []
     keys = [
-        (int(rng.integers(len(ds3))), int(rng.integers(1 << 30)))
+        (int(rng.integers(len(ds_uncached))), int(rng.integers(1 << 30)))
         for _ in range(int(oc["verify_n_train_items"]))
     ]
     for key in keys:
-        a, b = ds3[key], ds4[key]
+        a, b = ds_uncached[key], ds_cached[key]
         for g in ("obs", "rig", "targets"):
             for k in a[g]:
                 if not torch.equal(a[g][k], b[g][k]):
@@ -282,24 +286,24 @@ def cmd_verify_occ(ctx: E4Ctx) -> dict[str, Any]:
 
 
 def make_loader(
-    ctx: E4Ctx, rc: dict[str, Any], start_draw: int, num_workers: int | None = None
+    ctx: EvidenceLockedContext, rc: dict[str, Any], start_draw: int, num_workers: int | None = None
 ) -> tuple[DataLoader, int]:
-    c3 = ctx.c3
-    t_by_rel = load_cache_index(c3.rel_dir)
+    oracle = ctx.oracle
+    t_by_rel = load_cache_index(oracle.rel_dir)
     windows = [
         (rel, s)
-        for rel in c3.lists["train"]
-        for s in window_starts(t_by_rel[rel], c3.window, c3.stride)
+        for rel in oracle.lists["train"]
+        for s in window_starts(t_by_rel[rel], oracle.window, oracle.stride)
     ]
-    contact_valid = ctx.contact_valid(c3.lists["train"])
-    ds = E4TrainDataset(
+    contact_valid = ctx.contact_valid(oracle.lists["train"])
+    ds = CachedOcclusionTrainDataset(
         windows,
-        window=c3.window,
-        rel_dir=c3.rel_dir,
-        ev_cfg=c3.ev_cfg,
+        window=oracle.window,
+        rel_dir=oracle.rel_dir,
+        ev_cfg=oracle.ev_cfg,
         seed=int(ctx.cfg["seed"]),
-        z_rot_max_rad=float(c3.cfg["train"]["z_rot_max_rad"]),
-        j0_neutral=c3.j0,
+        z_rot_max_rad=float(oracle.cfg["train"]["z_rot_max_rad"]),
+        j0_neutral=oracle.j0,
         contact_valid=contact_valid,
         occ_dir=ctx.occ_dir,
     )
@@ -307,8 +311,8 @@ def make_loader(
     loader = DataLoader(
         ds,
         batch_size=int(rc["train"]["batch_size"]),
-        sampler=E3TrainSampler(len(windows), int(ctx.cfg["seed"]), start_draw),
-        collate_fn=collate_e3,
+        sampler=CompletionTrainSampler(len(windows), int(ctx.cfg["seed"]), start_draw),
+        collate_fn=collate_completion_windows,
         num_workers=nw,
         persistent_workers=nw > 0,
         prefetch_factor=4 if nw > 0 else None,
@@ -334,12 +338,12 @@ def make_optim(model: torch.nn.Module, rc: dict[str, Any]):
     return opt, torch.optim.lr_scheduler.LambdaLR(opt, lr_at)
 
 
-def step_fn(ctx: E4Ctx, model, opt, sched, batch, rc, gen) -> dict[str, float]:
+def step_fn(ctx: EvidenceLockedContext, model, opt, sched, batch, rc, gen) -> dict[str, float]:
     model.train()
     opt.zero_grad(set_to_none=True)
-    loss, stats = compute_loss_e4(
+    loss, stats = compute_loss_evidence_locked(
         model,
-        ctx.c3.fk,
+        ctx.oracle.fk,
         batch,
         loss_w=rc["loss"],
         lock=rc["lock"],
@@ -348,7 +352,7 @@ def step_fn(ctx: E4Ctx, model, opt, sched, batch, rc, gen) -> dict[str, float]:
         amp=bool(rc["train"]["bf16"]) and ctx.device.type == "cuda",
         gen=gen,
     )
-    if not rc["train"].get("skip_nonfinite", False):  # v1 path, unchanged
+    if not rc["train"].get("skip_nonfinite", False):  # ablation-study path, unchanged
         loss.backward()
         torch.nn.utils.clip_grad_norm_(
             model.parameters(), float(rc["train"]["grad_clip"])
@@ -357,7 +361,7 @@ def step_fn(ctx: E4Ctx, model, opt, sched, batch, rc, gen) -> dict[str, float]:
         if sched is not None:
             sched.step()
         return stats
-    # E4-v2: skip (and log) any step whose loss or gradient norm is not finite.
+    # Pre-registered comparison: skip (and log) any step whose loss or gradient norm is not finite.
     finite = bool(torch.isfinite(loss))
     if finite:
         loss.backward()
@@ -380,18 +384,18 @@ def step_fn(ctx: E4Ctx, model, opt, sched, batch, rc, gen) -> dict[str, float]:
     return {**stats, "skipped": 0.0 if finite else 1.0}
 
 
-def predict_clip_e4(
-    ctx: E4Ctx, model, rc, obs_w, rig_w, *, n_samples: int = 0, gen=None
+def predict_clip_evidence_locked(
+    ctx: EvidenceLockedContext, model, rc, obs_w, rig_w, *, n_samples: int = 0, gen=None
 ):
-    c3 = ctx.c3
+    oracle = ctx.oracle
     t_len = obs_w["joint_pos_3d"].shape[0]
-    p = predict_windows_e4(
+    p = predict_windows_evidence_locked(
         model,
-        c3.fk,
+        oracle.fk,
         obs_w,
         rig_w,
-        window=c3.window,
-        stride=c3.stride,
+        window=oracle.window,
+        stride=oracle.stride,
         lock=rc["lock"],
         device=ctx.device,
         n_samples=n_samples,
@@ -412,15 +416,15 @@ def predict_clip_e4(
     return pred, prob, dis, n_dis, samples
 
 
-def selection_items(ctx: E4Ctx) -> list[dict[str, Any]]:
-    c3 = ctx.c3
+def selection_items(ctx: EvidenceLockedContext) -> list[dict[str, Any]]:
+    oracle = ctx.oracle
     masks = CohortMasks(
-        Path(c3.cfg["paths"]["ego_splits_yaml"]),
-        Path(c3.cfg["paths"]["floor_work_csv"]),
-        c3.lists["selection"],
+        Path(oracle.cfg["paths"]["ego_splits_yaml"]),
+        Path(oracle.cfg["paths"]["floor_work_csv"]),
+        oracle.lists["selection"],
     )
     items = []
-    for rel in c3.lists["selection"]:
+    for rel in oracle.lists["selection"]:
         clip, obs, rig = ctx.evidence(rel)
         items.append(
             {
@@ -429,18 +433,18 @@ def selection_items(ctx: E4Ctx) -> list[dict[str, Any]]:
                 "rig": rig,
                 "masks": {
                     c: masks.mask(rel, clip["T"], c)
-                    for c in c3.cfg["selection"]["cohorts"]
+                    for c in oracle.cfg["selection"]["cohorts"]
                 },
             }
         )
     return items
 
 
-def selection_eval(ctx: E4Ctx, model, rc, items) -> dict[str, Any]:
-    """Same metric as E3: mean of pooled MPJPE (mm) over VAL `all` and `ordinary_locomotion`."""
-    sums = {c: [0.0, 0] for c in ctx.c3.cfg["selection"]["cohorts"]}
+def selection_eval(ctx: EvidenceLockedContext, model, rc, items) -> dict[str, Any]:
+    """Same metric as the oracle baselines: mean of pooled MPJPE (mm) over VAL `all` and `ordinary_locomotion`."""
+    sums = {c: [0.0, 0] for c in ctx.oracle.cfg["selection"]["cohorts"]}
     for it in items:
-        pred = predict_clip_e4(ctx, model, rc, it["obs"], it["rig"])[0]
+        pred = predict_clip_evidence_locked(ctx, model, rc, it["obs"], it["rig"])[0]
         err = np.linalg.norm(pred - it["gt"], axis=-1) * 1000.0
         for c, m in it["masks"].items():
             sums[c][0] += float(err[m].sum())
@@ -450,7 +454,7 @@ def selection_eval(ctx: E4Ctx, model, rc, items) -> dict[str, Any]:
     return {"mpjpe_mm": per, "metric": float(np.mean(vals)) if vals else float("inf")}
 
 
-def train_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
+def train_run(ctx: EvidenceLockedContext, name: str) -> dict[str, Any]:
     rc = ctx.run_cfg(name)
     tc = rc["train"]
     seed_everything(int(ctx.cfg["seed"]))
@@ -499,7 +503,7 @@ def train_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
                 "torch_rng": torch.get_rng_state(),
                 "gen_state": gen.get_state(),
                 "run_cfg": rc,
-                "train_clip_list_sha256": ctx.c3.lists["train_meta"][
+                "train_clip_list_sha256": ctx.oracle.lists["train_meta"][
                     "train_clip_list_sha256"
                 ],
             },
@@ -539,7 +543,7 @@ def train_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
         "run_cfg": rc,
         "steps": step,
         "n_train_windows": n_windows,
-        "selection": {"split": "val", "n_clips": len(items), **ctx.c3.cfg["selection"]},
+        "selection": {"split": "val", "n_clips": len(items), **ctx.oracle.cfg["selection"]},
         "best": best_rec,
         "best_is_last_step": bool(best_rec and best_rec["step"] == max_steps),
         "last_20pct_metric_range_mm": [min(tail), max(tail)] if tail else None,
@@ -555,7 +559,7 @@ def train_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
     return out
 
 
-def cmd_train_ablations(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_train_ablations(ctx: EvidenceLockedContext) -> dict[str, Any]:
     res = ctx.results().get("train_ablations", {})
     for name in ctx.cfg["ablation"]["runs"]:
         res[name] = train_run(ctx, name)
@@ -563,7 +567,7 @@ def cmd_train_ablations(ctx: E4Ctx) -> dict[str, Any]:
     return res
 
 
-def cmd_train_main(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_train_main(ctx: EvidenceLockedContext) -> dict[str, Any]:
     out = train_run(ctx, MAIN)
     ctx.update("train_main", out)
     return out
@@ -572,7 +576,7 @@ def cmd_train_main(ctx: E4Ctx) -> dict[str, Any]:
 # --------------------------------------------------------------------------- evaluation
 
 
-def _common(ctx: E4Ctx, rel: str, clip, obs) -> dict[str, Any]:
+def _common(ctx: EvidenceLockedContext, rel: str, clip, obs) -> dict[str, Any]:
     entry = ctx.entries[rel]
     fl = ctx.flags(rel)
     return {
@@ -598,21 +602,21 @@ def learned_eval(pred, prob, dis, n_dis, common, thr) -> ClipEval:
 
 
 def evaluate(
-    ctx: E4Ctx,
+    ctx: EvidenceLockedContext,
     split: str,
     makers: dict[str, Callable[..., ClipEval]],
     cohorts: list[str],
 ) -> tuple[dict[str, dict[str, CohortAccumulator]], float]:
-    c3 = ctx.c3
-    ev = c3.cfg["eval"]
+    oracle = ctx.oracle
+    ev = oracle.cfg["eval"]
     tau, tau_s = (
         float(ev["ground_consistency_tolerance_m"]),
         float(ev["ground_consistency_tolerance_sensitivity_m"]),
     )
-    rels = c3.lists[split]
+    rels = oracle.lists[split]
     masks = CohortMasks(
-        Path(c3.cfg["paths"]["ego_splits_yaml"]),
-        Path(c3.cfg["paths"]["floor_work_csv"]),
+        Path(oracle.cfg["paths"]["ego_splits_yaml"]),
+        Path(oracle.cfg["paths"]["floor_work_csv"]),
         rels,
     )
     accs = {b: {c: CohortAccumulator() for c in cohorts} for b in makers}
@@ -632,15 +636,15 @@ def evaluate(
                     accs[b][c],
                     ce,
                     masks.mask(rel, clip["T"], c),
-                    sole_offsets=c3.sole,
+                    sole_offsets=oracle.sole,
                     tau_m=tau,
                     tau_sensitivity_m=tau_s,
                 )
     return accs, time.perf_counter() - t0
 
 
-def summarize(ctx: E4Ctx, accs, learned: set[str]) -> dict[str, Any]:
-    ev = ctx.c3.cfg["eval"]
+def summarize(ctx: EvidenceLockedContext, accs, learned: set[str]) -> dict[str, Any]:
+    ev = ctx.oracle.cfg["eval"]
     return {
         b: {
             c: {
@@ -664,17 +668,17 @@ def summarize(ctx: E4Ctx, accs, learned: set[str]) -> dict[str, Any]:
     }
 
 
-def model_maker(ctx: E4Ctx, model, rc) -> Callable[..., ClipEval]:
-    thr = float(ctx.c3.cfg["eval"]["contact_threshold"])
+def model_maker(ctx: EvidenceLockedContext, model, rc) -> Callable[..., ClipEval]:
+    thr = float(ctx.oracle.cfg["eval"]["contact_threshold"])
 
     def mk(obs, rig, common):
-        pred, prob, dis, n_dis, _ = predict_clip_e4(ctx, model, rc, obs, rig)
+        pred, prob, dis, n_dis, _ = predict_clip_evidence_locked(ctx, model, rc, obs, rig)
         return learned_eval(pred, prob, dis, n_dis, common, thr)
 
     return mk
 
 
-def cmd_eval_ablation(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_eval_ablation(ctx: EvidenceLockedContext) -> dict[str, Any]:
     """VAL only (no TEST in any design decision): one row per ablation run, identical budget."""
     makers, metas = {}, {}
     for name in ctx.cfg["ablation"]["runs"]:
@@ -688,7 +692,7 @@ def cmd_eval_ablation(ctx: E4Ctx) -> dict[str, Any]:
         }
     accs, wall = evaluate(ctx, "val", makers, ["all", "ordinary_locomotion"])
     table = summarize(ctx, accs, set(makers))
-    print_rows(ctx.c3, "val", table)
+    print_rows(ctx.oracle, "val", table)
     out = {
         "disclaimer": ctx.disclaimer,
         "split": "val",
@@ -701,7 +705,7 @@ def cmd_eval_ablation(ctx: E4Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_choose_main(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_choose_main(ctx: EvidenceLockedContext) -> dict[str, Any]:
     ab = ctx.results()["ablation"]["table"]
     ref, phys = (
         ab["ref_locked_gen_phys0"]["all"]["metrics"],
@@ -735,37 +739,37 @@ def cmd_choose_main(ctx: E4Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_eval_table(ctx: E4Ctx) -> dict[str, Any]:
-    c3 = ctx.c3
+def cmd_eval_table(ctx: EvidenceLockedContext) -> dict[str, Any]:
+    oracle = ctx.oracle
     print(ctx.disclaimer)
-    m3, meta3 = load_trained(c3)
+    model_tf, meta_tf = load_trained(oracle)
     sb = same_budget_run(ctx)
-    m4b, rc4b, meta4b = ctx.load_run(sb)
-    m4, rc4, meta4 = ctx.load_run(MAIN)
+    model_budget, rc_budget, meta_budget = ctx.load_run(sb)
+    model_main, rc_main, meta_main = ctx.load_run(MAIN)
     for k in ("model", "lock", "loss"):
-        if rc4b[k] != rc4[k]:
+        if rc_budget[k] != rc_main[k]:
             raise RuntimeError(f"same-budget run '{sb}' differs from main in '{k}'")
-    thr = float(c3.cfg["eval"]["contact_threshold"])
+    thr = float(oracle.cfg["eval"]["contact_threshold"])
 
     def mk_heur(obs, rig, common):
-        hp, dis, n_dis, _ = predict_clip_heuristic(c3, obs, rig)
+        hp, dis, n_dis, _ = predict_clip_heuristic(oracle, obs, rig)
         return ClipEval(
             pred=hp,
-            contact_pred=heuristic_foot_contact(hp, c3.sole),
+            contact_pred=heuristic_foot_contact(hp, oracle.sole),
             contact_prob=None,
             overlap_disagree_mm=dis,
             n_overlap_frames=n_dis,
             **common,
         )
 
-    def mk_e3(obs, rig, common):
-        pred, prob, dis, n_dis = predict_clip_model(c3, m3, obs, rig)
+    def mk_transformer(obs, rig, common):
+        pred, prob, dis, n_dis = predict_clip_model(oracle, model_tf, obs, rig)
         return learned_eval(pred, prob, dis, n_dis, common, thr)
 
     def mk_gt(obs, rig, common):
         return ClipEval(
             pred=common["gt"],
-            contact_pred=proxy_foot_contact(common["gt"], c3.sole),
+            contact_pred=proxy_foot_contact(common["gt"], oracle.sole),
             contact_prob=None,
             overlap_disagree_mm=0.0,
             n_overlap_frames=0,
@@ -774,35 +778,35 @@ def cmd_eval_table(ctx: E4Ctx) -> dict[str, Any]:
 
     makers = {
         "heuristic": mk_heur,
-        "e3_learned": mk_e3,
-        "e4_same_budget": model_maker(ctx, m4b, rc4b),
-        "e4_main": model_maker(ctx, m4, rc4),
+        "e3_learned": mk_transformer,
+        "e4_same_budget": model_maker(ctx, model_budget, rc_budget),
+        "e4_main": model_maker(ctx, model_main, rc_main),
         "gt_reference": mk_gt,
     }
-    cohorts = list(c3.cfg["eval"]["cohorts"])
+    cohorts = list(oracle.cfg["eval"]["cohorts"])
     result: dict[str, Any] = {
         "disclaimer": ctx.disclaimer,
         "models": {
-            "e3_learned": meta3,
+            "e3_learned": meta_tf,
             "e4_same_budget": {
                 "run": sb,
-                "max_steps": rc4b["train"]["max_steps"],
-                **meta4b,
-                "run_cfg": rc4b,
+                "max_steps": rc_budget["train"]["max_steps"],
+                **meta_budget,
+                "run_cfg": rc_budget,
             },
             "e4_main": {
                 "run": MAIN,
-                "max_steps": rc4["train"]["max_steps"],
-                **meta4,
-                "run_cfg": rc4,
+                "max_steps": rc_main["train"]["max_steps"],
+                **meta_main,
+                "run_cfg": rc_main,
             },
         },
         "note": "e4_same_budget = main-arm config trained for E3's budget (40000 steps, batch 64, "
         "windows 64/32, seed 0); e4_main = same config, longer schedule",
-        "ground_consistency_tolerance_m": c3.cfg["eval"][
+        "ground_consistency_tolerance_m": oracle.cfg["eval"][
             "ground_consistency_tolerance_m"
         ],
-        "ground_consistency_tolerance_sensitivity_m": c3.cfg["eval"][
+        "ground_consistency_tolerance_sensitivity_m": oracle.cfg["eval"][
             "ground_consistency_tolerance_sensitivity_m"
         ],
         "splits": {},
@@ -814,7 +818,7 @@ def cmd_eval_table(ctx: E4Ctx) -> dict[str, Any]:
             ctx, accs, {"e3_learned", "e4_same_budget", "e4_main"}
         )
         result[f"wall_s_{split}"] = wall
-        print_rows(c3, split, result["splits"][split])
+        print_rows(oracle, split, result["splits"][split])
         floor_accs[split] = {b: accs[b]["floor_work_eligible"] for b in makers}
     keys = (
         "mpjpe_full_all_mm",
@@ -838,11 +842,11 @@ def cmd_eval_table(ctx: E4Ctx) -> dict[str, Any]:
     return result
 
 
-def cmd_generative_check(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_generative_check(ctx: EvidenceLockedContext) -> dict[str, Any]:
     """Prior samples on VAL: spread of hidden joints and best-of-K (diagnostic, not a point estimate)."""
     gc = ctx.cfg["generative_check"]
-    m4, rc4, meta = ctx.load_run(MAIN)
-    rels = ctx.c3.lists["selection"][: int(gc["n_clips"])]
+    model_main, rc_main, meta = ctx.load_run(MAIN)
+    rels = ctx.oracle.lists["selection"][: int(gc["n_clips"])]
     gen = torch.Generator(device=ctx.device).manual_seed(int(ctx.cfg["seed"]))
     s = {
         "point_hidden": [0.0, 0],
@@ -854,8 +858,8 @@ def cmd_generative_check(ctx: E4Ctx) -> dict[str, Any]:
     for rel in rels:
         clip, obs, rig = ctx.evidence(rel)
         gt = np.asarray(clip["joints_22"], dtype=np.float32)
-        pred, _, _, _, samp = predict_clip_e4(
-            ctx, m4, rc4, obs, rig, n_samples=int(gc["n_samples"]), gen=gen
+        pred, _, _, _, samp = predict_clip_evidence_locked(
+            ctx, model_main, rc_main, obs, rig, n_samples=int(gc["n_samples"]), gen=gen
         )
         hid = ~obs["joint_visible"].numpy().astype(bool)
         e_pt = np.linalg.norm(pred - gt, axis=-1) * 1000
@@ -887,8 +891,8 @@ def cmd_generative_check(ctx: E4Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_leak_check(ctx: E4Ctx) -> dict[str, Any]:
-    """E3 leak protocol on both reported E4 models (same-budget and main)."""
+def cmd_leak_check(ctx: EvidenceLockedContext) -> dict[str, Any]:
+    """Oracle-baselines leak protocol on both reported evidence-locked models (same-budget and main)."""
     res = {name: _leak_check_run(ctx, name) for name in (same_budget_run(ctx), MAIN)}
     res["pass"] = all(r["pass"] for r in res.values())
     print("leak_check pass:", res["pass"])
@@ -896,30 +900,30 @@ def cmd_leak_check(ctx: E4Ctx) -> dict[str, Any]:
     return res
 
 
-def _leak_check_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
-    """E3 leak protocol on one trained E4 model; outputs include the evidence-locked joints."""
-    c3 = ctx.c3
+def _leak_check_run(ctx: EvidenceLockedContext, name: str) -> dict[str, Any]:
+    """Oracle-baselines leak protocol on one trained evidence-locked model; outputs include the evidence-locked joints."""
+    oracle = ctx.oracle
     model, rc, meta = ctx.load_run(name)
-    c3.body._model.to("cpu")
+    oracle.body._model.to("cpu")
     seed = int(ctx.cfg["seed"])
-    t_by_rel = load_cache_index(c3.rel_dir)
+    t_by_rel = load_cache_index(oracle.rel_dir)
     rng = np.random.default_rng(seed)
     found = None
-    for k in range(int(c3.cfg["leak_check"]["max_tries"])):
-        rel = c3.lists["val"][int(rng.integers(len(c3.lists["val"])))]
-        if t_by_rel[rel] < c3.window:
+    for k in range(int(oracle.cfg["leak_check"]["max_tries"])):
+        rel = oracle.lists["val"][int(rng.integers(len(oracle.lists["val"])))]
+        if t_by_rel[rel] < oracle.window:
             continue
-        clip = load_clip_memmap(rel, rel_dir=c3.rel_dir)
-        s = int(rng.integers(0, t_by_rel[rel] - c3.window + 1))
-        base = np.array(clip["pose_body"][s : s + c3.window], dtype=np.float32)
-        obs0, rig0 = _gt_window_evidence(c3, clip, s, base, seed + k)
+        clip = load_clip_memmap(rel, rel_dir=oracle.rel_dir)
+        s = int(rng.integers(0, t_by_rel[rel] - oracle.window + 1))
+        base = np.array(clip["pose_body"][s : s + oracle.window], dtype=np.float32)
+        obs0, rig0 = _gt_window_evidence(oracle, clip, s, base, seed + k)
         vis0 = obs0["joint_visible"]
         # Legs fully hidden, but some visible joint for the positive control.
         if vis0[:, list(LOWER_BODY_JOINTS)].any() or not vis0.any():
             continue
         pert = base.reshape(-1, 21, 3).copy()
         pert[:, list(LEG_BODY_AA_INDICES), :] += 0.37
-        obs1, _ = _gt_window_evidence(c3, clip, s, pert.reshape(-1, 63), seed + k)
+        obs1, _ = _gt_window_evidence(oracle, clip, s, pert.reshape(-1, 63), seed + k)
         if torch.equal(obs0["joint_visible"], obs1["joint_visible"]):
             found = (rel, s, obs0, rig0, obs1)
             break
@@ -939,7 +943,7 @@ def _leak_check_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
                     ob, {k: v.unsqueeze(0).to(dev) for k, v in r.items()}
                 ).items()
             }
-            out["joints_out"] = output_joints(out, c3.fk, ob, rc["lock"])
+            out["joints_out"] = output_joints(out, oracle.fk, ob, rc["lock"])
         return out
 
     def diff(a, b):
@@ -982,19 +986,19 @@ def _leak_check_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
     pos_ctrl = diff(out0, run(pc, rig0))
     b_obs = {k: v.unsqueeze(0).to(dev) for k, v in obs0.items()}
     b_rig = {k: v.unsqueeze(0).to(dev) for k, v in rig0.items()}
-    z = torch.zeros(1, c3.window, 21, 3, device=dev)
+    z = torch.zeros(1, oracle.window, 21, 3, device=dev)
     attempts = {
         "targets_kwarg": lambda: model(b_obs, b_rig, targets={"body_aa": z}),
         "init_pose_kwarg": lambda: model(b_obs, b_rig, init_body_aa=z),
         "gt_key_in_obs": lambda: model(
-            {**b_obs, "joints_gt_22": torch.zeros(1, c3.window, 22, 3, device=dev)},
+            {**b_obs, "joints_gt_22": torch.zeros(1, oracle.window, 22, 3, device=dev)},
             b_rig,
         ),
         "pose_key_in_obs": lambda: model(
-            {**b_obs, "pose_body": torch.zeros(1, c3.window, 63, device=dev)}, b_rig
+            {**b_obs, "pose_body": torch.zeros(1, oracle.window, 63, device=dev)}, b_rig
         ),
         "target_key_in_rig": lambda: model(
-            b_obs, {**b_rig, "transl": torch.zeros(1, c3.window, 3, device=dev)}
+            b_obs, {**b_rig, "transl": torch.zeros(1, oracle.window, 3, device=dev)}
         ),
         "rig_missing_head_pose": lambda: model(
             b_obs, {k: v for k, v in b_rig.items() if k != "head_pos_world"}
@@ -1016,7 +1020,7 @@ def _leak_check_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
         "window": {
             "rel_path": rel,
             "start": s,
-            "length": c3.window,
+            "length": oracle.window,
             "all_lower_body_hidden": True,
         },
         "forward_parameters": params,
@@ -1040,7 +1044,7 @@ def _leak_check_run(ctx: E4Ctx, name: str) -> dict[str, Any]:
     return res
 
 
-def cmd_preflight(ctx: E4Ctx) -> dict[str, Any]:
+def cmd_preflight(ctx: EvidenceLockedContext) -> dict[str, Any]:
     """Overfit one batch, exact resume, and throughput for each ablation config."""
     pf = ctx.cfg["preflight"]
     out: dict[str, Any] = {}
@@ -1072,9 +1076,9 @@ def cmd_preflight(ctx: E4Ctx) -> dict[str, Any]:
             for _ in range(int(pf["resume_steps"])):
                 m.eval()  # dropout off; posterior noise seeded identically
                 o.zero_grad(set_to_none=True)
-                loss, _ = compute_loss_e4(
+                loss, _ = compute_loss_evidence_locked(
                     m,
-                    ctx.c3.fk,
+                    ctx.oracle.fk,
                     batch,
                     loss_w=rc["loss"],
                     lock=rc["lock"],
@@ -1120,7 +1124,7 @@ def cmd_preflight(ctx: E4Ctx) -> dict[str, Any]:
     return out
 
 
-def cmd_run(ctx: E4Ctx) -> None:
+def cmd_run(ctx: EvidenceLockedContext) -> None:
     for fn in (
         cmd_build_occ,
         cmd_verify_occ,
@@ -1154,7 +1158,7 @@ COMMANDS = {
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Track E4-v1 completion (oracle control)"
+        description="Evidence-locked completion, ablation study (oracle control)"
     )
     parser.add_argument(
         "--config", type=Path, default=Path("configs/e4_completion.yaml")
@@ -1165,7 +1169,7 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("cmd", choices=sorted(COMMANDS))
     args = parser.parse_args(argv)
     cfg = yaml.safe_load(args.config.read_text(encoding="utf-8"))
-    COMMANDS[args.cmd](E4Ctx(cfg, args.config, torch.device(args.device)))
+    COMMANDS[args.cmd](EvidenceLockedContext(cfg, args.config, torch.device(args.device)))
 
 
 if __name__ == "__main__":

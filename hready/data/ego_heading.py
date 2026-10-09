@@ -1,4 +1,4 @@
-"""Ego heading in the horizontal plane (Track E3 heuristic)."""
+"""Ego heading in the horizontal plane (flat-floor heuristic)."""
 
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ def heading_sequence(
 ) -> tuple[np.ndarray, np.ndarray]:
     """Unit xy heading ``(T, 2)`` and source code ``(T,)``.
 
-    ``camera_R`` rows are camera axes in world (E2-A: world->camera), so row 2 is the look axis.
+    ``camera_R`` rows are camera axes in world (observation simulator: world->camera), so row 2 is the look axis.
     If ``|look_xy| < min_horiz``: hold the last stable heading, else pelvis->head xy, else the first
     later stable heading (clip start), else world +y. Only the last fallback depends on the world axes.
     """

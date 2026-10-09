@@ -1,8 +1,8 @@
-"""E3 flat-floor ankle-offset heuristic (heading frame; no IK; nothing fitted to data).
+"""Flat-floor ankle-offset heuristic (heading frame; no IK; nothing fitted to data).
 
 Offsets come from the neutral locked_head rest skeleton (betas = 0), symmetrised left/right, with
 the arms hanging (rest pose is a T-pose). They are expressed in the per-frame heading frame
-(right, forward, up) and anchored at the given head position (eye midpoint, D1):
+(right, forward, up) and anchored at the given head position (eye midpoint, given rig pose):
 
 1. visible joints keep their evidence;
 2. pelvis: evidence if visible, else head + template offset;
@@ -26,8 +26,8 @@ from hready.body.joint_indices import (
     SMPLX_LEFT_EYE,
     SMPLX_RIGHT_EYE,
 )
-from hready.data.e3_heading import heading_sequence
-from hready.metrics.e3_eval import proxy_foot_contact
+from hready.data.ego_heading import heading_sequence
+from hready.metrics.completion_metrics import proxy_foot_contact
 
 NUM_KP = 22
 HIPS = (JOINT_INDEX["left_hip"], JOINT_INDEX["right_hip"])

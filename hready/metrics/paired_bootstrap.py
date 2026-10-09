@@ -4,7 +4,7 @@ Each model contributes, per subject, the numerator/denominator sums of every poo
 (``CohortAccumulator.per_subject``) and contact-calibration bin statistics. One bootstrap draw
 resamples subjects with replacement; both models are pooled over the same draw and differenced,
 so the comparison is paired per clip (same clips, same evidence). The metric definitions are
-exactly the pooled ones in the tables (``hready.metrics.e3_eval``).
+exactly the pooled ones in the tables (``hready.metrics.completion_metrics``).
 """
 
 from __future__ import annotations

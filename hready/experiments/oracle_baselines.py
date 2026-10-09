@@ -1,4 +1,4 @@
-"""Track E3 oracle completion baselines CLI (control path only).
+"""Oracle completion baselines CLI (control path only).
 
 Every table row carries the disclaimer from the config. Commands:
 train-list, build-cache, verify-cache, preflight, train, eval-table, heuristic-check, leak-check, run.
@@ -21,7 +21,7 @@ import torch
 import yaml
 from torch.utils.data import DataLoader
 
-from hready.baselines.e3_heuristic import (
+from hready.baselines.flat_floor_heuristic import (
     HeuristicConfig,
     clip_headings,
     heuristic_foot_contact,
@@ -36,14 +36,14 @@ from hready.body.joint_indices import (
 )
 from hready.body.smplx_wrapper import load_body
 from hready.data.amass import _entry_by_rel, clip_flags, load_index, load_paths_config
-from hready.data.e3_clips import resolve_clip_lists
-from hready.data.e3_dataset import (
-    E3TrainDataset,
-    E3TrainSampler,
+from hready.data.completion_clips import resolve_clip_lists
+from hready.data.completion_windows import (
+    CompletionTrainDataset,
+    CompletionTrainSampler,
     EvidenceConfig,
     canonicalize,
     clip_noise_rng,
-    collate_e3,
+    collate_completion_windows,
     eval_window_batch,
     rotate_about_z,
     simulate_evidence,
@@ -51,20 +51,12 @@ from hready.data.e3_dataset import (
     window_starts,
     z_rotation,
 )
-from hready.data.e3_heading import (
+from hready.data.ego_heading import (
     SOURCE_BACKFILL,
     SOURCE_HOLD,
     SOURCE_LOOK,
     SOURCE_PELVIS_HEAD,
     SOURCE_WORLD_Y,
-)
-from hready.data.e3_motion_memmap import (
-    build_memmap,
-    cache_disk_bytes,
-    load_cache_index,
-    load_clip_memmap,
-    measure_window_reads,
-    verify_memmap,
 )
 from hready.data.ego_observation import (
     camera_config_from_dict,
@@ -73,8 +65,16 @@ from hready.data.ego_observation import (
     occlusion_config_from_dict,
 )
 from hready.data.ego_splits import split_clip_list_hashes
-from hready.eval.e3_cohorts import CohortMasks
-from hready.metrics.e3_eval import (
+from hready.data.motion_cache import (
+    build_memmap,
+    cache_disk_bytes,
+    load_cache_index,
+    load_clip_memmap,
+    measure_window_reads,
+    verify_memmap,
+)
+from hready.experiments.cohorts import CohortMasks
+from hready.metrics.completion_metrics import (
     ClipEval,
     CohortAccumulator,
     accumulate_clip,
@@ -84,7 +84,7 @@ from hready.metrics.e3_eval import (
     summarize_cohort,
 )
 from hready.models.ego_complete_motion import EgoCompleteMotion
-from hready.train.e3_oracle_engine import (
+from hready.train.completion_engine import (
     NeutralJointFK,
     aa_to_matrix,
     compute_loss,
@@ -394,7 +394,7 @@ def make_train_loader(
         rel: not bool(ctx.flags(rel).get("exclude_contact"))
         for rel in ctx.lists["train"]
     }
-    ds = E3TrainDataset(
+    ds = CompletionTrainDataset(
         windows,
         window=ctx.window,
         rel_dir=ctx.rel_dir,
@@ -408,8 +408,8 @@ def make_train_loader(
     loader = DataLoader(
         ds,
         batch_size=int(ctx.cfg["train"]["batch_size"]),
-        sampler=E3TrainSampler(len(windows), int(ctx.cfg["seed"]), start_draw),
-        collate_fn=collate_e3,
+        sampler=CompletionTrainSampler(len(windows), int(ctx.cfg["seed"]), start_draw),
+        collate_fn=collate_completion_windows,
         num_workers=nw,
         persistent_workers=nw > 0,
         prefetch_factor=4 if nw > 0 else None,
@@ -1220,7 +1220,7 @@ COMMANDS = {
 
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(
-        description="Track E3 oracle completion baselines (control)"
+        description="Oracle completion baselines (control)"
     )
     parser.add_argument("--config", type=Path, default=Path("configs/e3_oracle.yaml"))
     parser.add_argument(

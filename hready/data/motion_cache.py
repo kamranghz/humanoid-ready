@@ -1,4 +1,4 @@
-"""30 Hz grounded motion cache for E3 (uncompressed ``.npy`` per array, read with ``mmap_mode="r"``).
+"""30 Hz grounded motion cache for completion (uncompressed ``.npy`` per array, read with ``mmap_mode="r"``).
 
 One directory per clip under ``<cache_dir>/<rel_dir>/clips/``:
 ``root_orient`` (T,3), ``pose_body`` (T,63), ``transl`` (T,3, grounded), ``betas`` (16,),

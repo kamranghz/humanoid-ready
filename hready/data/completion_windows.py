@@ -1,4 +1,4 @@
-"""E3 oracle windows: memmap motion -> E2-A evidence + rig -> canonical frame (+ train z-rotation).
+"""Oracle completion windows: memmap motion -> simulated evidence + rig -> canonical frame (+ train z-rotation).
 
 Canonical frame: subtract the window-start head xy from every world xy (evidence, head, targets);
 z is kept (floor at z = 0 is given). Training may rotate obs, rig and targets together about z.
@@ -19,13 +19,13 @@ from torch import Tensor
 from torch.utils.data import Dataset, Sampler
 
 from hready.body.rotations import axis_angle_to_matrix
-from hready.data.e3_motion_memmap import load_clip_memmap
 from hready.data.ego_observation import (
     EgoCameraConfig,
     EgoNoiseConfig,
     OcclusionCapsuleConfig,
     simulate_oracle_evidence,
 )
+from hready.data.motion_cache import load_clip_memmap
 
 NUM_KP = 22
 NUM_BODY = 21
@@ -61,7 +61,7 @@ def simulate_evidence(
     rng: np.random.Generator,
     ev_cfg: EvidenceConfig,
 ) -> tuple[dict[str, Tensor], dict[str, Tensor]]:
-    """World-frame E2-A evidence for a contiguous frame range."""
+    """World-frame simulated evidence for a contiguous frame range."""
     return simulate_oracle_evidence(
         torch.from_numpy(np.ascontiguousarray(joints_22, dtype=np.float32)),
         torch.from_numpy(np.ascontiguousarray(joints_55, dtype=np.float32)),
@@ -137,7 +137,7 @@ def rotate_about_z(
     targets["root_R"] = rz @ targets["root_R"]
 
 
-class E3TrainSampler(Sampler):
+class CompletionTrainSampler(Sampler):
     """Infinite seeded window stream yielding ``(window_index, draw_id)``; resumable by draw count."""
 
     def __init__(self, n_windows: int, seed: int, start_draw: int = 0) -> None:
@@ -156,7 +156,7 @@ class E3TrainSampler(Sampler):
             epoch, pos = epoch + 1, 0
 
 
-class E3TrainDataset(Dataset):
+class CompletionTrainDataset(Dataset):
     """Training windows: evidence simulated per draw (fresh noise each draw), z-rotation augmentation."""
 
     def __init__(
@@ -250,7 +250,7 @@ class E3TrainDataset(Dataset):
         }
 
 
-def collate_e3(items: list[dict[str, Any]]) -> dict[str, Any]:
+def collate_completion_windows(items: list[dict[str, Any]]) -> dict[str, Any]:
     out: dict[str, Any] = {}
     for group in ("obs", "rig", "targets"):
         out[group] = {

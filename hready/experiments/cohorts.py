@@ -1,10 +1,10 @@
-"""E3 cohort frame masks, reproducing the recorded E1 definitions (``hready.data.ego_splits``).
+"""Cohort frame masks, reproducing the recorded subject-split cohort definitions (``hready.data.ego_splits``).
 
 - ``ordinary_locomotion``: BABEL segments >= ``min_segment_duration_s`` whose first matching cohort
-  (E1 order: floor_work, ordinary_locomotion, other_labelled) is ordinary_locomotion.
+  (cohort order: floor_work, ordinary_locomotion, other_labelled) is ordinary_locomotion.
 - ``floor_work_eligible`` (kneel + lie), ``sit_floor``, ``sit_support``: confirmed segments in
   ``results/E/floor_work_clips.csv``.
-Segment -> frame indices use E1's ``_segment_frame_indices`` at 30 Hz.
+Segment -> frame indices use the split module's ``_segment_frame_indices`` at 30 Hz.
 """
 
 from __future__ import annotations
@@ -18,7 +18,7 @@ import yaml
 
 from hready.data.amass import load_index
 from hready.data.babel import BabelIndexEntry, load_babel_index_payload
-from hready.data.e3_clips import FLOOR_WORK_ELIGIBLE_CLASSES
+from hready.data.completion_clips import FLOOR_WORK_ELIGIBLE_CLASSES
 from hready.data.ego_splits import _collect_babel_proposals, _segment_frame_indices
 
 COHORTS: tuple[str, ...] = (
