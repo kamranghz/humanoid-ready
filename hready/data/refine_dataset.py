@@ -9,16 +9,32 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
-from hready.data.amass import AmassIndexEntry, load_clip
+from hready.data.amass import AmassIndexEntry
+from hready.data.motion_cache import load_cache_index, load_clip_memmap
 from hready.data.refine_eligible_cache import eligible_entries
 from hready.data.refine_eligible_cache import split_counts as cached_split_counts
 
 SplitName = Literal["train", "val", "test"]
 WINDOW = 64
+MOTION_CACHE_DIR = "grounded_motion_30hz"
+
+
+def load_grounded_clip(entry: AmassIndexEntry) -> dict[str, Any]:
+    """Grounded 30 Hz clip from the memmap cache (same values as ``load_clip(entry, ground=True)``)."""
+    clip = load_clip_memmap(entry.rel_path, rel_dir=MOTION_CACHE_DIR)
+    return {
+        "root_orient": clip["root_orient"],
+        "pose_body": clip["pose_body"].reshape(-1, 21, 3),
+        "transl": clip["transl"],
+        "betas": np.asarray(clip["betas"]),
+        "fps": float(clip["fps"]),
+    }
 
 
 def _eligible_entries(split: SplitName) -> list[AmassIndexEntry]:
-    return eligible_entries(split)
+    """Eligible clips of the split that have an entry in the grounded motion cache."""
+    cached = load_cache_index(MOTION_CACHE_DIR)
+    return [e for e in eligible_entries(split) if e.rel_path in cached]
 
 
 class HRRefineWindowDataset(Dataset):
@@ -43,17 +59,17 @@ class HRRefineWindowDataset(Dataset):
 
     def __getitem__(self, idx: int) -> dict[str, Any]:
         entry = self.entries[idx % len(self.entries)]
-        clip = load_clip(entry, ground=True)
+        clip = load_grounded_clip(entry)
         t = clip["root_orient"].shape[0]
         if t >= self.window:
             i0 = self._rng.randint(0, t - self.window)
-            root = clip["root_orient"][i0 : i0 + self.window]
-            body = clip["pose_body"][i0 : i0 + self.window]
-            transl = clip["transl"][i0 : i0 + self.window]
+            root = np.array(clip["root_orient"][i0 : i0 + self.window])
+            body = np.array(clip["pose_body"][i0 : i0 + self.window])
+            transl = np.array(clip["transl"][i0 : i0 + self.window])
         else:
-            root = clip["root_orient"]
-            body = clip["pose_body"]
-            transl = clip["transl"]
+            root = np.array(clip["root_orient"])
+            body = np.array(clip["pose_body"])
+            transl = np.array(clip["transl"])
             pad = self.window - t
             root = np.concatenate([root, np.repeat(root[-1:], pad, axis=0)], axis=0)
             body = np.concatenate([body, np.repeat(body[-1:], pad, axis=0)], axis=0)

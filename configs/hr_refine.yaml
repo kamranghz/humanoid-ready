@@ -5,6 +5,8 @@ batch_size: 8
 lr: 3.0e-4
 weight_decay: 0.01
 max_steps: 10000
+warmup_steps: 20
+grad_clip_norm: 1.0
 log_every: 50
 save_every: 500
 bf16: true
@@ -39,3 +41,24 @@ physics_loss:
     enabled: false
 
 checkpoint_dir: results/hr_refine
+
+# Validation during training (fixed windows, fixed corruption seeds; best checkpoint by MPJPE).
+eval_every: 200
+eval_windows: 200
+eval_seed: 0
+
+# Physics-loss ablation arms, selected with ``--arm``; each block is merged over the keys above.
+# minus_contact turns off the contact-weighted foot-skating term (ground penetration stays on).
+ablation_arms:
+  recon_only:
+    loss: {physics: 0.0}
+  full:
+    loss: {physics: 0.01}
+  minus_contact:
+    loss: {physics: 0.01}
+    physics_loss:
+      foot_skating: {enabled: false}
+  minus_balance:
+    loss: {physics: 0.01}
+    physics_loss:
+      balance_com_in_support: {enabled: false}

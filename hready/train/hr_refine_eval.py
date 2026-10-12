@@ -11,14 +11,13 @@ from torch import nn
 
 from hready.body.batch_forward import smpl_forward_bt
 from hready.body.smplx_wrapper import SmplxBody
-from hready.data.amass import load_clip
 from hready.data.refine_corrupt import (
     CorruptionConfig,
     apply_corruption,
     make_corruption_rng,
     unpack_pose,
 )
-from hready.data.refine_dataset import collate_windows
+from hready.data.refine_dataset import collate_windows, load_grounded_clip
 from hready.data.refine_eligible_cache import eligible_entries
 from hready.metrics.physical import foot_skate, ground_penetration, jitter
 from hready.metrics.pose import mpjpe, pa_mpjpe
@@ -36,12 +35,12 @@ class WindowMetrics:
 
 def _window_batch(entry_idx: int, offset: int, window: int, split: str = "val") -> dict[str, Any]:
     entry = eligible_entries(split)[entry_idx]
-    clip = load_clip(entry, ground=True)
+    clip = load_grounded_clip(entry)
     t = clip["root_orient"].shape[0]
     i0 = min(offset, max(0, t - window))
-    root = clip["root_orient"][i0 : i0 + window]
-    body = clip["pose_body"][i0 : i0 + window]
-    transl = clip["transl"][i0 : i0 + window]
+    root = np.array(clip["root_orient"][i0 : i0 + window])
+    body = np.array(clip["pose_body"][i0 : i0 + window])
+    transl = np.array(clip["transl"][i0 : i0 + window])
     if root.shape[0] < window:
         pad = window - root.shape[0]
         root = np.concatenate([root, np.repeat(root[-1:], pad, axis=0)], axis=0)
@@ -66,7 +65,7 @@ def eval_plan(n_windows: int, eval_seed: int, split: str = "val") -> list[tuple[
     for _ in range(n_windows):
         ei = int(rng.integers(0, len(entries)))
         entry = entries[ei]
-        clip = load_clip(entry, ground=True)
+        clip = load_grounded_clip(entry)
         t = clip["root_orient"].shape[0]
         i0 = int(rng.integers(0, max(1, t - 63))) if t > 63 else 0
         plan.append((ei, i0, entry.subject))

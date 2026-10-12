@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import math
 import os
 import random
 from dataclasses import dataclass
@@ -330,6 +331,19 @@ def backward_step(
         "recon": float(out["recon"].detach().cpu()),
         "physics": float(out["physics"].detach().cpu()),
     }
+
+
+def build_scheduler(
+    optimizer: torch.optim.Optimizer, max_steps: int, warmup_steps: int
+) -> torch.optim.lr_scheduler.LRScheduler:
+    """Linear warmup over ``warmup_steps`` steps, then cosine decay to zero at ``max_steps``."""
+
+    def factor(step: int) -> float:
+        warm = min((step + 1) / warmup_steps, 1.0) if warmup_steps > 0 else 1.0
+        progress = min(step / max(max_steps, 1), 1.0)
+        return warm * 0.5 * (1.0 + math.cos(math.pi * progress))
+
+    return torch.optim.lr_scheduler.LambdaLR(optimizer, factor)
 
 
 def wrap_ddp(model: HRRefine, device: torch.device, local_rank: int) -> nn.Module:
