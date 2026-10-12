@@ -147,15 +147,13 @@ Conversion to the repo convention (Z-up, floor at z = 0): `(x, y, z)_scene -> (x
 
 ## 6. Sanity checks (raw output)
 
-Body model: the repo wrapper `load_body("locked_head")` is neutral with 16 betas and flat hands. EgoBody gives 10 betas, gendered, per frame. Handling used here: 10 betas zero-padded to 16 (identical to a 10-beta model when padded this way), per-sequence median betas, neutral model, hands flat (the body joints do not depend on hand pose), jaw/eyes/expression ignored. **The mismatch is not negligible**; against the gendered `locked_head` file with the same 10 betas, 40 frames per recording:
+Body model: the repo wrapper `load_body("locked_head")` is neutral with 16 betas and flat hands. EgoBody gives 10 betas, gendered, per frame. Handling used here: 10 betas zero-padded to 16 (identical to a 10-beta model when padded this way), per-sequence median betas, neutral model, hands flat (the body joints do not depend on hand pose), jaw/eyes/expression ignored. **The mismatch is not negligible**; against the gendered `locked_head` file with the same 10 betas, 40 frames per recording. Both sides use joints regressed from the posed vertices (the repo wrapper's definition); an earlier version of this paragraph compared smplx skeleton joints against regressed joints and was about 1-3 mm off. Rechecked 2026-10-11:
 
 ```
-=== train recording_20210911_S08_S03_01 (male, seminar_h52)
- male model vs repo neutral+zero-padded-16: body-joint dist mean 47.3 mm max 95.8 mm | vertex mean 57.6 mm max 113.7 mm | pelvis position diff mean 30.9 mm
-=== val recording_20211002_S03_S18_02 (female, cab_g_benches)
- female model vs repo neutral+zero-padded-16: body-joint dist mean 25.2 mm max 59.6 mm | vertex mean 17.6 mm max 57.7 mm | pelvis position diff mean 6.9 mm
-=== test recording_20220318_S31_S32_01 (female, seminar_d78_0318)
- female model vs repo neutral+zero-padded-16: body-joint dist mean 30.4 mm max 70.3 mm | vertex mean 28.1 mm max 77.2 mm | pelvis position diff mean 7.9 mm
+recording_20210911_S08_S03_01 (male, seminar_h52):         22 body joints mean 45.6 mm max 95.2 mm | pelvis mean 30.8 mm
+recording_20211002_S03_S18_02 (female, cab_g_benches):     22 body joints mean 25.7 mm max 61.7 mm | pelvis mean  6.5 mm
+recording_20220318_S31_S32_01 (female, seminar_d78_0318):  22 body joints mean 31.0 mm max 71.9 mm | pelvis mean  8.3 mm
+gendered model, smplx skeleton joints vs vertex-regressed joints (same model): mean 3.0-3.7 mm, max 10.0-10.9 mm
 ```
 
 Forward kinematics and floor, three recordings (heights in metres above the mesh floor of section 4; `lowest foot` is the lowest of left/right ankle and foot joints; columns are [min, p5, median, p95, max]):
@@ -175,7 +173,7 @@ test  recording_20220318_S31_S32_01  scene=seminar_d78_0318  frames=2751
   camera centre to wearer head: median 0.152 m (p5 0.140, p95 0.160), 2646 image frames
 ```
 
-Existing geometry cohort tree (`hready.data.ego_splits.classify_frame_decision_tree` with the frozen thresholds in `configs/ego_splits.yaml`, metre units, no normalisation) applied to the wearer ground truth of **val** (17 recordings, 29,140 frames at 30 fps, floor from the mesh, per-sequence median betas). "Runs" are maximal same-class frame runs of at least 1.0 s; subjects are wearers under the first-token reading of section 3.
+Existing geometry cohort tree (`hready.data.ego_splits.classify_frame_decision_tree` with the pre-registered thresholds in `configs/ego_splits.yaml`, metre units, no normalisation) applied to the wearer ground truth of **val** (17 recordings, 29,140 frames at 30 fps, floor from the mesh, per-sequence median betas). "Runs" are maximal same-class frame runs of at least 1.0 s; subjects are wearers under the first-token reading of section 3.
 
 ```
   class        frames   frac   runs>=1s  sequences  wearer-subjects
