@@ -14,6 +14,7 @@ The "world frame = Kinect camera 1" of the task text is, in the files, the frame
 | `calibrations.zip` | 0.4 MB | per recording `cal_trans/*.json` |
 | `transf_matrices_all_seqs.pkl` | 84 MB | per recording transforms (section 4) |
 | `smplx_camera_wearer_{train,val,test}.zip` | 0.23 / 0.06 / 0.15 GB | one `.pkl` per frame, wearer only |
+| `smplx_interactee_{train,val,test}.zip` (added 2026-10-11) | 0.23 / 0.06 / 0.15 GB | same layout as the wearer zips, for the person visible in the egocentric view |
 | `data_info_release.csv`, `data_splits.csv` | small | scene, body genders, frame range, split lists |
 
 ## 2. Layout
@@ -25,7 +26,7 @@ The "world frame = Kinect camera 1" of the task text is, in the files, the frame
 - `<ticks>` is a Windows FILETIME (100 ns units). `NNNNN` is the frame number, **identical to the SMPL-X frame number** (section 3).
 - One recording (`recording_20211002_S18_S03_02`) also holds `PV/PV.tar` (143 MB, 329 members). All 329 members are also present as loose JPEGs, so the tar is redundant.
 - `<timestamp>_pv.txt`: line 1 `cx,cy,w,h` (for example `945.911,510.013,1920,1080`; read as principal point and size, which fits the image centre). Each further line: `ticks, fx, fy, <16 numbers>`, the 16 numbers being a row-major 4x4 **PV-camera-to-HoloLens-world** pose (last row `0 0 0 1`). Over 4036 / 3336 / 4685 lines (three sequences checked) `pv.txt` equals the inverse of `trans_world2pv[ticks]` from the pickle to within 7e-16 / 2e-15 / 2e-15. `fx, fy` differ between recordings (first-row values 1451 to 1467 in the three checked); whether they change within a recording was not checked.
-- `keypoints.npz`: `imgname`, `center` (N,2), `scale` (N,), `keypoints` (N,25,3) (x, y, confidence), `gender` (N,). **These belong to the interactee, not the wearer**: in all 65 recordings where wearer and interactee genders differ, `gender` equals the interactee's.
+- `keypoints.npz`: `imgname`, `center` (N,2), `scale` (N,), `keypoints` (N,25,3) (x, y, confidence), `gender` (N,). **These belong to the interactee, not the wearer**: in all 65 recordings where wearer and interactee genders differ, `gender` equals the interactee's, and the keypoints project onto the interactee's SMPL-X body (below). Confidence runs 0 to 1.02, and 34.6% of the 235,517 x 25 entries have confidence exactly 0. The 25 slots follow the OpenPose BODY_25 order as measured below; the files do not document it and do not name the detector that produced them.
 - `valid_frame.npz`: `imgname`, `valid` (bool). Its meaning is not documented in the files; keypoint rows equal the number of `valid == True` entries. Both files cover more frames than the SMPL-X range (see counts).
 
 **Wearer SMPL-X:** `smplx_camera_wearer_<split>/<recording>/body_idx_<k>/results/frame_<NNNNN>/000.pkl`. Exactly one `body_idx_<k>` folder per recording, one `.pkl` per frame, no gaps in frame numbers in any of the 125 recordings, and the frame range equals `start_frame..end_frame` of `data_info_release.csv` in all 125. The folder index is always the opposite of `body_idx_fpv` in `data_info_release.csv`, and the wearer gender in the pickle equals the `data_info` gender of that index in 125/125; so `body_idx_fpv` names the person seen in the egocentric view (the interactee), not the wearer.
@@ -45,6 +46,32 @@ Fields of each pickle (shapes as stored):
 | `gender` | string | `male` (66 recordings) or `female` (59) |
 
 There is no timestamp field; time comes from the frame number at 30 fps.
+
+**Interactee SMPL-X** (verified 2026-10-11): `smplx_interactee_<split>/<recording>/body_idx_<k>/results/frame_<NNNNN>/000.pkl`, same fields and shapes as the wearer (betas (1,10), global_orient (1,3), transl (1,3), body_pose (1,63), hand poses (1,12) PCA, jaw/eyes (1,3), expression (1,10), pose_embedding (1,32), gender string).
+
+```
+recordings in folder / in data_splits.csv: train 65/65, val 17/17, test 43/43
+structure problems (one body folder, folder index == body_idx_fpv, index != wearer index,
+  frame gaps, frame range != start/end of data_info_release.csv, gender != data_info): none in 125 recordings
+files per frame folder: 1;  frames: train 116630, val 29140, test 73961 (same as the wearer)
+genders: female 66 recordings, male 59 (the mirror of the wearer's 66 male / 59 female)
+betas: 10 per frame, varying within a recording (largest per-coefficient std 0.90)
+not a copy of the wearer: middle-frame |transl difference| min 1.02, median 1.89, max 3.11 m; 0 of 125 identical
+```
+
+**Keypoint rows against these frames** (a row is a frame of `keypoints.npz`; there is at most one row per frame number, no duplicates):
+
+| | train | val | test | total |
+|---|---|---|---|---|
+| keypoint rows | 120,745 | 31,129 | 83,643 | 235,517 |
+| rows whose frame has an interactee SMPL-X pose | 90,120 | 23,332 | 62,140 | 175,592 |
+| rows outside the SMPL-X frame range (before the first or after the last frame) | 30,625 | 7,797 | 21,503 | 59,925 |
+| interactee SMPL-X frames | 116,630 | 29,140 | 73,961 | 219,731 |
+| of those, frames that have a keypoint row | 90,120 | 23,332 | 62,140 | 175,592 |
+
+The 175,592 matched rows equal the number of images flagged `valid` (section 3), so every matched row also has an image. No keypoint row exists for 44,139 of the SMPL-X frames, and 59,925 rows have no SMPL-X pose.
+
+**Which keypoint set the 25 slots follow.** Measured, not documented: the interactee's SMPL-X points (22 body joints plus nose, eyes, ears, toes and heels, named by the installed `smplx.joint_names`) were projected into the PV image with the chain of section 4 on 4,958 frames sampled over all 125 recordings, and for each slot the point with the lowest median pixel distance (confidence above 0.5) was taken. 24 of 25 slots land on the point the OpenPose BODY_25 order expects (0 nose, 1 neck, 2-4 right shoulder/elbow/wrist, 5-7 left, 9-11 right hip/knee/ankle, 12-14 left, 15-18 right eye, left eye, right ear, left ear, 19-21 left big toe/small toe/heel, 22-24 right). The one exception is slot 8 (mid-hip), whose nearest point is the right hip (43.8 px; the SMPL-X pelvis is 46.8 px away), which is what a point between the two hips would do. So: BODY_25 order, consistent with the measurement; the detector or annotation process behind the values is **unknown**. This was an identity check only; no detector error was computed. It also validates the camera model of section 4: 60,749 of 60,763 confident keypoints fall inside the 1920 x 1080 image and the projected joints sit within roughly 10-15 px of their slots for limbs, face and feet.
 
 **Gaze / tracking:** `egocentric_gaze/<recording>/<timestamp>/<timestamp>_head_hand_eye.csv`, no header, 861 columns, about 60 Hz (median over recordings 58.4 Hz, min 29.9, max 60.0). Layout **inferred from column counts and zero patterns, not from documentation**: column 0 ticks; columns 1-16 a row-major 4x4 head pose (same layout as `pv.txt`; equality with `pv.txt` not checked); columns 17-850 two blocks of 417 = 1 + 26 x 16 (hand tracking, left then right); columns 851-860 the eye-gaze block (column 851 is 1 in 91-100% of sampled rows; internal layout not verified).
 
@@ -110,7 +137,8 @@ Conversion to the repo convention (Z-up, floor at z = 0): `(x, y, z)_scene -> (x
 | Head (camera) pose | **present** | `pv.txt` and `trans_world2pv` per image, plus `*_head_hand_eye.csv` at about 60 Hz; HoloLens tracking output, so a measured pose with unknown error, not an independent ground truth. The only reference is the wearer's SMPL-X head joint 0.15-0.18 m from the camera centre |
 | Hand tracking | **present, sparse** | gaze CSV, hand blocks non-zero in 11-22% of sampled rows (every 20th row); tracked by the device, not ground truth |
 | Gaze | **present** | gaze CSV, flag column 851 set in 91-100% of sampled rows; layout of the block unverified |
-| Wearer body visible in the image | **unknown / no annotation** | no wearer 2D keypoints or masks are released (`keypoints.npz` is the interactee). Geometric check on three recordings (project wrists and ankles with the chain above, no occlusion test, not checked against images): in the field of view in at most 0.3% of frames, i.e. the wearer's own body is essentially absent from the egocentric image |
+| Wearer body visible in the image | **unknown / no annotation** | no wearer 2D keypoints or masks are released (`keypoints.npz` is the interactee). Geometric check on three recordings (project wrists and ankles with the chain above, no occlusion test; the projection itself is validated by the interactee keypoints, section 2): in the field of view in at most 0.3% of frames, i.e. the wearer's own body is essentially absent from the egocentric image |
+| Visible person's 3D ground truth and 2D keypoints | **present** | `smplx_interactee_*` (gendered SMPL-X, 30 fps) and `keypoints.npz` (BODY_25 order, 175,592 rows matched to an interactee pose and an image); source and quality of the keypoint values unknown |
 | Contact labels (foot, support) | **absent** | none released; they would have to be derived from the SMPL-X ground truth and the mesh floor, with the floor uncertainty above |
 | Gravity direction | **absent as a file** | derivable from `kinect12_to_world` (assumption in section 4) |
 | Floor height | **absent as a file** | derivable from the scene mesh (estimate, a few cm) |
