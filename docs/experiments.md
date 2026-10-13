@@ -24,7 +24,7 @@ Commit IDs are deliberately not recorded here.
 | Perception baseline measurement | E2-B2, B2 | — | — | not started |
 | Perception training | E2-B3, B3 | — | — | not started |
 | Perception model selection | E2-B4, B4 | — | — | not started |
-| Realistic observation model | E2-C | — | — | not started |
+| Realistic observation model | E2-C | — | `docs/realistic_observation_design.md` (design note and pre-registration) | design note written 2026-10-13; no experiments run yet; acceptance criteria pre-registered |
 | Oracle completion baselines | E3 (oracle mode) | `configs/oracle_completion_baselines.yaml` | `results/completion/oracle_baselines.json` | done (oracle control) |
 | Completion baselines on realistic observations | E3 (perceived mode) | — | — | not started |
 | Evidence-locked completion | E4 | — | — | closed as an oracle-evidence study |
