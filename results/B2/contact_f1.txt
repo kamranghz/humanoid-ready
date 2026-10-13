@@ -1,0 +1,11 @@
+HR-Refine foot-contact head: validation F1
+Trained 2000 steps on AMASS train windows (grounded_motion_30hz cache), seed 0, one run per condition.
+Validation: 256 fixed random val windows of 64 frames, corrupted inputs (fixed seeds); micro-averaged over the 4 foot channels (L heel, L toe, R heel, R toe); 65536 frame-channels, positive rate 0.704.
+Labels: the cache's foot-channel contact labels (height + velocity rule, hready/data/contact.py).
+
+condition / baseline                    F1  precision   recall
+head: video_only                     0.936      0.921    0.951
+head: imu_only                       0.936      0.915    0.959
+head: fused                          0.938      0.922    0.955
+baseline: always contact             0.826      0.704    1.000
+baseline: corrupted foot z<5cm       0.691      0.850    0.583

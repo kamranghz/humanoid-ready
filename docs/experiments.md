@@ -32,6 +32,7 @@ Commit IDs are deliberately not recorded here.
 | Evidence-locked completion, pre-registered comparison | E4 attempt 2, E4-v2, v2 | `configs/evidence_locked_preregistered_comparison.yaml` | `results/completion/evidence_locked_preregistered_comparison.json` | no arm passed the pre-registered rule; TEST not evaluated |
 | Decoupled contact grounding | E4b | — | — | not started |
 | End-to-end evaluation | E5 | — | — | not started |
+| HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt`, `results/auxiliary_heads/action_intent.txt` | done (2000 steps per condition, one seed) |
 | Real egocentric validation | E5b | — | — | not started |
 | Humanoid simulation asset | E6a | — | — | not started |
 | Simulation tracking training | E6 | — | — | not started |
