@@ -33,6 +33,7 @@ Commit IDs are deliberately not recorded here.
 | Decoupled contact grounding | E4b | — | — | not started |
 | End-to-end evaluation | E5 | — | — | not started |
 | HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt`, `results/auxiliary_heads/action_intent.txt` | done (2000 steps per condition, one seed) |
+| Joint torques by inverse dynamics, raw vs refined | — | `scripts/compute_torques.py`, `scripts/plot_torques.py` | `results/B2/torque_comparison.npz`, `results/B2/torque_plots.png` | done (3 val clips x 4 windows, one seed) |
 | Real egocentric validation | E5b | — | — | not started |
 | Humanoid simulation asset | E6a | — | — | not started |
 | Simulation tracking training | E6 | — | — | not started |
