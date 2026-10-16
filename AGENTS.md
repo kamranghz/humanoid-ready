@@ -233,7 +233,7 @@ The paper is written from the same code and results as the work packages. It doe
 |---|---|---|---|
 | Literature review | Read BeyondRetarget, Measuring Physical Plausibility, PolySim, GMR, PHUMA, PhysHMR in full; `paper/related_work.md` | each paper: setup, metrics, engines, overlap with us | ☐ |
 | Tracking-policy selection | Choose the G1 tracking policy that runs in Newton, PhysX and MuJoCo; record in `docs/decisions.md` | runs one AMASS clip in all three | ☐ |
-| External video data | Download 3DPW (and EMDB if available) | loader test passes | ☐ |
+| External video data | Download 3DPW (and EMDB if available) | loader test passes | ☑ evidence: `hready/data/threedpw.py` |
 | Method runs | Run GVHMR, WHAM, TRAM, BEDLAM-CLIFF on the test videos; convert to SMPL-X locked_head | per-method outputs + MPJPE/PA-MPJPE match published numbers within tolerance | ☐ |
 | Analysis plan | Pre-register analysis plan + thresholds in `paper/claims_map.md` | dated commit before the cross-engine comparison | ☐ |
 | Newton runs | Executability in Newton for all methods + AMASS GT upper bound; method- and clip-level analysis | `results/paper/newton/` | ☐ |
