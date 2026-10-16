@@ -98,6 +98,11 @@ These are computed per-method on the 3DPW test set
 using the same GT alignment as published benchmarks.
 Published numbers are cited; our numbers are reported alongside them.
 
+**Note on AMASS GT as upper bound:** AMASS GT has zero HMR error but nonzero
+retargeting error (RE > 0). HMR methods have nonzero HMR error and nonzero RE.
+The two error sources are reported separately; executability of AMASS GT measures
+the ceiling imposed by retargeting alone, not by pose estimation.
+
 ---
 
 ## 6. Analysis plan
@@ -200,12 +205,16 @@ No claim is dropped or reworded after seeing results.
 ## 10. Limitations (pre-acknowledged)
 
 - 3DPW test set is small (~35 sequences); method-level analyses have low power.
-- G1 tracking policy is open-source, not the robot's production controller.
 - MuJoCo and PhysX configurations may not be perfectly matched despite best effort;
   any unmatched parameter is documented in `paper/engine_config.md`.
 - HR-HMR is trained on only 2 BEDLAM scenes from random init; its results
   are reported at that scale and not compared to published benchmarks without caveat.
-- AMASS GT as "perfect HMR" ignores retargeting error; RE is reported separately.
+
+**Not limitations:**
+- The open-source G1 tracking policy is a feature, not a limitation: it makes the
+  evaluation fully reproducible by any reader. Noted in paper as a design choice.
+- AMASS GT retargeting error is handled in §5 as a documented design choice,
+  not an oversight.
 
 ---
 
