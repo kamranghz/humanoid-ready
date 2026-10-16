@@ -1,0 +1,955 @@
+{
+ "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+ "config": "configs/evidence_locked_ablation.yaml",
+ "seed": 0,
+ "train": {
+  "run_cfg": {
+   "model": {
+    "d_model": 256,
+    "n_heads": 8,
+    "n_layers": 4,
+    "dec_layers": 4,
+    "post_layers": 2,
+    "ff_dim": 1024,
+    "dropout": 0.1,
+    "max_len": 64,
+    "latent_dim": 32,
+    "generative": false
+   },
+   "lock": {
+    "sigma_frames": 1.5,
+    "radius_frames": 4,
+    "kappa": 0.05
+   },
+   "loss": {
+    "w_geodesic": 1.0,
+    "w_transl": 1.0,
+    "w_joints": 2.0,
+    "w_contact": 0.3,
+    "beta_kl": 0.001,
+    "w_phys": 0.0,
+    "phys_terms": {
+     "penetration": 100.0,
+     "skate": 1.0,
+     "balance": 1.0,
+     "balance_frames_per_step": 16
+    }
+   },
+   "train": {
+    "batch_size": 64,
+    "lr": 0.0004,
+    "weight_decay": 0.01,
+    "warmup_steps": 2000,
+    "grad_clip": 1.0,
+    "bf16": true,
+    "num_workers": 16,
+    "log_every": 500,
+    "val_every": 5000,
+    "checkpoint_root": "D:/projects/hready_data/checkpoints",
+    "max_steps": 150000
+   }
+  },
+  "steps": 150000,
+  "n_train_windows": 133316,
+  "selection": {
+   "split": "val",
+   "n_clips": 200,
+   "n_val_clips": 200,
+   "cohorts": [
+    "all",
+    "ordinary_locomotion"
+   ],
+   "metric": "mean of pooled MPJPE (mm) over the two cohorts"
+  },
+  "best": {
+   "step": 140000,
+   "mpjpe_mm": {
+    "all": 57.84803418226369,
+    "ordinary_locomotion": 51.10077709325289
+   },
+   "metric": 54.47440563775829,
+   "wall_s": 14711.993389899959
+  },
+  "best_is_last_step": false,
+  "last_20pct_metric_range_mm": [
+   54.47440563775829,
+   55.22429838885117
+  ],
+  "history": [
+   {
+    "step": 5000,
+    "mpjpe_mm": {
+     "all": 80.00201035955448,
+     "ordinary_locomotion": 70.13423462938079
+    },
+    "metric": 75.06812249446763,
+    "wall_s": 530.9021419999772
+   },
+   {
+    "step": 10000,
+    "mpjpe_mm": {
+     "all": 73.35983209112081,
+     "ordinary_locomotion": 67.2936829216313
+    },
+    "metric": 70.32675750637605,
+    "wall_s": 1070.4405711999862
+   },
+   {
+    "step": 15000,
+    "mpjpe_mm": {
+     "all": 67.48189765168672,
+     "ordinary_locomotion": 62.23757605936976
+    },
+    "metric": 64.85973685552824,
+    "wall_s": 1622.7302692999947
+   },
+   {
+    "step": 20000,
+    "mpjpe_mm": {
+     "all": 66.40405839286954,
+     "ordinary_locomotion": 59.94312684595981
+    },
+    "metric": 63.17359261941468,
+    "wall_s": 2161.6987817999907
+   },
+   {
+    "step": 25000,
+    "mpjpe_mm": {
+     "all": 65.3069494606715,
+     "ordinary_locomotion": 57.80710043404935
+    },
+    "metric": 61.55702494736043,
+    "wall_s": 2687.844268899993
+   },
+   {
+    "step": 30000,
+    "mpjpe_mm": {
+     "all": 63.71834279973776,
+     "ordinary_locomotion": 56.193065059099844
+    },
+    "metric": 59.9557039294188,
+    "wall_s": 3207.6288490999723
+   },
+   {
+    "step": 35000,
+    "mpjpe_mm": {
+     "all": 62.61254857339819,
+     "ordinary_locomotion": 56.51867000840816
+    },
+    "metric": 59.565609290903176,
+    "wall_s": 3722.8863005000167
+   },
+   {
+    "step": 40000,
+    "mpjpe_mm": {
+     "all": 61.628197631176874,
+     "ordinary_locomotion": 56.33713194886752
+    },
+    "metric": 58.9826647900222,
+    "wall_s": 4238.752450399974
+   },
+   {
+    "step": 45000,
+    "mpjpe_mm": {
+     "all": 61.48917320538137,
+     "ordinary_locomotion": 55.023707530787846
+    },
+    "metric": 58.25644036808461,
+    "wall_s": 4747.201184400008
+   },
+   {
+    "step": 50000,
+    "mpjpe_mm": {
+     "all": 61.39211116738682,
+     "ordinary_locomotion": 53.49288964437178
+    },
+    "metric": 57.4425004058793,
+    "wall_s": 5263.9833507
+   },
+   {
+    "step": 55000,
+    "mpjpe_mm": {
+     "all": 61.986920061149384,
+     "ordinary_locomotion": 54.19181317430327
+    },
+    "metric": 58.08936661772633,
+    "wall_s": 5773.419200900011
+   },
+   {
+    "step": 60000,
+    "mpjpe_mm": {
+     "all": 61.02220411726435,
+     "ordinary_locomotion": 53.15035175182921
+    },
+    "metric": 57.086277934546786,
+    "wall_s": 6282.8655841000145
+   },
+   {
+    "step": 65000,
+    "mpjpe_mm": {
+     "all": 59.94087803337132,
+     "ordinary_locomotion": 53.239154907218975
+    },
+    "metric": 56.59001647029515,
+    "wall_s": 6791.8271312
+   },
+   {
+    "step": 70000,
+    "mpjpe_mm": {
+     "all": 58.99336330112981,
+     "ordinary_locomotion": 52.55376103692211
+    },
+    "metric": 55.773562169025965,
+    "wall_s": 7304.656892600004
+   },
+   {
+    "step": 75000,
+    "mpjpe_mm": {
+     "all": 59.84664446178633,
+     "ordinary_locomotion": 53.7587423188168
+    },
+    "metric": 56.80269339030157,
+    "wall_s": 7815.354810099991
+   },
+   {
+    "step": 80000,
+    "mpjpe_mm": {
+     "all": 59.78633374634226,
+     "ordinary_locomotion": 53.1740978463074
+    },
+    "metric": 56.48021579632483,
+    "wall_s": 8323.771208199963
+   },
+   {
+    "step": 85000,
+    "mpjpe_mm": {
+     "all": 59.31585674977888,
+     "ordinary_locomotion": 52.74459158048142
+    },
+    "metric": 56.03022416513015,
+    "wall_s": 8838.543411299994
+   },
+   {
+    "step": 90000,
+    "mpjpe_mm": {
+     "all": 58.89146419467496,
+     "ordinary_locomotion": 52.81103824498617
+    },
+    "metric": 55.851251219830566,
+    "wall_s": 9378.025044700014
+   },
+   {
+    "step": 95000,
+    "mpjpe_mm": {
+     "all": 58.45184482762119,
+     "ordinary_locomotion": 52.2154514846323
+    },
+    "metric": 55.33364815612674,
+    "wall_s": 9922.78763029998
+   },
+   {
+    "step": 100000,
+    "mpjpe_mm": {
+     "all": 58.961057628715835,
+     "ordinary_locomotion": 52.19533642101768
+    },
+    "metric": 55.57819702486675,
+    "wall_s": 10467.62140860001
+   },
+   {
+    "step": 105000,
+    "mpjpe_mm": {
+     "all": 58.79538508401348,
+     "ordinary_locomotion": 51.0458817619656
+    },
+    "metric": 54.92063342298954,
+    "wall_s": 10991.96259099996
+   },
+   {
+    "step": 110000,
+    "mpjpe_mm": {
+     "all": 58.78148894041623,
+     "ordinary_locomotion": 52.005539099152195
+    },
+    "metric": 55.39351401978421,
+    "wall_s": 11534.849794699985
+   },
+   {
+    "step": 115000,
+    "mpjpe_mm": {
+     "all": 58.19195847323953,
+     "ordinary_locomotion": 52.23441714395428
+    },
+    "metric": 55.213187808596906,
+    "wall_s": 12072.369198100001
+   },
+   {
+    "step": 120000,
+    "mpjpe_mm": {
+     "all": 58.38922509934924,
+     "ordinary_locomotion": 51.66725344967532
+    },
+    "metric": 55.02823927451228,
+    "wall_s": 12618.186494799971
+   },
+   {
+    "step": 125000,
+    "mpjpe_mm": {
+     "all": 58.44238649435904,
+     "ordinary_locomotion": 52.0062102833433
+    },
+    "metric": 55.22429838885117,
+    "wall_s": 13164.797247599985
+   },
+   {
+    "step": 130000,
+    "mpjpe_mm": {
+     "all": 58.28188880588132,
+     "ordinary_locomotion": 50.883360820455714
+    },
+    "metric": 54.58262481316852,
+    "wall_s": 13697.860395699972
+   },
+   {
+    "step": 135000,
+    "mpjpe_mm": {
+     "all": 58.106754392887204,
+     "ordinary_locomotion": 51.18117173178944
+    },
+    "metric": 54.64396306233832,
+    "wall_s": 14205.984814199968
+   },
+   {
+    "step": 140000,
+    "mpjpe_mm": {
+     "all": 57.84803418226369,
+     "ordinary_locomotion": 51.10077709325289
+    },
+    "metric": 54.47440563775829,
+    "wall_s": 14711.993389899959
+   },
+   {
+    "step": 145000,
+    "mpjpe_mm": {
+     "all": 57.89373071373267,
+     "ordinary_locomotion": 51.19065020141716
+    },
+    "metric": 54.54219045757492,
+    "wall_s": 15255.84996719996
+   },
+   {
+    "step": 150000,
+    "mpjpe_mm": {
+     "all": 58.02526302578104,
+     "ordinary_locomotion": 51.31510469662664
+    },
+    "metric": 54.67018386120384,
+    "wall_s": 15788.493235000002
+   }
+  ],
+  "checkpoint": "D:/projects/hready_data/checkpoints/deterministic_main/best.pt",
+  "wall_s": 15789.759603100014
+ },
+ "eval": {
+  "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+  "split": "val",
+  "models": {
+   "oracle_transformer": {
+    "checkpoint": "D:/projects/hready_data/checkpoints/oracle_completion_transformer/best.pt",
+    "step": 40000,
+    "best_selection_metric": 63.11110752473453
+   },
+   "deterministic_main": {
+    "checkpoint": "D:/projects/hready_data/checkpoints/deterministic_main/best.pt",
+    "step": 140000,
+    "best_selection_metric": 54.47440563775829,
+    "run_cfg": {
+     "model": {
+      "d_model": 256,
+      "n_heads": 8,
+      "n_layers": 4,
+      "dec_layers": 4,
+      "post_layers": 2,
+      "ff_dim": 1024,
+      "dropout": 0.1,
+      "max_len": 64,
+      "latent_dim": 32,
+      "generative": false
+     },
+     "lock": {
+      "sigma_frames": 1.5,
+      "radius_frames": 4,
+      "kappa": 0.05
+     },
+     "loss": {
+      "w_geodesic": 1.0,
+      "w_transl": 1.0,
+      "w_joints": 2.0,
+      "w_contact": 0.3,
+      "beta_kl": 0.001,
+      "w_phys": 0.0,
+      "phys_terms": {
+       "penetration": 100.0,
+       "skate": 1.0,
+       "balance": 1.0,
+       "balance_frames_per_step": 16
+      }
+     },
+     "train": {
+      "batch_size": 64,
+      "lr": 0.0004,
+      "weight_decay": 0.01,
+      "warmup_steps": 2000,
+      "grad_clip": 1.0,
+      "bf16": true,
+      "num_workers": 16,
+      "log_every": 500,
+      "val_every": 5000,
+      "checkpoint_root": "D:/projects/hready_data/checkpoints",
+      "max_steps": 150000
+     }
+    }
+   },
+   "deterministic_40000_steps": {
+    "checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/deterministic/best.pt",
+    "step": 40000,
+    "best_selection_metric": 57.546497775488106
+   }
+  },
+  "selection_history": [
+   {
+    "step": 5000,
+    "metric": 75.06812249446763,
+    "mpjpe_mm": {
+     "all": 80.00201035955448,
+     "ordinary_locomotion": 70.13423462938079
+    }
+   },
+   {
+    "step": 10000,
+    "metric": 70.32675750637605,
+    "mpjpe_mm": {
+     "all": 73.35983209112081,
+     "ordinary_locomotion": 67.2936829216313
+    }
+   },
+   {
+    "step": 15000,
+    "metric": 64.85973685552824,
+    "mpjpe_mm": {
+     "all": 67.48189765168672,
+     "ordinary_locomotion": 62.23757605936976
+    }
+   },
+   {
+    "step": 20000,
+    "metric": 63.17359261941468,
+    "mpjpe_mm": {
+     "all": 66.40405839286954,
+     "ordinary_locomotion": 59.94312684595981
+    }
+   },
+   {
+    "step": 25000,
+    "metric": 61.55702494736043,
+    "mpjpe_mm": {
+     "all": 65.3069494606715,
+     "ordinary_locomotion": 57.80710043404935
+    }
+   },
+   {
+    "step": 30000,
+    "metric": 59.9557039294188,
+    "mpjpe_mm": {
+     "all": 63.71834279973776,
+     "ordinary_locomotion": 56.193065059099844
+    }
+   },
+   {
+    "step": 35000,
+    "metric": 59.565609290903176,
+    "mpjpe_mm": {
+     "all": 62.61254857339819,
+     "ordinary_locomotion": 56.51867000840816
+    }
+   },
+   {
+    "step": 40000,
+    "metric": 58.9826647900222,
+    "mpjpe_mm": {
+     "all": 61.628197631176874,
+     "ordinary_locomotion": 56.33713194886752
+    }
+   },
+   {
+    "step": 45000,
+    "metric": 58.25644036808461,
+    "mpjpe_mm": {
+     "all": 61.48917320538137,
+     "ordinary_locomotion": 55.023707530787846
+    }
+   },
+   {
+    "step": 50000,
+    "metric": 57.4425004058793,
+    "mpjpe_mm": {
+     "all": 61.39211116738682,
+     "ordinary_locomotion": 53.49288964437178
+    }
+   },
+   {
+    "step": 55000,
+    "metric": 58.08936661772633,
+    "mpjpe_mm": {
+     "all": 61.986920061149384,
+     "ordinary_locomotion": 54.19181317430327
+    }
+   },
+   {
+    "step": 60000,
+    "metric": 57.086277934546786,
+    "mpjpe_mm": {
+     "all": 61.02220411726435,
+     "ordinary_locomotion": 53.15035175182921
+    }
+   },
+   {
+    "step": 65000,
+    "metric": 56.59001647029515,
+    "mpjpe_mm": {
+     "all": 59.94087803337132,
+     "ordinary_locomotion": 53.239154907218975
+    }
+   },
+   {
+    "step": 70000,
+    "metric": 55.773562169025965,
+    "mpjpe_mm": {
+     "all": 58.99336330112981,
+     "ordinary_locomotion": 52.55376103692211
+    }
+   },
+   {
+    "step": 75000,
+    "metric": 56.80269339030157,
+    "mpjpe_mm": {
+     "all": 59.84664446178633,
+     "ordinary_locomotion": 53.7587423188168
+    }
+   },
+   {
+    "step": 80000,
+    "metric": 56.48021579632483,
+    "mpjpe_mm": {
+     "all": 59.78633374634226,
+     "ordinary_locomotion": 53.1740978463074
+    }
+   },
+   {
+    "step": 85000,
+    "metric": 56.03022416513015,
+    "mpjpe_mm": {
+     "all": 59.31585674977888,
+     "ordinary_locomotion": 52.74459158048142
+    }
+   },
+   {
+    "step": 90000,
+    "metric": 55.851251219830566,
+    "mpjpe_mm": {
+     "all": 58.89146419467496,
+     "ordinary_locomotion": 52.81103824498617
+    }
+   },
+   {
+    "step": 95000,
+    "metric": 55.33364815612674,
+    "mpjpe_mm": {
+     "all": 58.45184482762119,
+     "ordinary_locomotion": 52.2154514846323
+    }
+   },
+   {
+    "step": 100000,
+    "metric": 55.57819702486675,
+    "mpjpe_mm": {
+     "all": 58.961057628715835,
+     "ordinary_locomotion": 52.19533642101768
+    }
+   },
+   {
+    "step": 105000,
+    "metric": 54.92063342298954,
+    "mpjpe_mm": {
+     "all": 58.79538508401348,
+     "ordinary_locomotion": 51.0458817619656
+    }
+   },
+   {
+    "step": 110000,
+    "metric": 55.39351401978421,
+    "mpjpe_mm": {
+     "all": 58.78148894041623,
+     "ordinary_locomotion": 52.005539099152195
+    }
+   },
+   {
+    "step": 115000,
+    "metric": 55.213187808596906,
+    "mpjpe_mm": {
+     "all": 58.19195847323953,
+     "ordinary_locomotion": 52.23441714395428
+    }
+   },
+   {
+    "step": 120000,
+    "metric": 55.02823927451228,
+    "mpjpe_mm": {
+     "all": 58.38922509934924,
+     "ordinary_locomotion": 51.66725344967532
+    }
+   },
+   {
+    "step": 125000,
+    "metric": 55.22429838885117,
+    "mpjpe_mm": {
+     "all": 58.44238649435904,
+     "ordinary_locomotion": 52.0062102833433
+    }
+   },
+   {
+    "step": 130000,
+    "metric": 54.58262481316852,
+    "mpjpe_mm": {
+     "all": 58.28188880588132,
+     "ordinary_locomotion": 50.883360820455714
+    }
+   },
+   {
+    "step": 135000,
+    "metric": 54.64396306233832,
+    "mpjpe_mm": {
+     "all": 58.106754392887204,
+     "ordinary_locomotion": 51.18117173178944
+    }
+   },
+   {
+    "step": 140000,
+    "metric": 54.47440563775829,
+    "mpjpe_mm": {
+     "all": 57.84803418226369,
+     "ordinary_locomotion": 51.10077709325289
+    }
+   },
+   {
+    "step": 145000,
+    "metric": 54.54219045757492,
+    "mpjpe_mm": {
+     "all": 57.89373071373267,
+     "ordinary_locomotion": 51.19065020141716
+    }
+   },
+   {
+    "step": 150000,
+    "metric": 54.67018386120384,
+    "mpjpe_mm": {
+     "all": 58.02526302578104,
+     "ordinary_locomotion": 51.31510469662664
+    }
+   }
+  ],
+  "table": {
+   "oracle_transformer": {
+    "all": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 2223,
+     "n_frames": 929889,
+     "n_subjects": 46,
+     "clips_lost_exclude_contact": 85,
+     "clips_lost_exclude_physical_eval": 85,
+     "metrics": {
+      "mpjpe_full_all_mm": 66.67836724804914,
+      "mpjpe_full_visible_mm": 59.46352040543188,
+      "mpjpe_full_hidden_mm": 67.40637656363573,
+      "mpjpe_upper_all_mm": 63.98745352648344,
+      "mpjpe_upper_visible_mm": 70.08430024553425,
+      "mpjpe_upper_hidden_mm": 63.662204269850825,
+      "mpjpe_lower_all_mm": 73.4481302758149,
+      "mpjpe_lower_visible_mm": 54.52389455109785,
+      "mpjpe_lower_hidden_mm": 77.23143548799234,
+      "mpjpe_foot_all_mm": 88.39222954555652,
+      "mpjpe_foot_visible_mm": 59.35283224191525,
+      "mpjpe_foot_hidden_mm": 96.8254000114988,
+      "penetration_mean_mm": 5.983163451618446,
+      "foot_skate_m_s": 0.2017304053491605,
+      "ground_consistency_violation_frac": 0.42636006242157615,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.49200738051642445,
+      "penetration_max_mm": 320.31387090682983,
+      "contact_precision": 0.9186587875329253,
+      "contact_recall": 0.9640720221606648,
+      "contact_f1": 0.9408176999203298,
+      "contact_ece": 0.013026151705200037
+     },
+     "overlap_disagree_mm": 27.097725625486223,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 59.04906111633359,
+       "hi": 76.02562634267335,
+       "n_subjects": 46
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 64.59216051583337,
+       "hi": 92.47716970112475,
+       "n_subjects": 46
+      }
+     }
+    },
+    "ordinary_locomotion": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 695,
+     "n_frames": 148527,
+     "n_subjects": 41,
+     "clips_lost_exclude_contact": 45,
+     "clips_lost_exclude_physical_eval": 45,
+     "metrics": {
+      "mpjpe_full_all_mm": 63.96468396775177,
+      "mpjpe_full_hidden_mm": 64.40298421502072,
+      "mpjpe_upper_all_mm": 55.38853345946943,
+      "mpjpe_upper_hidden_mm": 55.09229923428209,
+      "mpjpe_lower_all_mm": 80.08443632207207,
+      "mpjpe_lower_hidden_mm": 83.5938070315726,
+      "mpjpe_foot_all_mm": 101.71581949884586,
+      "mpjpe_foot_hidden_mm": 109.55786434484256,
+      "penetration_mean_mm": 9.780383779404193,
+      "foot_skate_m_s": 0.27202109136448965,
+      "ground_consistency_violation_frac": 0.41222001452293744,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.46443077266815086,
+      "mpjpe_full_visible_mm": 57.55663677832668,
+      "mpjpe_upper_visible_mm": 64.4256306824349,
+      "mpjpe_lower_visible_mm": 54.96074380181276,
+      "mpjpe_foot_visible_mm": 61.646741040128596,
+      "penetration_max_mm": 177.96431481838226,
+      "contact_precision": 0.8893307327134442,
+      "contact_recall": 0.9455742179236204,
+      "contact_f1": 0.9165904879912081,
+      "contact_ece": 0.020303290521130432
+     },
+     "overlap_disagree_mm": 29.48490837815638,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 58.32721006956246,
+       "hi": 70.08162774316568,
+       "n_subjects": 41
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 74.92647864680582,
+       "hi": 92.65548260052621,
+       "n_subjects": 41
+      }
+     }
+    }
+   },
+   "deterministic_main": {
+    "all": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 2223,
+     "n_frames": 929889,
+     "n_subjects": 46,
+     "clips_lost_exclude_contact": 85,
+     "clips_lost_exclude_physical_eval": 85,
+     "metrics": {
+      "mpjpe_full_all_mm": 57.42911792935349,
+      "mpjpe_full_visible_mm": 11.680661562219592,
+      "mpjpe_full_hidden_mm": 62.0453351457187,
+      "mpjpe_upper_all_mm": 56.46546053222472,
+      "mpjpe_upper_visible_mm": 9.164012046482977,
+      "mpjpe_upper_hidden_mm": 58.98885670851206,
+      "mpjpe_lower_all_mm": 60.51311233121976,
+      "mpjpe_lower_visible_mm": 12.926118917736309,
+      "mpjpe_lower_hidden_mm": 70.02663344110869,
+      "mpjpe_foot_all_mm": 69.04340558153754,
+      "mpjpe_foot_visible_mm": 13.312844976175187,
+      "mpjpe_foot_hidden_mm": 85.22780846874019,
+      "penetration_mean_mm": 4.185650738805824,
+      "foot_skate_m_s": 0.1587708316734935,
+      "ground_consistency_violation_frac": 0.42473366754983555,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.48902154061812414,
+      "penetration_max_mm": 370.69958448410034,
+      "contact_precision": 0.936307976518013,
+      "contact_recall": 0.9622148960243455,
+      "contact_f1": 0.9490846755673672,
+      "contact_ece": 0.018383622897095036
+     },
+     "overlap_disagree_mm": 28.12615986476681,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 50.64413336128212,
+       "hi": 65.55272140094932,
+       "n_subjects": 46
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 58.49146853721584,
+       "hi": 82.84804337920136,
+       "n_subjects": 46
+      }
+     }
+    },
+    "ordinary_locomotion": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 695,
+     "n_frames": 148527,
+     "n_subjects": 41,
+     "clips_lost_exclude_contact": 45,
+     "clips_lost_exclude_physical_eval": 45,
+     "metrics": {
+      "mpjpe_full_all_mm": 55.395356505404855,
+      "mpjpe_full_hidden_mm": 58.36288853214986,
+      "mpjpe_upper_all_mm": 50.57435448344328,
+      "mpjpe_upper_hidden_mm": 51.933094397868935,
+      "mpjpe_lower_all_mm": 64.77158348321171,
+      "mpjpe_lower_hidden_mm": 71.97148062407275,
+      "mpjpe_foot_all_mm": 78.48709760389012,
+      "mpjpe_foot_hidden_mm": 91.14618674018347,
+      "penetration_mean_mm": 6.834188159841527,
+      "foot_skate_m_s": 0.19447115516839208,
+      "ground_consistency_violation_frac": 0.40740031439765717,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.4767832491481739,
+      "mpjpe_full_visible_mm": 12.00938740196713,
+      "mpjpe_upper_visible_mm": 9.123804622760572,
+      "mpjpe_lower_visible_mm": 13.227296547437469,
+      "mpjpe_foot_visible_mm": 13.805237254485649,
+      "penetration_max_mm": 136.79265975952148,
+      "contact_precision": 0.9119692699336304,
+      "contact_recall": 0.9564111044566211,
+      "contact_f1": 0.9336616340474795,
+      "contact_ece": 0.020914649219601924
+     },
+     "overlap_disagree_mm": 31.704619696251235,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 50.45964668901254,
+       "hi": 61.098385512172406,
+       "n_subjects": 41
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 64.27470741260106,
+       "hi": 79.74026220737588,
+       "n_subjects": 41
+      }
+     }
+    }
+   },
+   "deterministic_40000_steps": {
+    "all": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 2223,
+     "n_frames": 929889,
+     "n_subjects": 46,
+     "clips_lost_exclude_contact": 85,
+     "clips_lost_exclude_physical_eval": 85,
+     "metrics": {
+      "mpjpe_full_all_mm": 60.01665795530992,
+      "mpjpe_full_visible_mm": 12.205767372122935,
+      "mpjpe_full_hidden_mm": 64.84098376231302,
+      "mpjpe_upper_all_mm": 58.89627901386588,
+      "mpjpe_upper_visible_mm": 10.008920233154281,
+      "mpjpe_upper_hidden_mm": 61.504278478610665,
+      "mpjpe_lower_all_mm": 63.50647491119903,
+      "mpjpe_lower_visible_mm": 13.302367680853566,
+      "mpjpe_lower_hidden_mm": 73.5432051156849,
+      "mpjpe_foot_all_mm": 73.05515527159665,
+      "mpjpe_foot_visible_mm": 13.786014753861647,
+      "mpjpe_foot_hidden_mm": 90.26717748533822,
+      "penetration_mean_mm": 4.432460231741266,
+      "foot_skate_m_s": 0.1822837429827706,
+      "ground_consistency_violation_frac": 0.4320201047337146,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.503061691286028,
+      "penetration_max_mm": 275.0176787376404,
+      "contact_precision": 0.9230121777974856,
+      "contact_recall": 0.9647992665132067,
+      "contact_f1": 0.9434432393187794,
+      "contact_ece": 0.012589873322999663
+     },
+     "overlap_disagree_mm": 24.74561179111737,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 52.14561103664361,
+       "hi": 68.67900916946968,
+       "n_subjects": 46
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 61.336286315333474,
+       "hi": 87.41862629016047,
+       "n_subjects": 46
+      }
+     }
+    },
+    "ordinary_locomotion": {
+     "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+     "n_clips": 695,
+     "n_frames": 148527,
+     "n_subjects": 41,
+     "clips_lost_exclude_contact": 45,
+     "clips_lost_exclude_physical_eval": 45,
+     "metrics": {
+      "mpjpe_full_all_mm": 57.867561059452306,
+      "mpjpe_full_hidden_mm": 60.96547638247861,
+      "mpjpe_upper_all_mm": 51.389130244882146,
+      "mpjpe_upper_hidden_mm": 52.74713847093338,
+      "mpjpe_lower_all_mm": 69.87276180407848,
+      "mpjpe_lower_hidden_mm": 77.72083545134899,
+      "mpjpe_foot_all_mm": 85.3531027834612,
+      "mpjpe_foot_hidden_mm": 99.23721385685293,
+      "penetration_mean_mm": 7.257840850712671,
+      "foot_skate_m_s": 0.23839311583396583,
+      "ground_consistency_violation_frac": 0.433054844038015,
+      "ground_consistency_violation_frac_tau_sensitivity": 0.4951523711488282,
+      "mpjpe_full_visible_mm": 12.575353441870266,
+      "mpjpe_upper_visible_mm": 9.96091014140191,
+      "mpjpe_lower_visible_mm": 13.68815916894203,
+      "mpjpe_foot_visible_mm": 14.411968405821947,
+      "penetration_max_mm": 169.51265931129456,
+      "contact_precision": 0.8922379368419873,
+      "contact_recall": 0.9486998417820526,
+      "contact_f1": 0.9196030407356918,
+      "contact_ece": 0.021410642887829734
+     },
+     "overlap_disagree_mm": 27.288265076782118,
+     "bootstrap_95ci_subject_cluster": {
+      "mpjpe_full_all_mm": {
+       "lo": 52.60002009667846,
+       "hi": 63.673336614624354,
+       "n_subjects": 41
+      },
+      "mpjpe_lower_hidden_mm": {
+       "lo": 69.63220119970445,
+       "hi": 85.74627079040249,
+       "n_subjects": 41
+      }
+     }
+    }
+   }
+  },
+  "criteria": {
+   "primary_skate": {
+    "value": 0.1587708316734935,
+    "limit": 0.202,
+    "pass": true
+   },
+   "secondary_mpjpe_full_all": {
+    "value": 57.42911792935349,
+    "limit": 66.7,
+    "pass": true
+   },
+   "tertiary_no_divergence": {
+    "value": 75.06812249446763,
+    "at_step": 5000,
+    "n_checkpoints": 30,
+    "limit": 150.0,
+    "pass": true
+   },
+   "all_pass": true
+  },
+  "wall_s": 455.2589689999586
+ }
+}
