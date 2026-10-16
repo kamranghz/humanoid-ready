@@ -79,3 +79,62 @@
 - **What:** `HRRefine` gained optional heads (foot contact, BABEL action, root-translation intent) and an optional IMU input; all are off by default, so the refiner itself is unchanged. Three conditions of 2000 steps each (`video_only`, `imu_only`, `fused`), one seed, validation on fixed val windows. Results: `results/contact_torques/contact_f1.txt`, `results/auxiliary_heads/action_intent.txt`.
 - **Findings (as measured):** contact F1 0.936 / 0.936 / 0.938 against 0.826 for always-contact; action accuracy 0.500 / 0.493 / 0.504 against 0.281 for always-walk and 0.033 uniform; intent ADE 0.133 / 0.067 / 0.130 m against 0.140 m for zero motion. Refined root ADE is 0.0559 m in every condition against 0.0607 m for the corrupted input, so IMU did not help the refinement, and `fused` did not reproduce the `imu_only` intent gain (cause not investigated).
 - **Choices:** the IMU is a world-axis kinematic accelerometer from the cached clean joint positions (no gyroscope: the cache has no global joint rotations), plus 0.5 m/s^2 noise, so it is cleaner than the corrupted pose. The intent head sees only the first 49 frames and its last IMU frame is zeroed (the second difference there includes frame 49; a first run without this showed the same large gain, but the fix was kept as correct). Loss weights were not tuned. Training windows come from the 11,260 cached train clips, half of them from BABEL-labelled clips. The IMU ablation uses short real training instead of overfitting one batch, and the result folders follow `AGENTS.md`, not the retired `B2` / `C1` codes.
+
+### Paper track: G1 tracking policy for the Newton / PhysX / MuJoCo comparison (2026-10-16)
+
+**Status: research only.** Nothing was downloaded, installed or run for this entry. No candidate below is confirmed to run
+in all three engines, so the policy chosen for now is the **PD-only fallback**, labeled as such. The paper-track row
+"Tracking-policy selection" stays open (its done-when is "runs one AMASS clip in all three").
+
+**(1) Choice.**
+
+- **Controller used for the cross-engine study until a learned policy is verified: PD-only joint tracking of the
+  retargeted reference** (default G1 29-DoF gains, `hready/robot/isaaclab_newton.py`), as in the item 6 smoke test.
+  Label on every row: *PD-only joint tracking, not a balance controller; engine-independent by construction, not a
+  learned policy.* No source URL: it is our own code.
+- **Learned-policy candidate to verify next (not yet verified): a BeyondMimic-style G1 motion tracker**
+  (paper: https://arxiv.org/pdf/2508.08241; it reports sim-to-sim evaluation and real G1 deployment, 25 LAFAN1
+  references). I did not confirm the location or license of the official code in this search.
+- **Retargeter feeding any policy: GMR** (paper https://arxiv.org/abs/2510.02252, code github.com/YanjieZe/GMR, MIT per
+  its repository page). Its experiments used only the G1 and LAFAN1 data.
+
+**(2) Why this choice, and the alternatives.**
+
+- **Cross-engine policy transfer is the open risk, so a learned policy confounds the comparison.** PolySim
+  (https://arxiv.org/pdf/2510.01708) reports a policy trained in one simulator can fail in another (Genesis-trained
+  policy: 0.043 success in Isaac Gym; Isaac Gym-trained: 1.000 there). A learned policy trained in one engine would
+  measure that engine mismatch together with the clip quality we want to measure. The fallback has no training engine.
+- **Cost of the fallback:** it is not a balance controller, so on a free-base robot it falls (item 6 reports
+  time-to-fall under joint PD only), and verdicts must use the `kin_root` mode or a held-base variant. Results are
+  executability under tracking, not a statement about learned-controller feasibility.
+- **Alternatives found (none verified in all three engines):**
+  - mjlab-based G1 tracking (MuJoCo Warp backend, BeyondMimic tasks), e.g. Unitree's
+    https://github.com/unitreerobotics/unitree_rl_mjlab (motion-imitation section; mainly velocity tracking
+    otherwise). Trains and runs in MuJoCo Warp. The upstream mjlab URL was not among the pages I saw (only forks).
+  - MimicLite, https://github.com/roboparty/mimiclite: released G1 tracker with ONNX inference and MuJoCo sim2sim;
+    its comparison to another tracker is self-reported.
+  - ProtoMotions GTP G1 tracker, https://huggingface.co/cagataydev/protomotions-gtp-unitree-g1: community ONNX model,
+    IsaacLab or MuJoCo Warp, MuJoCo rollout example; the card calls real-hardware integration a work in progress.
+  - TWIST (github.com/YanjieZe/TWIST) and TWIST2: teleoperation-oriented stacks; not chosen, as the repository's purpose
+    is real-time teleoperation, not clip-level evaluation.
+  - PolySim: trains across simulators, which is closest to the goal, but I could not confirm that code or
+    checkpoints are released.
+- **Engine support found:** Newton is integrated in Isaac Lab 3.0 beta, focused on the MuJoCo-Warp solver; its docs say
+  Newton was validated against PhysX by transferring locomotion policies in both directions on the G1. That is a
+  locomotion policy, not a motion-tracking one. I found no published G1 motion-tracking policy validated on Newton.
+
+**(3) Confirmation that it runs in all three engines: NOT confirmed.** What exists in this repository:
+
+| engine | PD-only G1 tracking |
+|---|---|
+| Newton (Isaac Lab, WSL) | run in item 6 (`results/robot_smoke_test/`) |
+| PhysX (Isaac Lab) | not run; dropped for item 6 (rule 0) |
+| MuJoCo | used only to replay the retargeted motion to video (`replay.py`); no dynamics run |
+
+For a learned policy, the verification still to do is one AMASS clip in all three engines with the same checkpoint and
+configuration, recorded here; until then the fallback label above applies to every cross-engine row. The BeyondMimic
+checkpoint would have to be trained or obtained (a download exception under `AGENTS.md` §1), which this entry does not do.
+
+**Open items.** (a) Locate the official BeyondMimic code and checkpoint license. (b) Decide whether a trained checkpoint
+is obtained or trained here. (c) Run the three-engine check. Sources: arXiv 2508.08241, 2510.02252, 2510.01708;
+Isaac Lab Newton backend docs (isaac-sim.github.io/IsaacLab, v3.0.0-beta2).
