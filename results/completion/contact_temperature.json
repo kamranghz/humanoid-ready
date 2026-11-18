@@ -1,0 +1,36 @@
+{
+ "temperature": 5.282056867138426,
+ "completion_model": "ref_locked_gen_phys0",
+ "completion_checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
+ "fit": "single scalar T on the contact logits, p = sigmoid(logit / T), minimising the NLL of the overlap-averaged probabilities",
+ "calibration_set": {
+  "source": "seeded draw from the clips of the 19 tune subjects (not in the completion training list, VAL or TEST)",
+  "n_clips": 200,
+  "seed": 0,
+  "n_frame_channels": 282996,
+  "positive_rate": 0.6991300230391949,
+  "before": {
+   "ece": 0.15002632721758435,
+   "brier": 0.15708801324306074,
+   "nll": 1.0960456140947292
+  },
+  "after": {
+   "ece": 0.06528575305409104,
+   "brier": 0.12449089364137784,
+   "nll": 0.3972759328425697
+  }
+ },
+ "n_monitor_clips": 100,
+ "wall_s": 56.87915739999153,
+ "val_all": {
+  "n_clips": 2223,
+  "before": {
+   "ece": 0.10069389410272724,
+   "brier": 0.1131151027023031
+  },
+  "after": {
+   "ece": 0.042045781514568975,
+   "brier": 0.09738746469691695
+  }
+ }
+}

@@ -1,0 +1,33 @@
+HR-Refine action and intent heads, and IMU fusion ablation
+Trained 2000 steps on AMASS train windows (grounded_motion_30hz cache), seed 0, one run per condition; no confidence intervals.
+
+Action head (BABEL frame labels, 30 categories, single label per frame = most frequent category present)
+  validation: 256 fixed val windows from BABEL-labelled clips, 13358 labelled frames
+  baselines: uniform 0.033, always first class ('walk') 0.281
+  accuracy, video_only: 0.500
+  accuracy, imu_only: 0.493
+  accuracy, fused: 0.504
+
+Intent head (next 15 frames of root translation after 49 observed frames, metres)
+  validation: 256 fixed random val windows
+  baselines: zero motion ADE 0.140 / FDE 0.255; constant velocity ADE 0.156 / FDE 0.299
+  head, video_only: ADE 0.133 / FDE 0.243
+  head, imu_only: ADE 0.067 / FDE 0.125
+  head, fused: ADE 0.130 / FDE 0.239
+
+IMU fusion ablation (ADE on root translation of the refined output over the 64-frame window, metres)
+  input: corrupted pose always; video = 2D keypoints; imu = 6-sensor kinematic accelerometer, noise std 0.5 m/s^2
+  condition       root ADE (m)   MPJPE (mm)
+  video_only            0.0559        27.57
+  imu_only              0.0559        28.60
+  fused                 0.0560        27.73
+  corrupted input        0.0607        30.06
+
+Notes
+  - The synthetic IMU is computed from the clean (uncorrupted) motion plus Gaussian noise, so it is cleaner than the
+    corrupted pose input; it is a kinematic accelerometer in world axes (no gyroscope, no sensor-frame rotation).
+  - The intent head sees only the first observed frames; the last observed frame's IMU feature is zeroed because it
+    is a second difference that includes the first future frame.
+  - The imu_only intent gain is large while fused shows almost none; the cause was not investigated.
+  - The refined root ADE barely improves on the corrupted input in all conditions (training is short).
+  - Multi-task loss weights were not tuned; one seed per condition.

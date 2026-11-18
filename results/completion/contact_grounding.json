@@ -1,0 +1,445 @@
+{
+ "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+ "split": "val",
+ "n_clips": 2223,
+ "completion_model": "ref_locked_gen_phys0",
+ "completion_checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt",
+ "temperature": 5.282056867138426,
+ "stage_training": {
+  "steps": 10000,
+  "diverged": false,
+  "divergence_rule": "any non-finite loss, or monitor loss at the last step above its step-0 value (identity stage)",
+  "monitor_history": [
+   {
+    "step": 0,
+    "skate": 0.0963352343692206,
+    "pen": 0.0004644208333692841,
+    "height": 0.03757651415288023,
+    "foot_pos": 0.09335855001186863,
+    "disp": 0.0,
+    "loss": 0.6590533179974337
+   },
+   {
+    "step": 1000,
+    "skate": 0.02685121357418164,
+    "pen": 8.798333011391457e-06,
+    "height": 0.013299000284289913,
+    "foot_pos": 0.09300184889367111,
+    "disp": 0.0531213766535427,
+    "loss": 0.2467488858252612
+   },
+   {
+    "step": 2000,
+    "skate": 0.022122037288458463,
+    "pen": 5.126377358711718e-06,
+    "height": 0.011211878838440997,
+    "foot_pos": 0.09102080557324471,
+    "disp": 0.05195822401179208,
+    "loss": 0.21855132760257895
+   },
+   {
+    "step": 3000,
+    "skate": 0.019477087795491368,
+    "pen": 5.3240210089473896e-06,
+    "height": 0.009377307738922726,
+    "foot_pos": 0.09038651531047656,
+    "disp": 0.053024706946235914,
+    "loss": 0.20298413511566918
+   },
+   {
+    "step": 4000,
+    "skate": 0.018529052809108652,
+    "pen": 4.979982580205709e-06,
+    "height": 0.00814507233223875,
+    "foot_pos": 0.09173358089758595,
+    "disp": 0.05518076167072603,
+    "loss": 0.19853999601652378
+   },
+   {
+    "step": 5000,
+    "skate": 0.01780192936304482,
+    "pen": 3.1181576584470576e-06,
+    "height": 0.008236407824468236,
+    "foot_pos": 0.09085993884201565,
+    "disp": 0.05403241234148922,
+    "loss": 0.19382104956593352
+   },
+   {
+    "step": 6000,
+    "skate": 0.017615111245679747,
+    "pen": 2.70150394777202e-06,
+    "height": 0.007836681328786045,
+    "foot_pos": 0.09079446401314148,
+    "disp": 0.05475161839789207,
+    "loss": 0.1924520116698122
+   },
+   {
+    "step": 7000,
+    "skate": 0.01723998674988048,
+    "pen": 2.1568131219500676e-06,
+    "height": 0.007729657103044572,
+    "foot_pos": 0.09031205861302326,
+    "disp": 0.054356498562110916,
+    "loss": 0.1898929795267385
+   },
+   {
+    "step": 8000,
+    "skate": 0.017313948198279534,
+    "pen": 2.5744199021822343e-06,
+    "height": 0.006922637882844662,
+    "foot_pos": 0.09105730414481703,
+    "disp": 0.05514992122651362,
+    "loss": 0.19032211461988308
+   },
+   {
+    "step": 9000,
+    "skate": 0.016998510545729133,
+    "pen": 2.133256850382661e-06,
+    "height": 0.007031297485394428,
+    "foot_pos": 0.09061390061261822,
+    "disp": 0.05481268500455415,
+    "loss": 0.1883323430468183
+   },
+   {
+    "step": 10000,
+    "skate": 0.016965783309385134,
+    "pen": 2.243562082966789e-06,
+    "height": 0.006848347107960513,
+    "foot_pos": 0.09080109199191938,
+    "disp": 0.05538304996174531,
+    "loss": 0.18824102109056973
+   }
+  ],
+  "monitor_clips": 100,
+  "n_train_windows": 133316,
+  "temperature": 5.282056867138426,
+  "wall_s": 699.3364984000218,
+  "completion_checkpoint": "D:/projects/hready_data/checkpoints/evidence_locked_ablation/ref_locked_gen_phys0/best.pt"
+ },
+ "table": {
+  "completion_uncalibrated": {
+   "all": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 2223,
+    "n_frames": 929889,
+    "n_subjects": 46,
+    "clips_lost_exclude_contact": 85,
+    "clips_lost_exclude_physical_eval": 85,
+    "metrics": {
+     "mpjpe_full_all_mm": 64.81891835403098,
+     "mpjpe_full_visible_mm": 12.22535480949887,
+     "mpjpe_full_hidden_mm": 70.12583661940837,
+     "mpjpe_upper_all_mm": 60.83433953403424,
+     "mpjpe_upper_visible_mm": 9.191653592367087,
+     "mpjpe_upper_hidden_mm": 63.58932783270837,
+     "mpjpe_lower_all_mm": 73.14858596855137,
+     "mpjpe_lower_visible_mm": 13.722862353209038,
+     "mpjpe_lower_hidden_mm": 85.02888817596373,
+     "mpjpe_foot_all_mm": 86.2316774153175,
+     "mpjpe_foot_visible_mm": 14.140664389014276,
+     "mpjpe_foot_hidden_mm": 107.16722854690079,
+     "penetration_mean_mm": 5.63281182265157,
+     "foot_skate_m_s": 0.23491700683846944,
+     "ground_consistency_violation_frac": 0.3969038521921051,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.4569146477849631,
+     "penetration_max_mm": 287.94604539871216,
+     "contact_precision": 0.8685860118850688,
+     "contact_recall": 0.9628328976629862,
+     "contact_f1": 0.9132844291743335,
+     "contact_ece": 0.10069389410272724,
+     "contact_brier": 0.1131151027023031
+    },
+    "overlap_disagree_mm": 18.522033249660893,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 56.4386563432343,
+      "hi": 74.45434627735331,
+      "n_subjects": 46
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 71.54462151249322,
+      "hi": 100.56306770521665,
+      "n_subjects": 46
+     }
+    }
+   },
+   "ordinary_locomotion": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 695,
+    "n_frames": 148527,
+    "n_subjects": 41,
+    "clips_lost_exclude_contact": 45,
+    "clips_lost_exclude_physical_eval": 45,
+    "metrics": {
+     "mpjpe_full_all_mm": 63.86274566204618,
+     "mpjpe_full_hidden_mm": 67.38007644711813,
+     "mpjpe_upper_all_mm": 54.848423346185825,
+     "mpjpe_upper_hidden_mm": 56.34913571188877,
+     "mpjpe_lower_all_mm": 80.64159857807412,
+     "mpjpe_lower_hidden_mm": 89.96968936724781,
+     "mpjpe_foot_all_mm": 101.1165458710379,
+     "mpjpe_foot_hidden_mm": 118.06958231130427,
+     "penetration_mean_mm": 8.736808510852331,
+     "foot_skate_m_s": 0.3152775676584113,
+     "ground_consistency_violation_frac": 0.38115529169559287,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.4458063023164883,
+     "mpjpe_full_visible_mm": 12.438589460848965,
+     "mpjpe_upper_visible_mm": 9.0667760731945,
+     "mpjpe_lower_visible_mm": 13.861508976840836,
+     "mpjpe_foot_visible_mm": 14.494676730943251,
+     "penetration_max_mm": 210.22158861160278,
+     "contact_precision": 0.7976599409696689,
+     "contact_recall": 0.9437596279047593,
+     "contact_f1": 0.8645811297166496,
+     "contact_ece": 0.13608424874120315
+    },
+    "overlap_disagree_mm": 20.383796737123124,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 57.31148769585138,
+      "hi": 70.56192529239505,
+      "n_subjects": 41
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 80.0498065363218,
+      "hi": 99.70949709350553,
+      "n_subjects": 41
+     }
+    }
+   }
+  },
+  "completion_calibrated": {
+   "all": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 2223,
+    "n_frames": 929889,
+    "n_subjects": 46,
+    "clips_lost_exclude_contact": 85,
+    "clips_lost_exclude_physical_eval": 85,
+    "metrics": {
+     "mpjpe_full_all_mm": 64.81891835403098,
+     "mpjpe_full_visible_mm": 12.22535480949887,
+     "mpjpe_full_hidden_mm": 70.12583661940837,
+     "mpjpe_upper_all_mm": 60.83433953403424,
+     "mpjpe_upper_visible_mm": 9.191653592367087,
+     "mpjpe_upper_hidden_mm": 63.58932783270837,
+     "mpjpe_lower_all_mm": 73.14858596855137,
+     "mpjpe_lower_visible_mm": 13.722862353209038,
+     "mpjpe_lower_hidden_mm": 85.02888817596373,
+     "mpjpe_foot_all_mm": 86.2316774153175,
+     "mpjpe_foot_visible_mm": 14.140664389014276,
+     "mpjpe_foot_hidden_mm": 107.16722854690079,
+     "penetration_mean_mm": 5.63281182265157,
+     "foot_skate_m_s": 0.23491700683846944,
+     "ground_consistency_violation_frac": 0.3969038521921051,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.4569146477849631,
+     "penetration_max_mm": 287.94604539871216,
+     "contact_precision": 0.8685597560597913,
+     "contact_recall": 0.9628512348328196,
+     "contact_f1": 0.9132781640025668,
+     "contact_ece": 0.042045781514568975,
+     "contact_brier": 0.09738746469691695
+    },
+    "overlap_disagree_mm": 18.522033249660893,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 56.4386563432343,
+      "hi": 74.45434627735331,
+      "n_subjects": 46
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 71.54462151249322,
+      "hi": 100.56306770521665,
+      "n_subjects": 46
+     }
+    }
+   },
+   "ordinary_locomotion": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 695,
+    "n_frames": 148527,
+    "n_subjects": 41,
+    "clips_lost_exclude_contact": 45,
+    "clips_lost_exclude_physical_eval": 45,
+    "metrics": {
+     "mpjpe_full_all_mm": 63.86274566204618,
+     "mpjpe_full_hidden_mm": 67.38007644711813,
+     "mpjpe_upper_all_mm": 54.848423346185825,
+     "mpjpe_upper_hidden_mm": 56.34913571188877,
+     "mpjpe_lower_all_mm": 80.64159857807412,
+     "mpjpe_lower_hidden_mm": 89.96968936724781,
+     "mpjpe_foot_all_mm": 101.1165458710379,
+     "mpjpe_foot_hidden_mm": 118.06958231130427,
+     "penetration_mean_mm": 8.736808510852331,
+     "foot_skate_m_s": 0.3152775676584113,
+     "ground_consistency_violation_frac": 0.38115529169559287,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.4458063023164883,
+     "mpjpe_full_visible_mm": 12.438589460848965,
+     "mpjpe_upper_visible_mm": 9.0667760731945,
+     "mpjpe_lower_visible_mm": 13.861508976840836,
+     "mpjpe_foot_visible_mm": 14.494676730943251,
+     "penetration_max_mm": 210.22158861160278,
+     "contact_precision": 0.7976577175462186,
+     "contact_recall": 0.9438758331769032,
+     "contact_f1": 0.8646285825803449,
+     "contact_ece": 0.05289266683850654
+    },
+    "overlap_disagree_mm": 20.383796737123124,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 57.31148769585138,
+      "hi": 70.56192529239505,
+      "n_subjects": 41
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 80.0498065363218,
+      "hi": 99.70949709350553,
+      "n_subjects": 41
+     }
+    }
+   }
+  },
+  "grounded_calibrated": {
+   "all": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 2223,
+    "n_frames": 929889,
+    "n_subjects": 46,
+    "clips_lost_exclude_contact": 85,
+    "clips_lost_exclude_physical_eval": 85,
+    "metrics": {
+     "mpjpe_full_all_mm": 64.07028794339534,
+     "mpjpe_full_visible_mm": 20.74196882176999,
+     "mpjpe_full_hidden_mm": 68.44230292152844,
+     "mpjpe_upper_all_mm": 60.83433953403424,
+     "mpjpe_upper_visible_mm": 9.191653592367087,
+     "mpjpe_upper_hidden_mm": 63.58932783270837,
+     "mpjpe_lower_all_mm": 71.08985237921065,
+     "mpjpe_lower_visible_mm": 26.607096879450534,
+     "mpjpe_lower_hidden_mm": 79.98277902154369,
+     "mpjpe_foot_all_mm": 82.11421046913067,
+     "mpjpe_foot_visible_mm": 33.21776873742045,
+     "mpjpe_foot_hidden_mm": 96.31395490664647,
+     "penetration_mean_mm": 0.35231793708674103,
+     "foot_skate_m_s": 0.08681824979015504,
+     "ground_consistency_violation_frac": 0.02455350580410115,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.03263373658047832,
+     "penetration_max_mm": 98.04967045783997,
+     "contact_precision": 0.8685597560597913,
+     "contact_recall": 0.9628512348328196,
+     "contact_f1": 0.9132781640025668,
+     "contact_ece": 0.042045781514568975,
+     "contact_brier": 0.09738746469691695
+    },
+    "overlap_disagree_mm": 18.522033249660893,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 55.55436827336867,
+      "hi": 73.28075406139389,
+      "n_subjects": 46
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 66.39377476809008,
+      "hi": 94.26976944769191,
+      "n_subjects": 46
+     }
+    }
+   },
+   "ordinary_locomotion": {
+    "disclaimer": "oracle control; floor height given (world z = 0); head pose and gravity given (rig input)",
+    "n_clips": 695,
+    "n_frames": 148527,
+    "n_subjects": 41,
+    "clips_lost_exclude_contact": 45,
+    "clips_lost_exclude_physical_eval": 45,
+    "metrics": {
+     "mpjpe_full_all_mm": 62.893221723188184,
+     "mpjpe_full_hidden_mm": 65.4946878971383,
+     "mpjpe_upper_all_mm": 54.848423346185825,
+     "mpjpe_upper_hidden_mm": 56.34913571188877,
+     "mpjpe_lower_all_mm": 77.97540765560315,
+     "mpjpe_lower_hidden_mm": 84.43893108234883,
+     "mpjpe_foot_all_mm": 95.78416468297786,
+     "mpjpe_foot_hidden_mm": 106.46425760554443,
+     "penetration_mean_mm": 0.38041185840478403,
+     "foot_skate_m_s": 0.12265171001939007,
+     "ground_consistency_violation_frac": 0.024377787885316672,
+     "ground_consistency_violation_frac_tau_sensitivity": 0.03304367254765837,
+     "mpjpe_full_visible_mm": 24.8592096243165,
+     "mpjpe_upper_visible_mm": 9.0667760731945,
+     "mpjpe_lower_visible_mm": 31.702845802649747,
+     "mpjpe_foot_visible_mm": 41.21402519123845,
+     "penetration_max_mm": 50.064921379089355,
+     "contact_precision": 0.7976577175462186,
+     "contact_recall": 0.9438758331769032,
+     "contact_f1": 0.8646285825803449,
+     "contact_ece": 0.05289266683850654
+    },
+    "overlap_disagree_mm": 20.383796737123124,
+    "bootstrap_95ci_subject_cluster": {
+     "mpjpe_full_all_mm": {
+      "lo": 57.11615843589462,
+      "hi": 68.88738424331912,
+      "n_subjects": 41
+     },
+     "mpjpe_lower_hidden_mm": {
+      "lo": 76.10563293875954,
+      "hi": 92.22369002147094,
+      "n_subjects": 41
+     }
+    }
+   }
+  }
+ },
+ "criteria": {
+  "primary_skate": {
+   "value_m_s": 0.08681824979015504,
+   "limit": 0.202,
+   "pass": true
+  },
+  "secondary_contact_ece": {
+   "value": 0.042045781514568975,
+   "limit": 0.015,
+   "pass": false
+  },
+  "tertiary_full_mpjpe": {
+   "value_mm": 64.07028794339534,
+   "limit": 66.8,
+   "pass": true
+  }
+ },
+ "all_criteria_pass": false,
+ "reference_values": {
+  "oracle_transformer": {
+   "mpjpe_full_all_mm": 66.67836724804914,
+   "foot_skate_m_s": 0.2017304053491605,
+   "penetration_mean_mm": 5.983163451618446,
+   "contact_ece": 0.013026151705200037
+  },
+  "evidence_locked_same_budget_recorded": {
+   "mpjpe_full_all_mm": 64.81891835403098,
+   "foot_skate_m_s": 0.23491700683846944,
+   "penetration_mean_mm": 5.63281182265157,
+   "contact_ece": 0.1006938934900048
+  }
+ },
+ "reproduction_of_recorded_same_budget_row": {
+  "mpjpe_full_all_mm": {
+   "this_run": 64.81891835403098,
+   "recorded": 64.81891835403098
+  },
+  "foot_skate_m_s": {
+   "this_run": 0.23491700683846944,
+   "recorded": 0.23491700683846944
+  },
+  "penetration_mean_mm": {
+   "this_run": 5.63281182265157,
+   "recorded": 5.63281182265157
+  },
+  "contact_ece": {
+   "this_run": 0.10069389410272724,
+   "recorded": 0.1006938934900048
+  }
+ },
+ "wall_s": 255.9531932999962
+}
