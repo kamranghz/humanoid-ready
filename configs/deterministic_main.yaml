@@ -1,0 +1,17 @@
+# Deterministic evidence-locked completion at the main budget (oracle control; docs/decoupled_contact_grounding.md, second study).
+# Everything except the budget is read from the ablation study's deterministic arm and left unchanged.
+ablation_config: configs/evidence_locked_ablation.yaml
+run_name: deterministic_main
+reference_run: deterministic        # ablation-study deterministic arm (40000 steps), reported for comparison only
+max_steps: 150000                   # cosine to 2% of the peak learning rate over the whole run
+checkpoint_root: checkpoints        # under data_root; the run lives in checkpoints/deterministic_main
+
+criteria:
+  primary_skate_m_s_max: 0.202          # oracle_transformer VAL
+  secondary_mpjpe_full_all_mm_max: 66.7 # oracle_transformer VAL
+  tertiary_selection_metric_mm_max: 150.0
+
+cohorts: [all, ordinary_locomotion]
+
+paths:
+  results_json: results/completion/deterministic_main.json

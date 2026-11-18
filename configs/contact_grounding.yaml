@@ -1,0 +1,51 @@
+# Decoupled contact grounding: temperature-calibrated contact probabilities + a foot-only grounding stage.
+# Pre-registered in docs/decoupled_contact_grounding.md (2026-10-13) before any run. Oracle control path.
+seed: 0
+
+# Frozen completion model: an ablation run of configs/evidence_locked_ablation.yaml (its best.pt, weights untouched).
+ablation_config: configs/evidence_locked_ablation.yaml
+completion_run: ref_locked_gen_phys0   # = evidence_locked_same_budget
+
+calibration:
+  n_clips: 200            # seeded draw from the clips of the 19 tune subjects (never in the completion training list)
+  seed: 0
+  tune_motion_rel_dir: contact_grounding_tune_clips_30hz   # grounded 30 Hz cache of the tune-subject clips
+  build_workers: 8
+  log_temperature_bounds: [-3.0, 3.0]
+  monitor_clips: 100      # tune-subject clips not in the calibration set; divergence monitor only
+
+stage:
+  channels: 64
+  kernel: 5
+  dilations: [1, 2, 4, 1]
+  displacement_scale: 0.1   # m per unit of the (zero-initialised) output
+
+loss:
+  skate: 5.0         # foot_skating on GT-contact frames (m^2/s^2)
+  penetration: 100.0 # ground_penetration hinge (m^2)
+  contact_height: 1.0 # mean |sole-proxy height| on GT-contact frames (m)
+  foot_position: 1.0  # mean L2 of the four foot joints to the ground truth (m)
+  displacement: 0.1   # mean |correction| (m)
+
+train:
+  batch_size: 64
+  max_steps: 10000
+  lr: 1.0e-3
+  lr_floor_fraction: 0.02
+  warmup_steps: 200
+  grad_clip: 1.0
+  log_every: 500
+  monitor_every: 1000
+  num_workers: 12
+  checkpoint_dir: null   # default <data_root>/checkpoints/contact_grounding
+
+# Pre-registered acceptance criteria, evaluated on the pooled VAL `all` point estimate.
+criteria:
+  skate_max_m_s: 0.202          # oracle_transformer VAL skate
+  contact_ece_max: 0.015        # oracle_transformer 0.013 + 0.002
+  full_mpjpe_max_mm: 66.8       # evidence_locked_same_budget 64.8 + 2
+
+paths:
+  temperature_json: results/completion/contact_temperature.json
+  results_json: results/completion/contact_grounding.json
+  reference_json: results/completion/evidence_locked_ablation.json
