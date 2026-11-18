@@ -70,15 +70,23 @@ def _write_ablation_row(path: Path, arm: str, metrics: dict[str, float]) -> None
         w.writerows(rows.values())
 
 
-def _make_loader(split: str, batch_size: int, window: int, seed: int) -> DataLoader:
+def _make_loader(split: str, batch_size: int, window: int, seed: int,
+                  num_workers: int = 0) -> DataLoader:
     ds = HRRefineWindowDataset(split=split, window=window, seed=seed)
+    kwargs: dict = {}
+    if num_workers > 0:
+        # spawn is required on Windows and safe on Linux; persistent_workers
+        # keeps worker processes alive across epochs to avoid re-fork overhead.
+        kwargs["multiprocessing_context"] = "spawn"
+        kwargs["persistent_workers"] = True
     return DataLoader(
         ds,
         batch_size=batch_size,
         shuffle=True,
-        num_workers=0,
+        num_workers=num_workers,
         collate_fn=collate_windows,
         drop_last=True,
+        **kwargs,
     )
 
 
@@ -133,7 +141,8 @@ def train_main(cfg: dict[str, Any]) -> None:
         )
         print(f"val corrupt-input baseline mpjpe_mm={corrupt_row['mpjpe_mm']:.3f}")
 
-    loader = _make_loader("train", batch_size, window, base_seed)
+    num_workers = int(cfg.get("num_workers", 4))
+    loader = _make_loader("train", batch_size, window, base_seed, num_workers=num_workers)
     data_iter = iter(loader)
     t0 = time.perf_counter()
     if rank == 0:

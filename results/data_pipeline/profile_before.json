@@ -1,0 +1,10 @@
+{
+  "mode": "serial_num_workers_0",
+  "num_workers": 0,
+  "n_batches": 50,
+  "wall_s": 28.397,
+  "batches_per_s": 1.76,
+  "samples_per_s": 14.1,
+  "s_per_batch": 0.5679,
+  "ms_per_sample": 70.92
+}

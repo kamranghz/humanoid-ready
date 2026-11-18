@@ -1,0 +1,29 @@
+{
+  "timestamp": "2026-11-18 19:26:11",
+  "batch_size": 8,
+  "window_frames": 64,
+  "n_clips_measured": 400,
+  "n_batches_timed": 50,
+  "ms_per_file_cold": 64.5,
+  "baseline": {
+    "mode": "serial_num_workers_0",
+    "num_workers": 0,
+    "n_batches": 50,
+    "wall_s": 28.397,
+    "batches_per_s": 1.76,
+    "samples_per_s": 14.1,
+    "s_per_batch": 0.5679,
+    "ms_per_sample": 70.92
+  },
+  "fixed": {
+    "mode": "parallel_num_workers_4",
+    "num_workers": 4,
+    "n_batches": 50,
+    "wall_s": 14.128,
+    "batches_per_s": 3.54,
+    "samples_per_s": 28.3,
+    "s_per_batch": 0.2826,
+    "ms_per_sample": 35.34
+  },
+  "speedup_x": 2.01
+}

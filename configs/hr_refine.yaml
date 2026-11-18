@@ -2,6 +2,7 @@
 seed: 0
 window: 64
 batch_size: 8
+num_workers: 4  # parallel DataLoader workers; 0 = serial (bottleneck); spawn context, persistent_workers=True
 lr: 3.0e-4
 weight_decay: 0.01
 max_steps: 10000
