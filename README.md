@@ -17,6 +17,7 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Simulated egocentric evidence (head camera, visibility, occlusion, noise) with leak checks | Built | `hready/data/ego_observation.py`, `docs/ego_observation_model.md` |
 | Full-body completion baselines under simulated evidence (heuristic + learned) | Built | `results/completion/oracle_baselines.json`, `docs/oracle_completion_baselines.md` |
 | Humanoid-robot smoke test (retarget one motion to a Unitree G1 in Isaac Lab + Newton) | Built | `results/robot_smoke_test/` |
+| SMPL-X ↔ MHR conversion through a SOMA-X bridge (separate conda env, nearest-neighbour topology bridge) | Built, limited evidence | `hready/body/soma_x_wrapper.py`, `docs/body_models.md` |
 | Spatio-temporal refinement model and trainer (DDP code path implemented, not yet tested on multiple GPUs) | Building (code written; no reported result) | `hready/models/hr_refine.py`, `hready/train/` |
 | Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study failed acceptance; pre-registered comparison failed its pre-registered rule (below) |
 | Visual perception from egocentric RGB | Planned | — |
@@ -24,7 +25,7 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Physics-aware refinement (kinematic, then simulation tracking) | Planned | — |
 | Validation on real egocentric recordings | Planned | — |
 
-Built = code on `main` with evidence in `results/` and CI green. Building = started, not measured. Planned = not started.
+Built = code on `main` with evidence in `results/` and CI green. Built, limited evidence = code on `main` with a documented check that is not yet a `results/` file (here: one run on 4 synthetic frames, see `docs/body_models.md`). Building = started, not measured. Planned = not started.
 
 ## Headline results
 
@@ -78,7 +79,7 @@ hready/            Python package
 configs/           experiment configs (index: configs/README.md; paths.example.yaml is the template for local paths)
 docs/              design notes, data issues, decision and pivot logs (index: docs/README.md; experiment registry: docs/experiments.md)
 results/           result files produced by the scripts (index: results/README.md; numbers above come from here)
-scripts/           small inspection utilities
+scripts/           small utilities (SOMA-X worker and round-trip check, profilers, inspection)
 ```
 
 ## Reproducing
