@@ -7,7 +7,6 @@ Reuses the ablation study's deterministic arm unchanged except for the budget.
 from __future__ import annotations
 
 import argparse
-import json
 from pathlib import Path
 from typing import Any
 
@@ -23,7 +22,11 @@ from hready.experiments.evidence_locked_ablation import (
     summarize,
     train_run,
 )
-from hready.experiments.oracle_baselines import load_trained, predict_clip_model, print_rows
+from hready.experiments.oracle_baselines import (
+    load_trained,
+    predict_clip_model,
+    print_rows,
+)
 
 
 def load_context(config_path: Path, device: torch.device) -> tuple[dict[str, Any], EvidenceLockedContext]:
@@ -99,8 +102,8 @@ def cmd_eval(cfg: dict[str, Any], ctx: EvidenceLockedContext) -> dict[str, Any]:
     metas = {"oracle_transformer": meta_tf, name: {**meta, "run_cfg": rc}}
     ref_path = _reference_ckpt(cfg)
     if ref_path.is_file():
-        from hready.train.completion_engine import load_checkpoint
         from hready.models.evidence_locked_completion import EvidenceLockedCompletion
+        from hready.train.completion_engine import load_checkpoint
 
         st = load_checkpoint(ref_path)
         ref = EvidenceLockedCompletion(**st["run_cfg"]["model"]).to(ctx.device)

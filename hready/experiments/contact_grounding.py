@@ -27,13 +27,34 @@ from hready.data.completion_windows import (
 )
 from hready.data.motion_cache import build_memmap, load_clip_memmap
 from hready.experiments.cohorts import CohortMasks
-from hready.experiments.evidence_locked_ablation import EvidenceLockedContext, make_loader, summarize
+from hready.experiments.evidence_locked_ablation import (
+    EvidenceLockedContext,
+    make_loader,
+    summarize,
+)
 from hready.losses.physics import foot_skating, ground_penetration
-from hready.metrics.completion_metrics import ClipEval, CohortAccumulator, accumulate_clip
-from hready.models.contact_calibration import apply_temperature, brier, ece, fit_temperature, nll
+from hready.metrics.completion_metrics import (
+    ClipEval,
+    CohortAccumulator,
+    accumulate_clip,
+)
+from hready.models.contact_calibration import (
+    brier,
+    ece,
+    fit_temperature,
+    nll,
+)
 from hready.models.grounding_stage import GroundingStage
-from hready.train.completion_engine import save_checkpoint, seed_everything, stitch_windows
-from hready.train.evidence_locked_engine import FOOT_CHANNELS, foot_points, output_joints
+from hready.train.completion_engine import (
+    save_checkpoint,
+    seed_everything,
+    stitch_windows,
+)
+from hready.train.evidence_locked_engine import (
+    FOOT_CHANNELS,
+    foot_points,
+    output_joints,
+)
 
 FPS = 30.0
 VARIANTS = ("completion_uncalibrated", "completion_calibrated", "grounded_calibrated")
