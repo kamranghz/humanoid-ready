@@ -138,3 +138,61 @@ checkpoint would have to be trained or obtained (a download exception under `AGE
 **Open items.** (a) Locate the official BeyondMimic code and checkpoint license. (b) Decide whether a trained checkpoint
 is obtained or trained here. (c) Run the three-engine check. Sources: arXiv 2508.08241, 2510.02252, 2510.01708;
 Isaac Lab Newton backend docs (isaac-sim.github.io/IsaacLab, v3.0.0-beta2).
+
+### Nymeria: files on disk, licence, audit results (2026-11-19)
+
+Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymeria_inventory.py` (read-only; run 2026-11-19).
+
+- **Files on disk** (`D:\projects\hready_data\datasets\nymeria`): 206 sequence folders, 499.9 GB of zips, file times 2026-10-12. This
+  download was **not recorded** in this file when it was made; this entry records it now.
+- **Licence as stated in all 206 `metadata.json`:** CC BY-NC 4.0 (non-commercial, attribution). The licence text and the dataset's own
+  terms were not re-read here; the owner confirms them before any redistribution or derived release.
+- **What each sequence has:** all 206 have `body_motion.zip`, `recording_head.zip`, `recording_lwrist.zip`, `recording_rwrist.zip` and
+  `metadata.json`. 37 lack `narration_atomic_action.csv` and 31 of those also lack `narration_activity_summarization.csv`, so 169
+  sequences have all seven files.
+- **The egocentric video is not in this download.** `recording_head.zip` holds `motion.vrs`, `et.vrs` and the SLAM and eye-gaze outputs,
+  but no `data.vrs`. The dataset's own definitions list `recording_head/data/data.vrs` as a separate download group
+  (`recording_head_data_data_vrs`); that group was not taken. Whether `data.vrs` carries the RGB stream is inferred from the
+  dataset's viewer, which shows RGB from the participant's glasses, not stated in the file definitions. Consequence: today Nymeria
+  gives real head trajectories (SLAM), body motion and narrations, but no frames to run a detector on.
+- **Body motion:** `body_motion.zip` holds `body/xdata.npz` and `body/xdata_blueman.glb` (3 members; no `.mvnx`). It is the Xsens
+  export (23 segments, 22 joint angles, `foot_contacts`, N = 197,843 and 233,661 frames in the two sequences read), not an SMPL-X fit;
+  array names and shapes are in `docs/nymeria_data_format.md`.
+- **Size of the set:** 206 sequences, 53.92 h of action time, 45 locations, 29 sequences with two participants, 16 scripted scenarios.
+- **Floor work in the narrations (169 sequences with atomic-action text; sentences with the wearer as subject, word patterns, not
+  verified frame by frame; sentence counts, not durations):** kneeling 889, squatting or crouching 782, sitting on the ground 379,
+  lying 191 (166 name a bed, sofa or chair, 3 name the floor, 22 name no surface), crawling 11, push-up or plank 20. The floor-heavy
+  sequences are concentrated: 4 of the 5 "Game night" sequences (kneeling 16 to 205 sentences each, sitting on the ground up to 163) and
+  3 "Body stretch" sequences (kneeling, sitting on the ground, 20 push-up or plank sentences in one). Kneel and sit_floor therefore
+  look evaluable on real data if video is added; lying on the floor is not supported by these counts.
+- **Head camera (read later the same day):** `camera-rgb` is a fisheye (`FisheyeRadTanThinPrism`), focal 1218.0 px, principal point
+  (1455.8, 1451.6); under stated assumptions (radial terms only, 2880 x 2880 calibration frame) about 115 degrees horizontal. Details and
+  caveats in `docs/nymeria_data_format.md`, section 6.
+- **Not known yet:** `frameRate` and `frameCount` values, the clock of the video frame list, and the alignment between video and motion.
+- **Intended use (proposal, not decided):** a second real egocentric dataset next to EgoBody (evaluation-only, unchanged). Whether
+  Nymeria is also used for training or adaptation, and under which subject-disjoint split, is an owner decision. Adding the video
+  group is a download exception under `AGENTS.md` section 1 and needs the owner's decision and a size check on one sequence first.
+
+### Nymeria: preview video download, camera profile and calibration hold-out (2026-11-19, later)
+
+- **Download exception (owner decision, in chat).** The owner approved adding the preview RGB video group (`video_main_rgb`) for
+  the 7 floor-heavy sequences listed in `docs/nymeria_data_format.md`: `20230706_s0_breanna_reese_act0_cfg468`,
+  `20230815_s0_samantha_lester_act0_513kae`, `20230628_s1_hayley_little_act0_z038r0`, `20230731_s0_tammy_campos_act0_d3blev`,
+  `20230720_s0_robert_ballard_act0_7n4853`, `20230707_s1_elizabeth_tucker_act0_df444f`, `20230816_s1_jeffery_bryant_act0_p5w199`.
+  Size: 1.42 GB each, about 10 GB in total, against 393 to 525 GB free on the drive. The first sequence was downloaded and its SHA-1
+  matched the list. The raw `recording_head_data_data_vrs` group (20.75 GB for the first sequence) was **not** taken; it would be
+  a further decision, with the `projectaria_tools` licence and a separate environment checked first.
+- **Why this group first.** It is read with ordinary video tools, needs no new package in the pinned `hready` environment, and one
+  frame was checked by eye (fisheye, upright, wearer's hands and thighs visible).
+- **Links.** The first URL list (file time 2026-10-11) had expired (HTTP 403, 14-day validity); a new list was requested from the
+  dataset page by the owner on 2026-11-19. The list is a credential-like file and stays outside the repository.
+- **Camera profile (owner accepted the recommendation).** `hl2_like` is the primary synthetic profile, because the real
+  validation set (EgoBody) is that device class; a smaller `aria_like` subset follows the Nymeria camera (fisheye, about 115 degrees
+  horizontal, parameters in `docs/nymeria_data_format.md`); `ego_wide` (129.8 degrees) stays only so the oracle results remain comparable.
+  A fisheye render needs a renderer that accepts a custom projection; if the renderer probe shows it does not, `aria_like` becomes a
+  rectified pinhole view and the document says so.
+- **Noise calibration hold-out (owner accepted the recommendation).** The 19 tune subjects of `results/splits/splits.json` (fraction
+  0.05, seed 0). The perception model trains on train minus tune, model selection uses VAL, TEST is used once; real-image noise is
+  calibrated on the EgoBody calibration set only. A leak check must show no tune subject in perception training.
+- **Stated limit.** One frame of one sequence has been looked at. No alignment between video and motion exists yet, and no detector
+  has been run on Nymeria video.
