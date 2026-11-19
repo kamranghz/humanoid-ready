@@ -28,3 +28,12 @@ newton = "1.2.1"
 warp-lang = "1.13.0"
 mujoco-warp = "3.8.0.3"
 isaaclab_root = "D:/RoboticsResearch/repositories/IsaacLab-Newton"
+
+[hready-soma]
+# conda env: hready-soma (Windows; SOMA-X subprocess worker). Read with pip list / python --version, 2026-11-19.
+python = "3.11.18"
+py-soma-x = "0.3.6"
+numpy = "1.26.4"
+torch = "2.11.0"
+scipy = "1.17.1"
+warp-lang = "1.19.0"
