@@ -33,7 +33,7 @@ Commit IDs are deliberately not recorded here.
 | Decoupled contact grounding | E4b | `configs/contact_grounding.yaml` | `results/completion/contact_grounding.json`, `results/completion/contact_temperature.json` | run 2026-10-13 (oracle control, VAL only): skate and full-MPJPE criteria met, contact-ECE criterion not met (0.042 against 0.015); partial failure, design in `docs/decoupled_contact_grounding.md` |
 | Deterministic completion at the main budget | (new) | `configs/deterministic_main.yaml` | `results/completion/deterministic_main.json` | run 2026-10-13 to 2026-10-15 (oracle control, VAL only, 150000 steps, best checkpoint step 140000): skate 0.159 m/s (limit 0.202), full MPJPE 57.4 mm (limit 66.7), no divergence (worst selection metric 75.1 mm at step 5000, limit 150); all criteria met; design in `docs/decoupled_contact_grounding.md` (second study) |
 | End-to-end evaluation | E5 | — | — | not started |
-| HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt`, `results/auxiliary_heads/action_intent.txt` | done (2000 steps per condition, one seed) |
+| HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt` (the action and intent file was removed on 2026-11-20) | done (2000 steps per condition, one seed) |
 | Joint torques by inverse dynamics, raw vs refined | — | `scripts/compute_torques.py`, `scripts/plot_torques.py` | `results/B2/torque_comparison.npz`, `results/B2/torque_plots.png` | done (3 val clips x 4 windows, one seed) |
 | Real egocentric validation | E5b | — | — | not started |
 | Humanoid simulation asset | E6a | — | — | not started |

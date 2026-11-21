@@ -21,8 +21,6 @@ HumanoidReady is a research codebase for recovering full-body 3D human motion (S
 | Spatio-temporal refinement model (HR-Refine) and trainer, with a physics-loss ablation (DDP code path implemented, not yet tested on multiple GPUs) | Built, single seed | `hready/models/hr_refine.py`, `hready/train/`, `results/physics_loss_ablation/` |
 | Improved completion model (evidence-locked; generative and deterministic variants) | Building | ablation study and pre-registered comparison failed; the deterministic variant at the main budget met its pre-registered criteria on validation only, TEST not evaluated (below) |
 | Decoupled contact grounding (temperature calibration and foot-correction stage) | Building | partial failure: contact-calibration criterion not met (below); `results/completion/contact_grounding.json` |
-| Contact, action and intent heads; IMU fusion ablation (HR-Refine, 2000 steps, one seed per condition) | Building | `results/contact_torques/contact_f1.txt`, `results/auxiliary_heads/action_intent.txt` |
-| Data-loading bottleneck diagnosis and fix (parallel DataLoader workers) | Building | `results/data_pipeline/`; shard and rolling-window pipeline not built |
 | Visual perception from egocentric RGB | Planned | — |
 | Evaluation on perceived (not simulated) evidence | Planned | — |
 | Physics-aware refinement (kinematic, then simulation tracking) | Planned | — |
@@ -63,7 +61,7 @@ The completion and grounding results below are an **oracle control**: the body e
 - Evidence is simulated from ground truth; no image-based perception is part of any reported number.
 - Physical metrics on the 22 FK joints use a foot-sole height proxy; a ground-truth row is reported so the proxy's own error is visible.
 - Floor-work cohorts are small (kneel and lie only; 8 subjects across validation and test).
-- The refinement ablation, the auxiliary heads and the data-loading measurement are single runs (one seed per condition). The loader result is one measurement on a network-mounted drive (2.0x samples per second, `results/data_pipeline/`).
+- The refinement ablation is a single run (one seed per condition).
 - A known issue in the recorded ground-consistency tolerance is recorded in `docs/pivot_log.md` (2026-10-07); tables report both the recorded and a corrected tolerance.
 
 ## What is not claimed

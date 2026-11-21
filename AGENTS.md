@@ -117,12 +117,12 @@ The repo **never** contains these files. Code reads paths from `configs/paths.ya
 - Action segmentation head on HR-Refine (BABEL frame labels): frame accuracy, edit score.
 - Intent head: predict next 0.5–1.0 s of root + pose: ADE/FDE.
 - Sensor integration: synthetic body-worn IMU from AMASS fused with video keypoints: video-only vs IMU-only vs fused.
-- **Evidence:** `results/auxiliary_heads/`.
+- **Evidence:** none in the repository (the earlier auxiliary-heads results were removed on 2026-11-20).
 
 **Data-pipeline bottlenecks — problem solving in the data engine** *(scope: resolving data-pipeline bottlenecks)*
 - Profile the AMASS/BEDLAM loader, fix the top bottleneck, report before/after throughput.
 - Keep `docs/pivot_log.md` with dated problem → decision → outcome entries.
-- **Evidence:** `results/data_pipeline/bottleneck.md`, `docs/pivot_log.md`.
+- **Evidence:** `docs/pivot_log.md` (the earlier `results/data_pipeline/` files were removed on 2026-11-20).
 
 ### Contact and physics-aware tracking
 
@@ -213,14 +213,14 @@ The paper is written from the same code and results as the work packages. It doe
 | 6 | **G1 smoke test:** one AMASS walk → G1 in Isaac Lab + Newton, metrics + video | Robot pipeline | AMASS | video + JSON | ☑ evidence: `hready/robot/isaaclab_newton.py`, `hready/robot/run_smoke.py`, `hready/robot/metrics.py`, `hready/robot/replay.py`, `results/robot_smoke_test/summary.json`, `results/robot_smoke_test/*/metrics_*.json`, `results/robot_smoke_test/*/replay_*.mp4`, `docs/decisions.md`, `docs/pivot_log.md`; visual sign-off CMU walk / ACCAD jump / BMLrub treadmill (robot smoke-test sign-off commit) |
 | 7 | HR-Refine model + corruption + virtual cams (incl. ego) + DDP trainer — **candidate learned instance of kinematic refinement** (not the egocentric-track main path) | Distributed temporal training, contact and torques | AMASS | overfits 1 batch; resume works | ☑ evidence: `hready/models/hr_refine.py`, `hready/train/`, `configs/hr_refine.yaml`, `docs/decisions.md` |
 | 8 | HR-Refine training + item-3 loss ablation (supporting evidence for kinematic-refinement losses) | Physics-loss study | AMASS | `results/physics_loss_ablation/ablation.csv` | ☑ evidence: `results/physics_loss_ablation/ablation.csv`, `results/physics_loss_ablation/ablation_analysis.md`; contact loss dominant (minus_contact ≈ recon_only); balance loss negligible (minus_balance ≈ full) |
-| 9 | Contact, action, intent heads; IMU fusion ablation — contact overlaps evidence-locked completion; action/intent/IMU supporting (auxiliary heads) | Contact and torques, auxiliary heads | AMASS, BABEL | `results/contact_torques`, `results/auxiliary_heads`; **affordance F1** (agreement with BABEL action labels) | ☐ |
+| 9 | Contact, action, intent heads; IMU fusion ablation — contact overlaps evidence-locked completion; action/intent/IMU supporting (auxiliary heads) | Contact and torques, auxiliary heads | AMASS, BABEL | `results/contact_torques` (the auxiliary-heads results were removed on 2026-11-20); **affordance F1** (agreement with BABEL action labels) | ☐ |
 | 10 | Joint torques (inverse dynamics) on reconstructed body — supporting metric | Contact and torques | AMASS | torque plots | ☑ |
 | 11 | G1 on raw vs refined clips; pose-error vs feasibility; QA flag (**downstream**, not the egocentric motion track) | Robot pipeline | AMASS | `results/robot_comparison/`; end-to-end: one real video (**3DPW** test sequence) → HMR → HR-Refine → G1 rollout video in `results/robot_comparison/end_to_end/` | ☐ |
 | 12 | **Perception pretraining (own perception model):** BEDLAM loader (2 tars, rotated closeups) + HR-HMR from scratch + augmentations — prerequisite of perception training | 3D pose model, robustness | BEDLAM | training curves, overlays | ☐ |
 | 13 | **Perception pretraining (own perception model):** BEDLAM-CLIFF baseline on same frames; robustness by blur/occlusion/people — prerequisite of perception training | 3D pose model, robustness | BEDLAM + ckpt | `results/pose_model`, `results/robustness`; **tracking:** ID-switch count and jitter on `orbit_bigOffice`, temporal transformer vs per-frame baseline | ☐ |
 | 14 | Action-conditioned prior ± physics regularization, evaluated on G1 (**downstream**) | Motion-prior regularization | AMASS, BABEL | `results/motion_prior/` | ☐ |
 | 15 | DDP equivalence test + Kaggle 2×T4 run | Distributed temporal training | AMASS | scaling table | ☐ |
-| 16 | Loader bottleneck before/after; shard + rolling-window pipeline | Data-pipeline bottlenecks, large-scale data | AMASS/BEDLAM | `results/data_pipeline/` | ☐ |
+| 16 | Loader bottleneck before/after; shard + rolling-window pipeline | Data-pipeline bottlenecks, large-scale data | AMASS/BEDLAM | none (earlier files removed on 2026-11-20) | ☐ |
 | 17 | SOMA-X pivot SMPL-X ↔ MHR + `body_models.md` | Body models | SMPL-X | round-trip error reported. **SMPL-X ↔ MHR** goes through the **SOMA-X pivot** (`py-soma-x` tools convert **to** SOMA; no direct SMPL-X↔MHR API documented). Implement in a **separate conda env `hready-soma`** (chumpy conflicts with NumPy 2.x in `hready`); API verified from the installed package (rule 3). **GHUM** in `docs/body_models.md` only (not supported by SOMA-X). | ☑ evidence: `hready/body/soma_x_wrapper.py`, `scripts/soma_x_worker.py`, `scripts/rmse_check.py`, `docs/body_models.md` (round-trip table; 4 synthetic frames, one run 2026-11-19) |
 | 18 | README with §4 table linked to evidence; `dataset_challenges.md`; `pivot_log.md` | all | — | every number traced to `results/` | ☐ |
 | 19 | Paper draft + slides | Publication | — | compiles | ☐ |
