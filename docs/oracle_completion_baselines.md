@@ -2,6 +2,8 @@
 
 **Status:** oracle **control** only (`docs/project_definition.md`, oracle evidence as a control). The perceived-RGB completion table runs after perception model selection on the same evidence schema. The oracle table is never described as the main system.
 
+**Scope:** these baselines and every number in this file come from simulated egocentric evidence on AMASS-family motion. They support claims about the simulated completion task only. Real-data claims (Nymeria, EgoBody) use their own baselines, pre-registered in `docs/nymeria_foot_lock_protocol.md`.
+
 **Disclaimer on every table row:** `oracle control; floor height given (world z = 0); head pose and gravity given (rig input)`. An unknown floor offset is a later ablation, not part of these baselines.
 
 **Commands** (config `configs/oracle_completion_baselines.yaml`; every command merges its section into `results/completion/oracle_baselines.json`):

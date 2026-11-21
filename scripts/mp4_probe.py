@@ -15,6 +15,7 @@ import json
 import math
 import struct
 import sys
+from itertools import pairwise
 from pathlib import Path
 
 CONTAINERS = {b"moov", b"trak", b"mdia", b"minf", b"stbl"}
@@ -58,6 +59,42 @@ def top_level_moov(path: Path) -> bytes:
                 return handle.read(size - header)
             pos += size
     raise ValueError("no moov box found")
+
+
+def moov_description(moov: bytes) -> str | None:
+    """Text of the iTunes-style ``desc`` item (udta/meta/ilst/desc/data), if present."""
+    for kind, body, stop in boxes(moov, 0, len(moov)):
+        if kind != b"udta":
+            continue
+        for kind2, body2, stop2 in boxes(moov, body, stop):
+            if kind2 != b"meta":
+                continue
+            for kind3, body3, stop3 in boxes(moov, body2 + 4, stop2):
+                if kind3 != b"ilst":
+                    continue
+                for kind4, body4, stop4 in boxes(moov, body3, stop3):
+                    if kind4 != b"desc":
+                        continue
+                    for kind5, body5, stop5 in boxes(moov, body4, stop4):
+                        if kind5 == b"data":
+                            return moov[body5 + 8 : stop5].decode(
+                                "utf-8", errors="replace"
+                            )
+    return None
+
+
+def frame_times_ns(path: Path) -> list[int] | None:
+    """Per-frame timestamps stored in the file's description tag, when it is a JSON list."""
+    text = moov_description(top_level_moov(path))
+    if not text:
+        return None
+    try:
+        values = json.loads(text)
+    except ValueError:
+        return None
+    if isinstance(values, list) and all(isinstance(v, int) for v in values):
+        return values
+    return None
 
 
 def parse_trak(data: bytes, start: int, end: int) -> dict:
@@ -120,7 +157,18 @@ def probe(path: Path) -> dict:
         for kind, body, stop in boxes(moov, 0, len(moov))
         if kind == b"trak"
     ]
-    return {"file": str(path), "bytes": path.stat().st_size, "tracks": tracks}
+    result = {"file": str(path), "bytes": path.stat().st_size, "tracks": tracks}
+    times = frame_times_ns(path)
+    if times:
+        steps = sorted(b - a for a, b in pairwise(times))
+        result["frame_times"] = {
+            "n": len(times),
+            "first_ns": times[0],
+            "last_ns": times[-1],
+            "median_step_ns": steps[len(steps) // 2] if steps else None,
+            "max_step_ns": steps[-1] if steps else None,
+        }
+    return result
 
 
 def main(argv=None) -> int:

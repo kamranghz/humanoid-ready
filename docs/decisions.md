@@ -179,8 +179,8 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
   the 7 floor-heavy sequences listed in `docs/nymeria_data_format.md`: `20230706_s0_breanna_reese_act0_cfg468`,
   `20230815_s0_samantha_lester_act0_513kae`, `20230628_s1_hayley_little_act0_z038r0`, `20230731_s0_tammy_campos_act0_d3blev`,
   `20230720_s0_robert_ballard_act0_7n4853`, `20230707_s1_elizabeth_tucker_act0_df444f`, `20230816_s1_jeffery_bryant_act0_p5w199`.
-  Size: 1.42 GB each, about 10 GB in total, against 393 to 525 GB free on the drive. The first sequence was downloaded and its SHA-1
-  matched the list. The raw `recording_head_data_data_vrs` group (20.75 GB for the first sequence) was **not** taken; it would be
+  Size: 0.82 to 1.42 GB each, 7.5 GB in total (1.42, 0.96, 0.85, 0.82, 1.14, 1.20, 1.13), against about 519 GB free on the drive afterwards.
+  All seven were downloaded on 2026-11-19 and every SHA-1 matched the list. The raw `recording_head_data_data_vrs` group (20.75 GB for the first sequence) was **not** taken; it would be
   a further decision, with the `projectaria_tools` licence and a separate environment checked first.
 - **Why this group first.** It is read with ordinary video tools, needs no new package in the pinned `hready` environment, and one
   frame was checked by eye (fisheye, upright, wearer's hands and thighs visible).
@@ -196,3 +196,25 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
   calibrated on the EgoBody calibration set only. A leak check must show no tune subject in perception training.
 - **Stated limit.** One frame of one sequence has been looked at. No alignment between video and motion exists yet, and no detector
   has been run on Nymeria video.
+- **Alignment result (same day).** The Xsens `timestamps_us` are not on the SLAM clock (no overlap in 5 of 7 sequences); the video frame list and
+  the narration are on the SLAM clock (every one of 1,400 narration rows lies inside its video's time range). Per-sequence offsets were estimated by
+  matching head rotation speed (`scripts/nymeria_motion_sync.py`, coarse stage): 6 of 7 sequences give a peak (0.98 to 0.995 against at most
+  0.28 elsewhere, except one at 0.63 that the refined run later puts at 0.986), 1 none (0.07, unresolved). Details in `docs/nymeria_data_format.md`, section 7.2. Stated limit: this is a
+  timing check on head motion; no joint has been projected into an image yet, so no evaluation-grade ground truth is claimed.
+
+### Nymeria: one uniform alignment run, inclusion rule and next experiment (2026-11-20)
+
+- **Why a new run.** The earlier Nymeria numbers came from several runs of one script (different code versions, keys from different runs in one
+  report, overlays from two generations). The owner had the old projection results deleted and asked for one consistent set. The script now stores a run id and a
+  code hash in every entry, `--fresh` starts from an empty report, and `--audit` prints one line per sequence and UNIFORM or the list of problems.
+  The run is id 20261120T170201Z; numbers are in `docs/nymeria_data_format.md`, section 7.3.
+- **Inclusion rule (in the script).** Timing claims need a refined head-to-Xsens correlation of at least 0.95 (6 of 7 sequences). Spatial claims also need a
+  shared head offset (5 of 7: breanna, samantha, hayley, tammy, elizabeth). Excluded: jeffery (no peak), and robert from spatial claims (3 good windows of 7).
+- **Corrections to earlier statements.** The global fit rms is 5.7 to 35.9 cm (earlier text said 9.5 to 36); drift residuals reach +-12.5 ms (earlier +-12);
+  the head offset d is not shared across persons (x 2 to 14 cm); elizabeth's alignment is not weak (refined 0.986), only her coarse value was low.
+- **Hand accuracy, measured with two independent labellers.** The window rms is head-position consistency, not hand accuracy. Hand points were clicked on the wearer's own glove by two people (click distance median 20.5 px of 800, 90th percentile 35.5 px). Headline = consensus of the two: the raw Xsens hand lands a median 58 px (about 10.1 cm) from the glove centre, 90th percentile about 18 cm; after a leave-one-sequence-out constant offset 47 px (about 7.6 cm). Either labeller alone gives the same within 4 px. The projection convention is the best of 32 tested. The first labelling pass (315 px) is withdrawn: some points were on another person. Details and limits in `docs/nymeria_data_format.md` section 7.3.
+- **Real-data experiment chosen (owner agreed on the priority).** Standing and foot slip from a noisy head pose on Nymeria, with the recorded protocol
+  `docs/nymeria_foot_lock_protocol.md` (baselines B0, B1, B2, M1; success rule fixed before any run; cohort rule). Run once on 60 sequences, results in section 11 of that file.
+  Body motion and head trajectory are already on disk for all 206 sequences, so no download is needed; the owner's approval of a download was not used.
+- **Older baselines.** The oracle completion baselines stay as controls for the simulated task only (`docs/oracle_completion_baselines.md` says so); they make no real-data claim.
+- **Standing and foot slip from the head pose alone, measured (first run, 60 Nymeria sequences).** Rule 2 not met: M1 beat the hysteresis baseline on 58 of 60 sequences but by a median 2.6 points of missed-lock against the recorded margin of 5. At no more than 5% false-lock, 62% to 65% of both-feet-planted frames are locked from the head pose alone (72% to 76% with 0.5 s of lookahead); in the hard case (planted while the head moves) 68% are missed by every detector. A single speed threshold is as good as hysteresis. Under strong simulated noise the learned detector degrades more slowly. Allowed claim: head-pose speed alone locks most but not all planted frames, and fails mainly when the head moves while the feet are planted; not a benchmark. Details, controls and limits in `docs/nymeria_foot_lock_protocol.md` section 11.
