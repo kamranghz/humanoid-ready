@@ -218,3 +218,174 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
   Body motion and head trajectory are already on disk for all 206 sequences, so no download is needed; the owner's approval of a download was not used.
 - **Older baselines.** The oracle completion baselines stay as controls for the simulated task only (`docs/oracle_completion_baselines.md` says so); they make no real-data claim.
 - **Standing and foot slip from the head pose alone, measured (first run, 60 Nymeria sequences).** Rule 2 not met: M1 beat the hysteresis baseline on 58 of 60 sequences but by a median 2.6 points of missed-lock against the recorded margin of 5. At no more than 5% false-lock, 62% to 65% of both-feet-planted frames are locked from the head pose alone (72% to 76% with 0.5 s of lookahead); in the hard case (planted while the head moves) 68% are missed by every detector. A single speed threshold is as good as hysteresis. Under strong simulated noise the learned detector degrades more slowly. Allowed claim: head-pose speed alone locks most but not all planted frames, and fails mainly when the head moves while the feet are planted; not a benchmark. Details, controls and limits in `docs/nymeria_foot_lock_protocol.md` section 11.
+
+### Nymeria: the repo's trained model on the head pose, second protocol (2026-11-21)
+
+- **Question and protocol.** Does the repo's trained completion model (`checkpoints/deterministic_main/best.pt`, step 140000) tell when both feet are planted better
+  than a speed threshold, given only the head pose of the glasses (all body joints marked not seen)? Recorded in `docs/nymeria_foot_lock_repo_model_protocol.md`
+  (rule in section 3, amendments A1 and A2, result in section 9). Same cohort, labels, folds and rule as the first protocol. Run once, 58 of the 60 sequences
+  (2 had no floor estimate).
+- **A mistake found before anything was scored.** The first call of the preparation step stopped on the axis check. A read-only diagnostic (no model, no
+  labels) showed that the device z axis of the Aria glasses is not the direction the wearer faces: the device frame is the left SLAM camera frame, and the
+  facing direction is about 40 degrees to the right of device z (walking directions in all 58 sequences: median 39.6 degrees, spread 7.8; the RGB camera's
+  own calibration: 38 degrees; the baseline between the two SLAM cameras: 0.3 degrees from that). The earlier assumption "z is forward" came from two sequences seen by hand.
+  Amendment A2 (written before any model output) takes the camera from each recording's calibration. Loosening the thresholds would have fed the model a camera rotated by 40 degrees.
+- **Result: rule not met, signal check failed.** At no more than 5% false-lock (training folds), the repo's model misses 86% of the both-feet-planted frames
+  (median over held-out sequences), the speed threshold B2 38%, the logistic regression M1 36%. The model's balanced accuracy is 0.56 (B2 0.80); it reaches 0.60
+  on 28% of the sequences (rule: 80%). It is better than B2 on 2 of 58 sequences (rule: more than 60%); median difference -41.5 points
+  (interval -49.6 to -28.6). The lookahead row is the same (80% against 28%). Hard case: 87% missed against 68%.
+- **Controls.** No floor shift of 3, 5 or 10 cm in either direction helps (82% to 89% missed); the Xsens head height instead of the SLAM height gives the same
+  (86.7%), so the SLAM pose is not the cause; a constant head height of 1.6 m is better (79%), so the model does not use the height; clock shifts are flat;
+  a 60 s label shift gives chance (0.497). The home-domain check on AMASS was not run.
+- **Allowed claim.** On 58 Nymeria sequences, with the floor height given, the repo's trained model fed only the head pose does not beat a speed threshold and is far worse.
+- **Not allowed.** That head pose has no contact information: a speed threshold reaches balanced accuracy 0.80 on the same frames. The failure is this model on this input, and
+  the run does not say why (input outside the training distribution; contact output trained on body evidence; camera conventions: the RGB camera looks 23 degrees
+  below the horizon on average and the head position is the left SLAM camera; none tested).
+- **Consequence for the project.** The completion model as trained is not a head-pose-only foot-contact detector. Anything claimed about contact from head pose on real
+  data rests on the first protocol (speed threshold and logistic regression), not on this model. The model has not been tested with the evidence it was built for
+  (visible joints) on real data.
+- **Open (owner's choice, each needs its own protocol):** the home-domain check (same model, head-only input, AMASS windows) to separate "outside the training
+  distribution" from the rest; a run with hand evidence after a valid hand-projection check; a new detector for the hard case on fresh sequences (137 of 206 untried);
+  the perception stage E2-B. Nymeria stays test-only.
+
+
+### Nymeria: the 137 untried sequences may be used for training (2026-11-21)
+
+- **Decision (owner, 2026-11-21).** The 137 sequences that no experiment has touched (206 on disk, minus the 69 that went through the data check) may be used for
+  training and adaptation of a learned detector. This replaces "Nymeria stays test-only" (entries of 2026-11-20 and 2026-11-21) **for these 137 only**. The 60
+  sequences of the foot-lock cohort stay test-only and are not used for fitting, tuning or selecting anything.
+- **Reason (from the files, `docs/dataset_sheets.md`).** Nymeria is the only dataset on disk with head pose, wrist devices, eye gaze and full-body ground truth
+  together on real data. The simple detectors reach balanced accuracy 0.80 from head pose, so the signal holds contact information; the repo's completion model,
+  trained on simulated evidence, did not transfer. The direction is to learn from the raw signals (no hand-made features), not reinforcement learning.
+- **Facts checked before this entry (read-only, from the data-check report and the metadata files).**
+  - 206 sequences: 60 in the test cohort, 9 attempted but failed the offset step, 137 never attempted.
+  - 3 of the 137 have the same gender, height, weight and age group as a test sequence. The files do not say whether they are the same person, so these 3 are **not**
+    used for training. 5 combinations repeat inside the 137: sequences with the same combination stay on the same side of any fold.
+  - The 9 that failed the offset step stay out of both sets unless their offset step later passes the same rule as the cohort.
+  - The 137 have not been through the offset step. Any of them that fails it is left out, as in the cohort; the number used is reported.
+  - 28 of the 30 locations of the test sequences also occur in the 137, and the scripted activities are mostly the same. A split by sequence therefore does **not**
+    show how a detector behaves in a new place; results are reported as "new sequences, mostly known places".
+  - 9 of the 137 have floor-heavy scripts (stretching, dance, game night, workout); the test cohort has 3 (game night only; no stretching, dance or workout).
+- **Not yet done.** The wrist devices' world frame and clock have not been checked against the head device and the suit; no wrist signal is used as an input until
+  that check passes (reported per sequence). The protocol of the first learned detector (input only the head pose, raw windows, same labels and rule as the first
+  protocol) is not written; it is written and read by the owner before any training.
+
+### Nymeria: wrist devices checked against the head device and the suit (2026-11-21)
+
+- **What was checked (read-only, owner ran it on the 60 test-cohort sequences).** Whether the left and right wrist devices share the head device's world frame and
+  clock. Method: the distance between head and wrist from the devices' own SLAM logs (aligned by UTC time) against the distance between the suit's head and hand
+  segments at the known head-to-suit offset, with a lag search of -4 to +4 s. Distance does not depend on the axes, so it tests a shared frame and a shared clock
+  together. Script: `hready_data/wip/wrist_frame_test.py` (outside the repo); per-sequence output: `hready_data/wip/wrist_frame_test.jsonl`.
+- **Result.** Median head-to-wrist distance 0.58 m (left) and 0.53 m (right). Correlation at lag 0: median 0.60 for both wrists. At the best lag: median 0.66 (left) and
+  0.67 (right); 48% (left) and 38% (right) of the 60 sequences reach 0.7. About 15 sequences reach 0.8 to 0.89; several are near zero or negative, and in 3 wrist records (2 sequences) the best lag sits at
+  the edge of the search (+4 s), meaning no match. The best lag has a median near 0 but spreads from about -1 s (10th percentile) to +1.7 s (90th percentile), and the left
+  and right wrist of one sequence usually have different lags. The head-to-suit correlation for the head device itself is 0.98 to 0.99.
+- **Reading.** The wrist devices are **not** shown to share the head device's clock and frame. The test cannot say which of the two fails: a clock off by more than the
+  search range, an unstable clock, or a different world frame would each give this picture. A separate clock fit per wrist device from its own rotation speed against the suit
+  hand (the method of `nymeria_project_check.py`, which gave correlations of 0.94 to 0.98 for 6 of 7 sequences) followed by the same distance test would separate clock from frame.
+  That has not been run.
+- **Consequence.** No wrist signal is used as an input of any learned detector until that two-part check passes. Wrist-based claims on real data are not made. Without the
+  suit, a method to align the wrist clocks from the devices themselves would also be needed outside Nymeria (the UTC stamps of the devices differed by 0.3 to 1.6 s in the
+  earlier clock check); that is stated as a limit. Step 1 of the new order (head pose only) does not depend on the wrist devices.
+- **Written next:** `docs/nymeria_foot_lock_learned_protocol.md` (approved by the owner 2026-11-21; nothing run yet).
+
+### Nymeria: data check of the training pool (2026-11-21)
+
+- **What was run (owner, Windows machine).** The repo's data check, unchanged, on the 134 sequences of the training pool of `docs/nymeria_foot_lock_learned_protocol.md`
+  (approved by the owner the same day). Report: `review/nymeria_learned_training_data_check.json`.
+- **Result.** 118 of 134 passed the offset step; 16 failed and are left out. One of the 118 failed the height-order id gate and is left out. **117 sequences are labelled and
+  usable for training.** 1831 min labelled, 1239 min both feet planted, 604 min hard stratum, 841 min both planted while upright. Size rule met; not indicative.
+- **Locations.** 41 locations in the usable pool; 3 of the 30 test locations are not in it.
+- **New-place test (protocol section 3A).** Held-out locations fixed by hash order before any model: 9 locations, 15 test sequences; 24 of the 117 training sequences are removed for
+  that test, 93 remain. The interval of that test will be wide.
+- **Not run:** any model. Next: the training and evaluation script, then an independent code review that checks no test sequence reaches training, validation, early
+  stopping or an operating point, before any run.
+
+### Nymeria: training script of the learned detector, independent review (2026-11-21)
+
+- **Written.** `scripts/nymeria_foot_lock_learned.py` (plan, prepare, train, choose, test, controls) and amendment A3 of `docs/nymeria_foot_lock_learned_protocol.md`. Labels, offsets,
+  strata, metrics, operating-point search and the first-protocol baselines are imported unchanged from the first protocol's code.
+- **Checks on made-up data.** Window building against an independent numpy version; the causal output does not change when later frames are changed, the lookahead output
+  sees at most 15 frames after the labelled frame; training reaches a validation loss near zero on an easy synthetic task; the whole chain (both sizes, three seeds, newplace,
+  controls) runs without error. On real data, owner's machine (RTX 4090): plan counts match protocol 8.0 and 8.0a; the caches of all 177 sequences (117 training, 60 test)
+  were built; rotations are valid and gravity in the world frame is (0, 0, -9.81), so z is up; a two-epoch smoke training of both sizes ran (smoke models only, not results).
+- **Change to the label-shuffle control (A3 item 10).** On made-up data, a network that learned nothing still ranked frames by head speed with a tiny weight of random sign, so
+  its balanced accuracy on the true labels was 0.99 or 0.02. "About 0.5" is therefore not a reliable leakage test. Now three shifts (60, 90, 120 s) and the verdict uses the
+  validation-loss gain over the base rate (leakage suspected only if at least 0.02 for all three).
+- **Independent review** (separate agent, did not write the code, traced test isolation, causality, label alignment, metrics and the rule against the protocol, with its own checks).
+  No blocker. Three major findings, all fixed before any model: the smoke and limit options could overwrite the one-shot test result (now refused for choose, test, controls);
+  false-lock of the baselines was not printed next to the rule (now printed and stored); a rerun of the first protocol that differs from the recorded numbers only warned (now stops).
+  Minor fixes: metadata keys and pool/test group overlap are checked in the plan; runs that did not train are listed; the newplace report is marked indicative.
+  Recorded as properties, not defects: the size S network's causal output reaches 30 frames back (about 1 s), M the whole window; inputs are not normalised (protocol); the
+  reference B2 and M1 of the first protocol have thresholds picked in-sample on the test folds, so B2-137 and M1-137 are the like-for-like comparison.
+- **Not run:** any real training, the size choice, the test.
+
+
+### Nymeria: learned head-pose foot-lock detector, test results and controls (2026-11-21)
+
+- **Main test (60 test sequences, size S chosen on validation: mean loss 0.2475 against 0.2572 for M, three seeds each).** Causal row at the "fl5" point: missed-lock 0.131
+  (B2 0.375, M1 0.355, B2-137 0.344, M1-137 0.363), hard-stratum missed 0.330 (baselines 0.58 to 0.70), balanced accuracy 0.878. Lower than B2 on 60 of 60 sequences, median
+  difference 24.3 points, 95% interval 22.6 to 27.0: the rule (section 3 item 2) and the beyond-data comparison (item 3, against M1-137: 23.4 points, 19.4 to 26.1) are met. The
+  first-protocol rerun is identical to the recorded numbers. Allowed claim: on 60 sequences, from head pose only, a network trained on 95 other sequences beats a speed threshold by
+  at least 5 points of missed-lock at 5% false-lock (new sequences, mostly known places).
+- **Caveat recorded with it.** False-lock at "fl5" is 0.081 on the test sequences, above the 5% it was set to on validation; B2-137 is 0.093, M1-137 0.039. Part of the lead over
+  M1-137 may come from the higher false-lock. About one third of the hard stratum is still missed.
+- **New-place test (15 sequences, 9 held-out locations, trained on 75).** Indicative. Missed-lock 0.143 against 0.36 to 0.38 for the baselines; 15 of 15 sequences lower than B2,
+  24.4 points (17.4 to 28.5): rule met on the held-out locations. False-lock 0.110.
+- **Controls.** C2: more data still helps (missed-lock 0.174, 0.139, 0.131 at 25%, 50%, 100%). C4: lookahead optimum at 0 ms; labels aligned to about 50 ms. C5 (56 sequences) and C6
+  (52 in known locations, 8 in others): rule met in each, no location effect.
+- **C3, noise: negative.** At 1 cm and 0.5 degrees the network is at chance (missed-lock 0.97); B2 and M1 degrade slowly (0.385 and 0.386). The result holds for clean head poses
+  (Aria closed-loop SLAM), not for noisy ones such as poses estimated from video. The likely cause (the input is the frame step times 30) is untested. This limits the claim for
+  the real-video goal and must appear in any paper.
+- **C1, label shift: incomplete, leakage neither found nor excluded.** The guard stopped the 60 s and 90 s runs: sequences are 11 to 21 minutes, and the guard judged a 60 s shift
+  as "no shift" because it compared the shift with 10% of the length. That is a mistake of mine in A3 item 10. The 120 s run trained and kept 8% of the main model's validation gain
+  (0.033 of 0.41), probably slow context. A4 (proposed, not applied): guard in seconds, verdict at half of the main gain. Owner has not yet decided.
+- **Not done.** The 60 s and 90 s runs; a model trained with noise (needs its own protocol and counts as a second look at the 60 test sequences); `docs/dataset_sheets.md` and the
+  tracker (E5b) not updated.
+
+### Nymeria: network trained with noise, protocol approved and code added (2026-11-21)
+
+- **Why.** The clean-trained network is at chance with 1 cm of per-frame noise (previous entry, C3), and head poses estimated from video carry that much noise. The owner asked to train
+  the network so that it works under noise and to compare it with the clean-trained one.
+- **Protocol.** `docs/nymeria_foot_lock_noise_protocol.md`, approved the same day. One change against the main run: independent per-frame noise added to the training input (a fresh copy
+  every epoch; 20% clean, otherwise position sigma log-uniform from 0.3 to 8 cm, yaw sigma 0.45 degrees per cm); size S, three seeds, same settings. Rule, recorded before any run: at 1 cm and at
+  2 cm the missed-lock at "fl5" is lower than B2's at the same noise (more than 60% of the sequences, median at least 5 points, interval excludes 0), and on clean poses at most 3 points above the
+  clean-trained network (0.131). Second use of the 60 test sequences, stated as such; correlated noise is a descriptive control.
+- **Code.** `scripts/nymeria_foot_lock_learned.py` gained `--step train --variant noise` and `--step test --scope noise` (written once to `review/nymeria_learned_noise_result.json`). Nothing existing
+  was changed in behaviour: training with the default settings gives bit-identical weights and loss to the version that produced the results (checked on made-up data), and the independent-noise
+  input equals the old one. Checks on made-up data: the autoregression against a plain loop (difference 3e-15; standard deviation 0.99; autocorrelation at one second 0.365 against 0.368),
+  yaw noise leaves the gravity input unchanged, the validation noisy copy is identical when regenerated, no test sequence is loaded while training, the whole chain (train, noise test, refusal of a
+  second run) runs. The results of the previous entries come from the earlier version of the script (code hash 4c8bf9a575bb98e6), archived as
+  `review/nymeria_foot_lock_learned_4c8bf9a575bb98e6.py`. No independent review of the new code has been done (the owner decides).
+- **Not run:** training of the noise models and the noise test.
+
+### Nymeria: network trained with noise, test result (2026-11-21)
+
+- **What was run.** Protocol `docs/nymeria_foot_lock_noise_protocol.md` as approved, no change to settings: three seeds of size S trained with noise (best epochs 10, 6, 9; none "possibly not
+  converged"), one test run on the 60 test sequences (second use of them, stated as such), written once to `review/nymeria_learned_noise_result.json`. Full tables in section 8 of the protocol.
+- **Result (causal, "fl5", median missed-lock, independent per-frame noise).** Noise-trained / clean-trained / B2: 0 cm 0.237 / 0.131 / 0.375; 1 cm 0.284 / 0.971 / 0.385; 2 cm 0.353 / 0.980 /
+  0.463; 5 cm 0.366 / 0.976 / 0.739.
+- **Rule.** Item 1 met at 1 cm (lower on 93.3% of the sequences, median 10.0 points, interval [8.3, 12.0]) and at 2 cm (85.0%, 11.6 points, [9.4, 14.3]). Item 2 not met: clean-level missed-lock
+  0.237 against the limit 0.161 (clean-trained 0.131); hard stratum 0.542 against 0.330.
+- **Allowed claim.** Trained with simulated independent per-frame noise, the network keeps a lead of at least 5 points of missed-lock over a speed threshold at 1 and 2 cm of noise (60
+  sequences, second use); robustness cost accuracy on clean poses. Neither network is better everywhere: the clean-trained one on exact poses, the noise-trained one under any noise.
+- **Limits.** Correlated noise (descriptive): lead over B2 11.8 points at 1 cm, 4.5 points at 2 cm (below the 5-point margin), and worse than B2 and M1 at 5 cm (missed-lock 0.839 against 0.555
+  and 0.506). The noise is simulated; the error of a pose estimated from video is not measured, so nothing is shown about video. No setting was changed after the result.
+- **Next (each needs its own protocol and the owner's approval):** measure the error of an actual pose estimator on these sequences (E2-B) and compare with the levels used here; a different
+  input (longer-span step, smoothed positions); a larger network; a different noise model; the open C1 decision (A4 and the two missing models). `docs/dataset_sheets.md`, `docs/experiments.md`
+  and the tracker (E5b) not yet updated.
+
+### Nymeria: error of a head pose estimated from video (2026-11-21)
+
+- **What was run.** Protocol `docs/nymeria_pose_noise_protocol.md` with amendments A1 and A2: VGGT-Omega (1B 512, as released) on 40 windows of 64 frames in each of the 7 sequences that have preview
+  video (280 windows), compared with the SLAM head trajectory after a per-window similarity fit. No foot-lock label read. Written once to `review/nymeria_pose_noise.json`. MonST3R dropped (A2): 2 h 50 min per
+  window, 8 days for the plan, and a larger error on the one window run.
+- **Result.** Equivalent independent sigma of the step error 0.13 cm (A, 145 moving windows; 0.15 cm outside the test cohort) and 0.21 cm (B, one scale per sequence); rotation error 0.1 to 0.3 degrees; position
+  error 1.2 cm (A) and 5.7 cm (B). Lag-1 autocorrelation 0.97 (simulated independent -0.01, correlated 0.93). Scale spread within a sequence 24 to 52%. Video and SLAM time alignment: 90% of windows at shift 0, no systematic shift.
+- **Reading by the pre-registered rule.** Sigma below 2 cm, but the error is slowly varying and the scale is not stable, so: the simulation of independent noise does not describe this error, the next step is a
+  different input and a scale source, not more noise training.
+- **Allowed claim.** For VGGT-Omega on 7 preview sequences, the frame-to-frame jitter of the head position is about 0.1 cm, well below the simulated 1 to 5 cm; the remaining error is smooth and the scale changes by
+  24 to 52% between windows. Nothing about other estimators; nothing about the detector on these poses.
+- **Limits.** One estimator; the fit uses SLAM (scale per window, rotation, offset), so real error is at least this large; 64-frame windows; SLAM error not measured; compressed preview video; MonST3R not run beyond one window.
+- **Next (each needs its own protocol and the owner's approval):** a scale source (wearer height, gravity plus a known height, IMU) and a test of the detector on VGGT-Omega poses with that scale; a detector
+  input that is robust to smooth error and scale change; the open C1 decision. `docs/dataset_sheets.md`, `docs/experiments.md` and the tracker (E5b) not yet updated.
