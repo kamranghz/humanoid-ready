@@ -35,7 +35,10 @@ Commit IDs are deliberately not recorded here.
 | End-to-end evaluation | E5 | — | — | not started |
 | HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt` (the action and intent file was removed on 2026-11-20) | done (2000 steps per condition, one seed) |
 | Joint torques by inverse dynamics, raw vs refined | — | `scripts/compute_torques.py`, `scripts/plot_torques.py` | `results/B2/torque_comparison.npz`, `results/B2/torque_plots.png` | done (3 val clips x 4 windows, one seed) |
-| Real egocentric validation | E5b | — | — | not started |
+| Real egocentric validation | E5b | — | — | in progress on Nymeria (rows below); the selected perception and completion pipeline has not been run on real video |
+| Nymeria foot-lock detector, learned from head pose | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_test_result.json`, `<data root>/review/nymeria_learned_controls.json` | run 2026-11-21 on the 60 test sequences; outcome in `docs/decisions.md` |
+| Nymeria foot-lock detector, trained with simulated noise | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_noise_result.json` | run 2026-11-21: lead over the speed threshold kept at 1 and 2 cm of independent noise, clean-pose accuracy lost; neither network better everywhere |
+| Nymeria head-pose error from video | E5b | `scripts/nymeria_pose_noise.py` | `<data root>/review/nymeria_pose_noise.json` | run 2026-11-21, VGGT-Omega only (MonST3R dropped, 2 h 50 min per window): step jitter about 0.13 cm, error smooth, scale unstable (24 to 52%); next input needs a scale source |
 | Humanoid simulation asset | E6a | — | — | not started |
 | Simulation tracking training | E6 | — | — | not started |
 | Refinement comparison (none / kinematic / simulation / both) | E7 (arms none, K, S, K+S) | — | — | not started |

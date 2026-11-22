@@ -70,6 +70,7 @@ the glove in the image misses by a median of about 10 cm (51 hands, 5 sequences,
 - No scene mesh and no floor file; the floor height comes from the suit.
 - IMU signals are not yet read. Wrist-device signals were checked on 2026-11-21 (see `docs/decisions.md`): the check did **not** show a shared clock and frame with the head device (median correlation 0.66 at the best lag; lags spread from about -1 s to +1.7 s); no wrist signal is used as an input yet.
 - Most of the 206 sequences are standing, walking and kitchen work; floor work is concentrated in a few sequences (Game night, Body stretch) [repo doc].
+- Head pose estimated from the preview video (7 sequences with video, VGGT-Omega only, measured 2026-11-21, `docs/nymeria_pose_noise_protocol.md` section 9): after a per-window similarity fit to the SLAM trajectory the frame-to-frame jitter of the camera position is about 0.13 cm and the rotation error 0.1 to 0.3 degrees, but the error is smooth (lag-1 autocorrelation 0.97) and the scale of the estimate changes between windows of one sequence by 24 to 52%. A metric scale needs a separate source. One estimator only.
 - Current rule (decision 2026-11-21, `docs/decisions.md`): the 60 foot-lock cohort sequences stay **test only**; the 137 untried sequences may be used for training and adaptation (3 that share a metadata combination with a test sequence are excluded, and each must first pass the data check). Protocol: `docs/nymeria_foot_lock_learned_protocol.md` (approved 2026-11-21).
 
 ---
