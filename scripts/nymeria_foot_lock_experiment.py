@@ -508,7 +508,10 @@ def evaluate(
     roll=0,
     dets=("B0", "B1", "B2", "M1"),
     keep=False,
+    mask=None,
 ) -> dict:
+    """``mask`` (optional): name -> bool array on the SLAM grid; only frames where it is true are used
+    (the repo-model protocol uses it to compare every detector on the same frames)."""
     data = {}
     for number, name in enumerate(names):
         rec = recs[name]
@@ -516,6 +519,8 @@ def evaluate(
         x = features(pos, omega, causal)
         idx, valid = lookup(rec, shift)
         valid = valid & rec["slam_ok"]
+        if mask is not None:
+            valid = valid & mask[name]
         lab = {k: rec[k][idx] for k in ("both", "hard", "upright", "foot_speed")}
         if roll:
             lab = {k: np.roll(v, roll) for k, v in lab.items()}
