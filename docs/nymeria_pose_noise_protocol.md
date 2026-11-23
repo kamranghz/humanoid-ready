@@ -1,6 +1,6 @@
 # Nymeria: error of a head pose estimated from video, protocol
 
-Status: written on 2026-11-21; **approved by the owner on 2026-11-21** (VGGT-Omega as main estimator, MonST3R as second). **Run on 2026-11-21 with VGGT-Omega only (amendment A2); result in section 9.** From here on, changes are made only as dated amendments.
+Status: written on 2026-11-21; **approved by the owner on 2026-11-21** (VGGT-Omega as main estimator, MonST3R as second). **Run on 2026-11-21 with VGGT-Omega only (amendment A2); result in section 9. Supplementary MonST3R check on 7 windows added by amendment A3 (2026-11-22); run on 2026-11-23, result under A3 below.** From here on, changes are made only as dated amendments.
 
 ## 1. Question
 
@@ -156,3 +156,36 @@ over longer spans. Mostly indoor scenes of two kinds, compressed preview video.
 10,215 s (2 h 50 min, 300 iterations at about 34 to 38 s per iteration); the 70 planned windows would take about 8 days. On that one window its error was larger than VGGT-Omega's (position error 6.8 cm
 against 1.3 cm, rotation 5.6 against 0.9 degrees after the same alignment; one window, a plumbing check, not a result). The settings were not changed to speed it up. The report is made for VGGT-Omega only
 (`--step report --model omega`); that window of MonST3R is not in the result file. Statements about "video poses" in section 6 are therefore not made: the result holds for VGGT-Omega only.
+
+**A3 (2026-11-22, before any supplementary run; approved by the owner).** A supplementary MonST3R check, added because MonST3R is built for scenes with moving things (a second person is often in view) and A2 dropped it for time only. It does not
+change the main result of section 9 and does not replace A2.
+
+1. **Windows.** One window per sequence, 7 in all. Rule, from the SLAM reference only (no estimate was looked at): the window with a SLAM camera path of at least 15 cm (a moving window) whose index is closest to 20, the lower index if
+   two are equally close. The windows, in the order of section 2 (pool 1 to 3, test 1 to 3, other): 19, 20, 20, 20, 20, 17, 20 (SLAM camera path 31, 20, 15, 38, 25, 120 and 42 cm). In the script: `--subset supplement`.
+2. **Settings** as in A1 item 7; nothing is changed to make it faster. The one window run earlier (first window of the first test sequence, A2) is not in this set and is not used.
+3. **Time.** About 2 h 50 min per window, about 20 hours in all; the run can be stopped and continued (finished windows are skipped).
+4. **Report.** `--step report --subset supplement` writes `review/nymeria_pose_noise_supplement.json` (a separate file, written once); it holds MonST3R and VGGT-Omega on the same 7 windows, with the same statistics, the same reference
+   autocorrelation procedure and the same reading as section 9. With one window per sequence, variant B equals variant A on these windows (the sequence scale is that window's scale), and the scale spread within a sequence cannot be measured; the 7 fitted scales are listed only.
+5. **Reading (fixed before the run).** The numbers are descriptive: 7 windows are too few to call one estimator better. Reported: for each window the two estimators side by side, and the number of windows (of 7) in which MonST3R has the smaller equivalent
+   independent sigma and the smaller rotation error. A statement about "video pose estimators" in general (not only VGGT-Omega) is made only if, for both, the equivalent independent sigma of the step error is below 2 cm and the error is slowly varying
+   (lag-1 autocorrelation above the midpoint of the simulated references). The need for a scale source is not tested again: it follows from the single camera. If MonST3R and VGGT-Omega disagree, the section 9 statement stays limited to VGGT-Omega.
+6. **Limits.** 7 windows, one per sequence, chosen to move; no long-range or sequence-level statement; the time of the run (1 to 2 nights) is the only reason the sample is small.
+
+**A3 result (run 2026-11-23, `review/nymeria_pose_noise_supplement.json`, script hash 46c51a3155ce9e8e).** 7 windows, one per sequence; MonST3R took 48 min to 10 h 44 min per window (the 10 h window is the one with the largest error and flow loss). Per window, equivalent independent
+sigma (cm) / median rotation error (deg) / position error (cm), VGGT-Omega then MonST3R, in sorted sequence order:
+
+| window (sequence, group) | sigma Omega / MonST3R | rotation Omega / MonST3R | position Omega / MonST3R |
+|---|---|---|---|
+| hayley (pool) | 0.043 / 0.100 | 0.17 / 0.77 | 0.19 / 0.71 |
+| breanna (test) | 0.068 / 0.046 | 0.27 / 0.98 | 0.37 / 0.48 |
+| elizabeth (pool) | 0.048 / 0.065 | 0.17 / 0.29 | 0.21 / 0.74 |
+| robert (pool) | 0.051 / 0.049 | 0.06 / 0.11 | 0.14 / 0.41 |
+| tammy (test) | 0.060 / 0.083 | 0.18 / 1.37 | 0.21 / 1.62 |
+| samantha (test) | 0.182 / 0.474 | 0.59 / 2.97 | 0.87 / 4.68 |
+| jeffery (other) | 0.060 / 0.049 | 0.11 / 0.21 | 0.24 / 0.33 |
+
+- MonST3R has the smaller sigma in 3 of 7 windows (breanna, robert, jeffery; robert by 0.002 cm) and the smaller rotation error in 0 of 7. Its position error is larger in 7 of 7. Pooled, sigma 0.09 cm (VGGT-Omega) and 0.19 cm (MonST3R); lag-1 autocorrelation 0.86 and 0.97
+  (simulated independent 0.04, correlated 0.91, midpoint about 0.48).
+- By the rule fixed in item 5: for both estimators sigma is below 2 cm and the error is slowly varying, and they do not disagree, so the section 9 statement may be widened from VGGT-Omega to "VGGT-Omega and MonST3R, on these 7 windows".
+- Not shown: which is better (7 windows); anything about scale (one window per sequence). The 7 fitted scales were not reported by the script (field empty), so no scale statement is made from this run.
+- Limits as in item 6.

@@ -389,3 +389,11 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
 - **Limits.** One estimator; the fit uses SLAM (scale per window, rotation, offset), so real error is at least this large; 64-frame windows; SLAM error not measured; compressed preview video; MonST3R not run beyond one window.
 - **Next (each needs its own protocol and the owner's approval):** a scale source (wearer height, gravity plus a known height, IMU) and a test of the detector on VGGT-Omega poses with that scale; a detector
   input that is robust to smooth error and scale change; the open C1 decision. `docs/dataset_sheets.md`, `docs/experiments.md` and the tracker (E5b) not yet updated.
+
+### Nymeria: supplementary MonST3R check (2026-11-23)
+
+- **What was run.** Amendment A3 of `docs/nymeria_pose_noise_protocol.md`: MonST3R and VGGT-Omega on 7 moving windows, one per sequence (`review/nymeria_pose_noise_supplement.json`, written once). MonST3R took 48 min to 10 h 44 min per window.
+- **Result.** Equivalent independent sigma 0.09 cm (VGGT-Omega) and 0.19 cm (MonST3R); lag-1 autocorrelation 0.86 and 0.97; rotation error 0.1 to 0.6 degrees (VGGT-Omega) and 0.1 to 3.0 degrees (MonST3R). MonST3R has the smaller sigma in 3 of 7 windows, the smaller rotation error in 0 of 7, the larger position error in 7 of 7.
+- **Reading by the rule fixed before the run.** Both estimators: sigma below 2 cm and slowly varying, no disagreement. The claim in the entry above may say "VGGT-Omega and MonST3R, on 7 windows" instead of VGGT-Omega only.
+- **Not claimed.** Which estimator is better; anything about scale (one window per sequence; no scale reported); anything beyond 7 moving windows.
+
