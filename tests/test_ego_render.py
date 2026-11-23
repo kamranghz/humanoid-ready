@@ -1,10 +1,12 @@
 """Checks for the torch rasteriser (synthetic data only, no body model needed)."""
 
 import numpy as np
-import torch
+import pytest
 
-from hready.data import ego_render as R
-from hready.data.ego_observation import (
+torch = pytest.importorskip("torch")  # CI installs numpy only; these checks need torch
+
+from hready.data import ego_render as R  # noqa: E402
+from hready.data.ego_observation import (  # noqa: E402
     EgoCameraConfig,
     head_frame_from_joints,
     project_joints_egocentric,
@@ -23,7 +25,7 @@ def _expected_coverage(verts, prof):
         for c in range(prof.width):
             x, y = c + 0.5, r + 0.5
 
-            def e(a, b):
+            def e(a, b, x=x, y=y):
                 return (u[b] - u[a]) * (y - v[a]) - (v[b] - v[a]) * (x - u[a])
 
             s = [e(0, 1), e(1, 2), e(2, 0)]
@@ -76,7 +78,7 @@ def test_floor_and_frame_are_byte_stable():
     v = TRI.clone()
     f = R.Floor(up=np.array([0.0, 1.0, 0.0]), height=1.0)
     eye = torch.eye(3)
-    kw = dict(r_cv=eye, t_cv=torch.zeros(3), cam_pos=torch.zeros(3), prof=PROF, floor=f, seed=3)
+    kw = {"r_cv": eye, "t_cv": torch.zeros(3), "cam_pos": torch.zeros(3), "prof": PROF, "floor": f, "seed": 3}
     a = R.render_frame(v, FACES, torch.tensor([5]), **kw)
     b = R.render_frame(v, FACES, torch.tensor([5]), **kw)
     for key in ("rgb", "depth", "region"):
