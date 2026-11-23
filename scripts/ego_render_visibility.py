@@ -27,7 +27,7 @@ from hready.data import ego_render as R
 from hready.data.amass import load_clip, load_index
 from hready.data.ego_observation import head_frame_from_joints
 
-PROFILES = ("hl2_like", "ego_wide")
+PROFILES = ("hl2_like", "aria_rect", "ego_wide")
 GROUPS = {
     "wrists": (20, 21),
     "arms": (18, 19, 20, 21),
@@ -111,7 +111,10 @@ def main(argv=None) -> None:
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--device", default="cuda" if torch.cuda.is_available() else "cpu")
     ap.add_argument("--out", default="results/E/perception/render_visibility.json")
+    ap.add_argument("--overwrite", action="store_true", help="allow replacing an existing result file")
     args = ap.parse_args(argv)
+    if Path(args.out).exists() and not args.overwrite:
+        raise SystemExit(f"{args.out} exists; give another --out (a result file is not replaced by accident)")
 
     device = torch.device(args.device)
     body = load_body("locked_head")
@@ -124,7 +127,7 @@ def main(argv=None) -> None:
     acc = {p: defaultdict(lambda: {"vis": [], "body_frac": []}) for p in PROFILES}
     t0 = time.time()
     for n, e in enumerate(clips):
-        clip = load_clip(e, ground=True)
+        clip = load_clip(e)  # no floor needed: the camera is head-relative (ground=True recomputes a floor mesh per clip)
         ids = frames_of_clip(clip, args.frames_per_clip)
         got = count_clip(body, weights, clip, ids, PROFILES, device)
         for p in PROFILES:
@@ -136,7 +139,7 @@ def main(argv=None) -> None:
 
     result = {
         "script_version": SCRIPT_VERSION,
-        "args": {k: v for k, v in vars(args).items() if k != "out"},
+        "args": {k: v for k, v in vars(args).items() if k not in ("out", "overwrite")},
         "n_clips": len(clips),
         "visibility_rule": "joint visible if inside the image, farther than z_near, and the nearest body surface at its pixel is at most 0.10 m in front of it",
         "profiles": {},

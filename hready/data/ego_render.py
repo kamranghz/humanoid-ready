@@ -86,6 +86,9 @@ class RenderProfile:
 PROFILES: dict[str, RenderProfile] = {
     # HoloLens-2 research-mode-like colour view: 640x360, about 64 deg horizontal.
     "hl2_like": RenderProfile("hl2_like", 640, 360, 486.3, 486.3, 315.3, 170.0),
+    # Aria-like RGB view as a rectified pinhole: square image, 110 deg horizontal (focal = 256 / tan(55 deg)).
+    # The real Aria camera is a fisheye; this is the rectified stand-in used for the main perception set.
+    "aria_rect": RenderProfile("aria_rect", 512, 512, 179.3, 179.3, 256.0, 256.0),
     # Wide pinhole, used only to compare with the oracle camera (focal 120 px, 512 px).
     "ego_wide": RenderProfile("ego_wide", 512, 512, 120.0, 120.0, 256.0, 256.0),
 }
