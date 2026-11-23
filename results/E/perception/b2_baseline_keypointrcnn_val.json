@@ -1,0 +1,251 @@
+{
+ "script_version": 1,
+ "script_sha1": "fd70737204c1df03",
+ "protocol": "docs/ego_perception_b2_protocol.md",
+ "model": "torchvision keypointrcnn_resnet50_fpn",
+ "weights": "COCO_V1",
+ "split": "val",
+ "every": 1,
+ "pck_px": [
+  12.8,
+  25.6
+ ],
+ "image_px": 512,
+ "results": {
+  "all_clips": {
+   "frames": 31013,
+   "frames_with_detection": 0.04923741656724599,
+   "visible_joint_instances": 16264,
+   "all_12": {
+    "visible_instances": 16264,
+    "labelled": {
+     "median_px": 85.4454507157253,
+     "mean_px": 104.52052510752797,
+     "recall_at_12.8px": 0.06486719134284309,
+     "recall_at_25.6px": 0.0765494343334973
+    },
+    "side_agnostic": {
+     "median_px": 77.64566133342817,
+     "mean_px": 99.03806507727826,
+     "recall_at_12.8px": 0.06984751598622725,
+     "recall_at_25.6px": 0.08196015740285292
+    }
+   },
+   "by_group": {
+    "shoulder": {
+     "visible_instances": 103,
+     "labelled": {
+      "median_px": 103.86411561976178,
+      "mean_px": 140.2562773066199,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.0
+     },
+     "side_agnostic": {
+      "median_px": 103.86411561976178,
+      "mean_px": 130.1690573449092,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.0
+     }
+    },
+    "elbow": {
+     "visible_instances": 3368,
+     "labelled": {
+      "median_px": 148.97036267959143,
+      "mean_px": 156.878810437111,
+      "recall_at_12.8px": 0.016923990498812352,
+      "recall_at_25.6px": 0.032957244655581946
+     },
+     "side_agnostic": {
+      "median_px": 138.24670523241429,
+      "mean_px": 148.47752918801524,
+      "recall_at_12.8px": 0.01840855106888361,
+      "recall_at_25.6px": 0.03830166270783848
+     }
+    },
+    "wrist": {
+     "visible_instances": 8569,
+     "labelled": {
+      "median_px": 21.433428904982517,
+      "mean_px": 81.56409284718711,
+      "recall_at_12.8px": 0.10129536702065585,
+      "recall_at_25.6px": 0.10654685494223363
+     },
+     "side_agnostic": {
+      "median_px": 15.222719050835341,
+      "mean_px": 78.63371934553855,
+      "recall_at_12.8px": 0.10351266192087759,
+      "recall_at_25.6px": 0.10923094876881784
+     }
+    },
+    "hip": {
+     "visible_instances": 178,
+     "labelled": {
+      "median_px": 111.45979156000402,
+      "mean_px": 134.93818737608953,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.011235955056179775
+     },
+     "side_agnostic": {
+      "median_px": 93.91905092172934,
+      "mean_px": 115.3638001123426,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.05056179775280899
+     }
+    },
+    "knee": {
+     "visible_instances": 1878,
+     "labelled": {
+      "median_px": 103.3979770957203,
+      "mean_px": 120.49841084152293,
+      "recall_at_12.8px": 0.010649627263045794,
+      "recall_at_25.6px": 0.03301384451544196
+     },
+     "side_agnostic": {
+      "median_px": 95.63405274353644,
+      "mean_px": 113.18145777260013,
+      "recall_at_12.8px": 0.01650692225772098,
+      "recall_at_25.6px": 0.039403620873269436
+     }
+    },
+    "ankle": {
+     "visible_instances": 2168,
+     "labelled": {
+      "median_px": 76.21449241135016,
+      "mean_px": 85.72983567554003,
+      "recall_at_12.8px": 0.0507380073800738,
+      "recall_at_25.6px": 0.0724169741697417
+     },
+     "side_agnostic": {
+      "median_px": 66.741308871791,
+      "mean_px": 79.74073426086841,
+      "recall_at_12.8px": 0.07195571955719557,
+      "recall_at_25.6px": 0.0853321033210332
+     }
+    }
+   },
+   "visibility_auc": {
+    "score_visible_vs_not_visible": 0.7551823038110518,
+    "visible": 3786,
+    "not_visible": 14538
+   }
+  },
+  "without_dfaust_mosh_shared_ids": {
+   "frames": 30909,
+   "frames_with_detection": 0.04920896826167136,
+   "visible_joint_instances": 16189,
+   "all_12": {
+    "visible_instances": 16189,
+    "labelled": {
+     "median_px": 85.50528557602696,
+     "mean_px": 104.4927968573577,
+     "recall_at_12.8px": 0.06504416579158688,
+     "recall_at_25.6px": 0.0767187596516153
+    },
+    "side_agnostic": {
+     "median_px": 77.66241774456907,
+     "mean_px": 99.00233278572439,
+     "recall_at_12.8px": 0.07004756316017048,
+     "recall_at_25.6px": 0.08215454938538513
+    }
+   },
+   "by_group": {
+    "shoulder": {
+     "visible_instances": 103,
+     "labelled": {
+      "median_px": 103.86411561976178,
+      "mean_px": 140.2562773066199,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.0
+     },
+     "side_agnostic": {
+      "median_px": 103.86411561976178,
+      "mean_px": 130.1690573449092,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.0
+     }
+    },
+    "elbow": {
+     "visible_instances": 3349,
+     "labelled": {
+      "median_px": 148.7101263374214,
+      "mean_px": 156.58702076314526,
+      "recall_at_12.8px": 0.01702000597193192,
+      "recall_at_25.6px": 0.033144222155867424
+     },
+     "side_agnostic": {
+      "median_px": 137.75587495162955,
+      "mean_px": 148.1717238632532,
+      "recall_at_12.8px": 0.01851298895192595,
+      "recall_at_25.6px": 0.038518960883845925
+     }
+    },
+    "wrist": {
+     "visible_instances": 8537,
+     "labelled": {
+      "median_px": 21.554893081699753,
+      "mean_px": 81.6324889215046,
+      "recall_at_12.8px": 0.10144078716176642,
+      "recall_at_25.6px": 0.10659482253719105
+     },
+     "side_agnostic": {
+      "median_px": 15.470148380871482,
+      "mean_px": 78.69551846584184,
+      "recall_at_12.8px": 0.10366639334660888,
+      "recall_at_25.6px": 0.10928897739252665
+     }
+    },
+    "hip": {
+     "visible_instances": 178,
+     "labelled": {
+      "median_px": 111.45979156000402,
+      "mean_px": 134.93818737608953,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.011235955056179775
+     },
+     "side_agnostic": {
+      "median_px": 93.91905092172934,
+      "mean_px": 115.3638001123426,
+      "recall_at_12.8px": 0.0,
+      "recall_at_25.6px": 0.05056179775280899
+     }
+    },
+    "knee": {
+     "visible_instances": 1866,
+     "labelled": {
+      "median_px": 103.3979770957203,
+      "mean_px": 120.49841084152293,
+      "recall_at_12.8px": 0.010718113612004287,
+      "recall_at_25.6px": 0.03322615219721329
+     },
+     "side_agnostic": {
+      "median_px": 95.63405274353644,
+      "mean_px": 113.18145777260013,
+      "recall_at_12.8px": 0.016613076098606645,
+      "recall_at_25.6px": 0.03965702036441586
+     }
+    },
+    "ankle": {
+     "visible_instances": 2156,
+     "labelled": {
+      "median_px": 76.21449241135016,
+      "mean_px": 85.72983567554003,
+      "recall_at_12.8px": 0.05102040816326531,
+      "recall_at_25.6px": 0.0728200371057514
+     },
+     "side_agnostic": {
+      "median_px": 66.741308871791,
+      "mean_px": 79.74073426086841,
+      "recall_at_12.8px": 0.07235621521335807,
+      "recall_at_25.6px": 0.08580705009276438
+     }
+    }
+   },
+   "visibility_auc": {
+    "score_visible_vs_not_visible": 0.7553776121012771,
+    "visible": 3779,
+    "not_visible": 14473
+   }
+  }
+ },
+ "run": "2026-11-23 08:48:19"
+}

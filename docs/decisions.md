@@ -403,3 +403,10 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
 - **What was built.** Own torch rasteriser (nothing installed; flat colour per body region, z-buffer, floor plane), `hready/data/ego_render.py`; writer `scripts/ego_render_set.py`. Train every 20th frame, val and test every 30th (start offset fixed by clip path and seed 0): 247,027 / 31,013 / 16,494 frames from 13,856 / 2,222 / 1,271 clips, written outside the repo (`ego_render/aria_rect`, manifest with the clip list). Labels per frame: 22 joint pixel positions, depth, in-image flag, z-buffer visibility.
 - **Subject ids in more than one split (7).** Four are name collisions between different datasets (CMU/KIT 11, 12, 63; GRAB/TotalCapture `s1`), not the same person. Three are subject ids that DFaust and MoSh both carry (50021, 50027: DFaust train, MoSh val; 50022: MoSh train, DFaust test). Whether these are the same people is not confirmed: the first ten shape parameters of the same id in the two datasets are not closer than those of different ids. If they are, the affected frames are 78 of 16,494 test frames and 104 of 31,013 val frames. The split itself is unchanged (pre-registered). Rule for B3/B4: report val and test results with and without the clips of these three subject ids.
 
+
+### B2 pretrained keypoint baseline measured (2026-11-23)
+
+- **What was run.** `scripts/ego_perception_b2.py`: COCO-pretrained Keypoint R-CNN, as released, on the val split of the `aria_rect` render set (31,013 frames; test untouched). Protocol and result: `docs/ego_perception_b2_protocol.md` sections 1 to 8.
+- **Result.** A person is detected in 4.9% of frames; labelled recall at 25.6 px is 0.077 (0.08 without the DFaust/MoSh shared ids); median error of detected joints 85 px, wrists 21 px; visibility AUC 0.755.
+- **Reading by the rules fixed before the run.** Recall below 0.5: B3 must include P-C (adapted pretrained) next to P-A (own model) and P-B (pretrained as released). Side-agnostic recall is not 0.2 higher: left/right naming is not the main error.
+- **Not claimed.** Nothing about real images, other pretrained models, or test.

@@ -31,3 +31,24 @@ Everything is also reported without the clips of subject ids 50021, 50022, 50027
 
 ## 7. Limits
 One pretrained model; synthetic flat-colour domain; hands are the mean SMPL-X hand pose; one rectified pinhole camera; the real Aria camera is a fisheye; the z-buffer visibility label has a 0.10 m tolerance; the pretrained model is not trained for a body seen from its own head.
+
+## 8. Result (run 2026-11-23, `results/E/perception/b2_baseline_keypointrcnn_val.json`, script sha1 fd70737204c1df03)
+Val split, 31,013 frames, 16,264 visible joint instances, COCO_V1 weights as released.
+
+| | all clips | without DFaust/MoSh shared ids |
+|---|---|---|
+| frames with a detection | 0.049 | 0.049 |
+| labelled median error, detected joints (px) | 85.4 | 85.5 |
+| labelled recall at 25.6 px | 0.077 | 0.08 |
+| side-agnostic recall at 25.6 px | 0.082 | 0.08 |
+| visibility AUC | 0.755 | 0.76 |
+
+By group (labelled recall at 25.6 px): wrist 0.107 (median 21 px), ankle 0.072, knee 0.033, elbow 0.033, hip 0.011, shoulder 0.0 (103 instances only).
+
+Reading by the rules in section 5:
+- Labelled recall at 25.6 px is 0.077, below 0.5: B3 must include the adapted pretrained variant (P-C).
+- Side-agnostic recall is 0.005 higher than labelled, below 0.2: left/right naming is not a main source of error.
+- Two causes of the low recall, both in the numbers: no person is found in 95% of frames, and where one is found the median error is 85 px (17% of the image side), except wrists (21 px).
+- Visibility AUC 0.755 is above chance but modest.
+
+Not claimed: anything about real egocentric images, other pretrained models, or test.
