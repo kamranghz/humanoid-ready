@@ -5,8 +5,8 @@ import pytest
 
 torch = pytest.importorskip("torch")  # CI installs numpy only; these checks need torch
 
-from hready.data import ego_render as R  # noqa: E402
-from hready.data.ego_observation import (  # noqa: E402
+from hready.data import ego_render as R
+from hready.data.ego_observation import (
     EgoCameraConfig,
     head_frame_from_joints,
     project_joints_egocentric,
