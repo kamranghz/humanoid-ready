@@ -49,7 +49,8 @@ MODELS = Path(r"C:\Users\kghol072\physical_fidelity\models")
 WINDOWS = 40  # windows per sequence, evenly spaced (protocol 4.1)
 LENGTH = 64  # frames per window (the length of the detector's input)
 MARGIN_S = 1.0  # seconds kept free at both ends of the overlap of video and SLAM
-MONST3R_EVERY = 4  # MonST3R runs on every fourth window
+MONST3R_EVERY = 4
+SUPPLEMENT_CENTRE = 20  # amendment A3: window index the supplementary MonST3R windows are chosen around  # MonST3R runs on every fourth window
 VIEW = 512  # side of the pinhole view in pixels (the input size of both models)
 VIEW_FOV_DEG = 90.0  # horizontal field of view of the pinhole view
 VIDEO_SIZE = 1408  # side of the preview video
@@ -251,10 +252,29 @@ def run_prepare(args) -> None:
 # ---------------------------------------------------------------- estimators
 
 
+def supplement_windows(plan: dict) -> dict:
+    """Amendment A3: per sequence the one window of the supplementary MonST3R check, from the SLAM reference only.
+
+    The moving window (SLAM camera path of at least ``MOVING_PATH_M``) whose index is closest to ``SUPPLEMENT_CENTRE``
+    (ties: the lower index). No estimate is looked at.
+    """
+    chosen = {}
+    for seq, entry in plan["sequences"].items():
+        moving = [int(w) for w, v in entry["windows"].items() if v.get("path_m", 0.0) >= MOVING_PATH_M]
+        if moving:
+            chosen[seq] = min(moving, key=lambda w: (abs(w - SUPPLEMENT_CENTRE), w))
+    return chosen
+
+
 def todo_windows(args, every: int = 1):
     plan = json.loads((WORK / "plan.json").read_text())
+    only = supplement_windows(plan) if getattr(args, "subset", None) == "supplement" else None
     for seq, entry in plan["sequences"].items():
         if args.sequence and seq != args.sequence:
+            continue
+        if only is not None:
+            if seq in only:
+                yield seq, only[seq]
             continue
         for w in sorted(int(x) for x in entry["windows"]):
             if w % every:
@@ -457,12 +477,14 @@ def reference_autocorrelation(refs: list[dict]) -> dict:
     return out
 
 
-def load_windows(model: str, names: list[str], plan: dict) -> dict:
+def load_windows(model: str, names: list[str], plan: dict, only: dict | None = None) -> dict:
     """Reference and estimate arrays of every window that has both, per sequence."""
     out: dict = {}
     for seq in names:
         rows = []
         for w in sorted(int(x) for x in plan["sequences"][seq]["windows"]):
+            if only is not None and w != only.get(seq):
+                continue
             ref_path = WORK / "ref" / f"{seq}_w{w:02d}.npz"
             est_path = WORK / f"est_{model}" / f"{seq}_w{w:02d}.npz"
             if not (ref_path.exists() and est_path.exists()):
@@ -547,20 +569,23 @@ def reading(summary: dict, reference: dict) -> dict:
 
 
 def run_report(args) -> None:
-    if RESULT.exists():
-        raise SystemExit(f"{RESULT} exists; the result is written once")
+    subset = getattr(args, "subset", None)
+    result = RESULT if not subset else REVIEW / f"nymeria_pose_noise_{subset}.json"
+    if result.exists():
+        raise SystemExit(f"{result} exists; the result is written once")
     plan = json.loads((WORK / "plan.json").read_text())
+    only = supplement_windows(plan) if subset == "supplement" else None
     names = sorted(plan["sequences"])
     groups = {n: plan["sequences"][n]["group"] for n in names}
     report: dict = {
         "protocol": "docs/nymeria_pose_noise_protocol.md",
         "script_sha1": hashlib.sha1(Path(__file__).read_bytes()).hexdigest()[:16],
         "run": time.strftime("%Y-%m-%d %H:%M:%S"),
-        "windows_per_sequence": WINDOWS, "window_frames": LENGTH, "moving_path_m": MOVING_PATH_M, "estimators": {},
+        "subset": subset, "subset_windows": only, "windows_per_sequence": WINDOWS, "window_frames": LENGTH, "moving_path_m": MOVING_PATH_M, "estimators": {},
     }
-    only = getattr(args, "model", None)  # amendment A2: the report can be limited to one estimator
-    for model in ((only,) if only else ("omega", "monst3r")):
-        data = load_windows(model, names, plan)
+    only_model = getattr(args, "model", None)  # amendment A2: the report can be limited to one estimator
+    for model in ((only_model,) if only_model else ("omega", "monst3r")):
+        data = load_windows(model, names, plan, only)
         if not any(data.values()):
             continue
         refs_moving = [r for rows in data.values() for r in rows if r["path_m"] >= MOVING_PATH_M]
@@ -608,9 +633,9 @@ def run_report(args) -> None:
             "reading_all_sequences": reading(pooled["all"], reference) if reference and pooled["all"]["A_moving"].get("windows") else None,
             "reading_outside_test": reading(pooled["outside_test"], reference) if reference and pooled["outside_test"]["A_moving"].get("windows") else None,
         }
-    RESULT.write_text(json.dumps(report, indent=1))
+    result.write_text(json.dumps(report, indent=1))
     show(report)
-    say(f"\nwritten to {RESULT}")
+    say(f"\nwritten to {result}")
 
 
 def show(report: dict) -> None:
@@ -639,6 +664,7 @@ def main(argv=None) -> int:
     p.add_argument("--step", required=True, choices=["prepare", "estimate", "report"])
     p.add_argument("--model", choices=["omega", "monst3r"])
     p.add_argument("--sequence")
+    p.add_argument("--subset", choices=["supplement"], help="amendment A3: the one window per sequence of the supplementary MonST3R check")
     p.add_argument("--limit", type=int, default=0, help="only the first N windows of each sequence (smoke test)")
     p.add_argument("--device", default="cuda")
     p.add_argument("--omega-dir", type=Path, default=MODELS / "vggt-omega")
