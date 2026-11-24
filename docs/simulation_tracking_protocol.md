@@ -106,3 +106,13 @@ Open-loop baseline (code `hready/robot/isaaclab_open_loop_baseline.py`, `hready/
 - Check on the joint mapping: the pose error of all copies at the first frame, before any step, must be below 1 cm.
 - Foot skate, ground penetration and float are defined with their thresholds in the amendment that adds the numeric stage 2
   thresholds, after this baseline.
+
+## Amendment 2026-11-24 (second): clip quality flags added to the window rule, before any export or run
+
+The candidate count (`--list-only`, no simulation run, no result) showed that the rule above also admits treadmill clips: the
+first fast window was a treadmill jog. On a treadmill the feet move backwards relative to the belt while the body stays in place; on
+a fixed floor this reference cannot be tracked with ground contact, so it would measure the data, not the tracker. The rule now
+also drops every clip the project already excludes from physical evaluation (`exclude_physical_eval` in the clip flags: foot skate,
+floor outlier, too short) and every clip with "treadmill" in its path. The flags are an existing, objective property of the clip,
+not chosen after looking at any tracking result. Counts before this change: walk 18, fast 5, sit_support 2, floor_work 4 usable
+segments. Everything else in the rule stays as written.

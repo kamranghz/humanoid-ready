@@ -3,7 +3,7 @@
     python scripts/tracking_reference_export.py [--list-only]
 
 Categories: walk and fast (BABEL walk / run segments), sit_support and floor_work (kneel, lie) from results/splits/floor_work_clips.csv.
-Rule (docs/simulation_tracking_protocol.md): validation split, segments of at least 5 s, seeded shuffle per category, one segment
+Rule (docs/simulation_tracking_protocol.md): validation split, clips not excluded from physical evaluation and not treadmill, segments of at least 5 s, seeded shuffle per category, one segment
 per subject, the first 8 usable windows of each category (the first window of each category is the stage 2 clip); a window is the
 first 10 s of its segment. Output: <data_root>/tracking_reference/<name>/*.npz and manifest.json, plus a copy of the manifest
 in results/E/tracking_infrastructure/reference_manifest.json.
@@ -22,7 +22,7 @@ import torch
 import yaml
 from hready.body.batch_forward import smpl_forward_bt
 from hready.body.smplx_wrapper import load_body
-from hready.data.amass import load_clip, load_index, load_paths_config
+from hready.data.amass import clip_flags, load_clip, load_index, load_paths_config
 from hready.data.babel import BabelIndexEntry, load_babel_index_payload
 from hready.data.completion_clips import FLOOR_WORK_ELIGIBLE_CLASSES, split_rels
 from hready.data.ego_splits import _collect_babel_proposals
@@ -77,12 +77,15 @@ def main(argv=None) -> None:
     cfg = yaml.safe_load(args.ego_splits.read_text(encoding="utf-8"))
     val_rels = set(split_rels("val"))
     cands = _babel_candidates(cfg, val_rels) + _floor_candidates(args.floor_csv, val_rels)
-    order = R.shuffled_order(cands, seed=R.SEED)
+    flags = {rel: clip_flags(rel) for rel in sorted({c.rel_path for c in cands})}
+    physical = {rel for rel, f in flags.items() if not (f["exclude_physical_eval"] or f["treadmill_name"])}
+    kept = [c for c in cands if c.rel_path in physical]  # clips the project already excludes from physical evaluation, and treadmill clips
+    order = R.shuffled_order(kept, seed=R.SEED)
 
-    print("segments in the validation split, before and after the 5 s minimum and one-per-subject rule:")
+    print("segments in the validation split: all, after the clip quality flags, usable (5 s minimum, one per subject):")
     for cat in R.CATEGORIES:
-        n_all = sum(c.category == cat for c in cands)
-        print(f"  {cat:12s} all {n_all:4d}   usable {len(order[cat]):4d}")
+        print(f"  {cat:12s} all {sum(c.category == cat for c in cands):4d}   flags {sum(c.category == cat for c in kept):4d}   "
+              f"usable {len(order[cat]):4d}")
     if args.list_only:
         for cat in R.CATEGORIES:
             for c in order[cat][: R.WINDOWS_PER_CATEGORY + 4]:
@@ -127,6 +130,7 @@ def main(argv=None) -> None:
     manifest = {"rule": "docs/simulation_tracking_protocol.md, amendment on reference windows", "seed": R.SEED, "fps": R.FPS,
                 "min_segment_s": R.MIN_SEGMENT_S, "max_window_s": R.MAX_WINDOW_S, "windows_per_category": R.WINDOWS_PER_CATEGORY,
                 "usable_segments": {cat: len(order[cat]) for cat in R.CATEGORIES},
+                "excluded_clip_flags": "exclude_physical_eval or treadmill name",
                 "windows_taken": dict(Counter(e["category"] for e in entries)), "skipped": skipped, "windows": entries}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=1), encoding="utf-8")
     args.manifest_copy.parent.mkdir(parents=True, exist_ok=True)
