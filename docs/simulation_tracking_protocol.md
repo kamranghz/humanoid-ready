@@ -143,3 +143,34 @@ is clean). Two sit_support windows are reference-limited and every result for th
 
 The reference quality numbers are in `results/E/tracking_infrastructure/reference_manifest.json`. No window is reselected after the
 baseline result is known.
+
+## Amendment 2026-11-24 (fifth): open-loop baseline result and numeric stage 2 thresholds, before any training
+
+Open-loop PD baseline (18 windows, `results/E/tracking_infrastructure/open_loop_baseline.json`; 18 s of wall time for all windows;
+the joint mapping is correct: pose error of all copies at the first frame 0.001 mm). Start from rest at the first reference frame, targets
+= reference joint angles, no policy, no reset:
+
+| Category | Windows | Completed | Median time to termination | Global MPJPE (mean) |
+|---|---|---|---|---|
+| walk | 8 | 0 | 0.77 s | 1552 mm |
+| fast | 4 | 0 | 0.65 s | 1634 mm |
+| sit_support | 2 | 0 | 0.39 s | 948 mm |
+| floor_work | 4 | 2 (windows 0 and 2) | 2.16 s | 402 mm |
+
+Global MPJPE includes the frames after the fall, so it is large; the error until termination was 67 to 375 mm in the walk and fast
+windows. The two completed floor windows have 148 mm (stage 2 floor clip) and 72 mm. Stage 2 clips, baseline: walk 1555 mm, fast 2225 mm,
+sit_support 693 mm, floor_work 148 mm (completed). Everything is reported as measured; the baseline is a floor to beat, not a result to
+tune against.
+
+Numeric thresholds for the decision rule above:
+
+- A seed meets the clip when the run completes the whole clip without termination and its global MPJPE is at most 100 mm (about twice
+  the 47 mm that PHC reports for a general tracker on AMASS test; chosen here, not derived) and below the open-loop baseline of that clip.
+- The full recipe works on a clip when at least 2 of 3 seeds meet it; it works overall when it works on all four clips.
+- Ablation arms (uniform sampling, PHC-style termination) are descriptive. A difference between arms is reported as a difference only when
+  the ranges of the three seeds of the two arms do not overlap.
+- Foot skate, ground penetration and float use `hready/metrics/physical.py` on the simulated joints at the control rate. Foot contact is taken
+  from the reference with the contact rule of `hready/data/contact.py` (height 0.05 m, speed 0.2 m/s) and applied to the same feet of the
+  simulation. They are reported next to the same numbers of the reference; they have no pass threshold.
+- Same training budget for every arm and clip. The budget is fixed in the next amendment, after the speed of one policy-training
+  iteration has been measured with a short run whose result is not used.
