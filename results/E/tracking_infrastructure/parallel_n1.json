@@ -1,0 +1,43 @@
+{
+ "num_envs": 1,
+ "sim_dt": 0.005555555555555556,
+ "control_hz": 30.0,
+ "decimation": 6,
+ "seconds": 5.0,
+ "control_steps": 150,
+ "joint_count": 63,
+ "prime": {
+  "joints_found": 21,
+  "axes_primed": 63,
+  "axes_already_driven": 0,
+  "root_prim": "/smplx_humanoid",
+  "copied_from": "smplx_humanoid_sim_11"
+ },
+ "build_seconds": 6.5067973136901855,
+ "gpu_used_gb_before": 1.68558592,
+ "gpu_used_gb_after_build": 1.777860608,
+ "gpu_used_gb_after_run": 1.813512192,
+ "timed_seconds": 2.236123561859131,
+ "sim_steps_timed": 870,
+ "sim_steps_per_second_all_copies": 389.0661566468514,
+ "copy_steps_per_second": 389.0661566468514,
+ "faster_than_real_time_factor": 2.161478648038064,
+ "stand": {
+  "copies_passing_all": 0,
+  "copies_fell": 0,
+  "worst_drop_m": 0.0056906938552856445,
+  "worst_tilt_deg": 1.226369023323059,
+  "worst_foot_drift_m": 0.004883602261543274,
+  "worst_pelvis_xy_range_last_2s_m": 0.00566473975777626,
+  "worst_pelvis_z_range_last_2s_m": 0.0003173947334289551,
+  "criteria": "drop<=3cm, tilt<5deg, feet drift<=1cm, pelvis xy range last 2s<=5mm, z range last 2s<=2mm, no fall, no NaN (the centre-of-mass criterion of the single-copy check is not repeated here)"
+ },
+ "copies_agree_max_abs_pelvis_difference_m": 0.0,
+ "passed": false,
+ "versions": {
+  "isaaclab": "6.1.17",
+  "isaaclab_newton": "0.13.6",
+  "newton": "1.2.1",
+  "warp": "1.13.0"
+ }
+}

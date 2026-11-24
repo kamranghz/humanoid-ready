@@ -41,7 +41,8 @@ Commit IDs are deliberately not recorded here.
 | Nymeria foot-lock detector, learned from head pose | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_test_result.json`, `<data root>/review/nymeria_learned_controls.json` | run 2026-11-21 on the 60 test sequences; outcome in `docs/decisions.md` |
 | Nymeria foot-lock detector, trained with simulated noise | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_noise_result.json` | run 2026-11-21: lead over the speed threshold kept at 1 and 2 cm of independent noise, clean-pose accuracy lost; neither network better everywhere |
 | Nymeria head-pose error from video | E5b | `scripts/nymeria_pose_noise.py` | `<data root>/review/nymeria_pose_noise.json` | run 2026-11-21, VGGT-Omega only (MonST3R dropped, 2 h 50 min per window): step jitter about 0.13 cm, error smooth, scale unstable (24 to 52%); next input needs a scale source |
-| Simulation tracking training | E6 | — | — | not started |
+| Simulation tracking training | E6 | `docs/simulation_tracking_protocol.md` | — | protocol recorded 2026-11-24; infrastructure check part 1 done (copies, speed, time step); reference export and open-loop baseline not run yet |
+| Humanoid in parallel copies on Isaac Lab + Newton (speed, memory, stand at the tracking step) | E6 | `hready/robot/isaaclab_humanoid_parallel_check.py` | `results/E/tracking_infrastructure/*.json` | run 2026-11-24: step 0.005 s with control at 33.3 Hz chosen (all 64, 1024 and 4096 copies stand; step 1/180 s splits copies into two outcomes); 4096 copies about 125 thousand control steps per second, 3.9 GB; details in the amendment of `docs/simulation_tracking_protocol.md` |
 | Refinement comparison (none / kinematic / simulation / both) | E7 (arms none, K, S, K+S) | — | — | not started |
 | Qualitative review | E8 | — | — | not started |
 | Claims map | E9 | — | — | not started |

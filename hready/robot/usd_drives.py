@@ -60,3 +60,20 @@ def describe_joints(stage: Usd.Stage, root_path: str, limit: int = 3) -> list[di
         out.append({"path": str(prim.GetPath()), "type": prim.GetTypeName(),
                     "schemas": [str(s) for s in prim.GetAppliedSchemas()], "attributes": {k: str(v) for k, v in attrs.items()}})
     return out
+
+
+def prime_usd_file(usd_path: str, stiffness: float = 1.0, damping: float = 1.0, max_force: float = 1.0e3) -> dict:
+    """Prime the drives of a USD file in place (under its default prim) and save it. Safe to repeat: driven axes are kept.
+
+    Needed when the robot is spawned from the file by a scene that clones it: the simulator model is built while the scene is
+    constructed, so there is no moment between the spawn and the build at which the open stage could still be primed.
+    """
+    stage = Usd.Stage.Open(str(usd_path))
+    root = stage.GetDefaultPrim() if stage else None
+    if root is None or not root.IsValid():
+        raise ValueError(f"{usd_path} has no default prim")
+    report = prime_usd_drives(stage, str(root.GetPath()), stiffness, damping, max_force)
+    if report["axes_primed"] > 0:
+        stage.GetRootLayer().Save()
+    report["root_prim"] = str(root.GetPath())
+    return report

@@ -1,0 +1,340 @@
+{
+ "num_envs": 16,
+ "sim_dt": 0.005555555555555556,
+ "control_hz": 30.0,
+ "decimation": 6,
+ "seconds": 5.0,
+ "control_steps": 150,
+ "joint_count": 63,
+ "prime": {
+  "joints_found": 21,
+  "axes_primed": 0,
+  "axes_already_driven": 63,
+  "root_prim": "/smplx_humanoid",
+  "copied_from": "existing copy"
+ },
+ "build_seconds": 8.53601360321045,
+ "gpu_used_gb_before": 1.68558592,
+ "gpu_used_gb_after_build": 1.77995776,
+ "gpu_used_gb_after_run": 1.813512192,
+ "timed_seconds": 7.6294050216674805,
+ "sim_steps_timed": 870,
+ "sim_steps_per_second_all_copies": 114.0324832053356,
+ "copy_steps_per_second": 1824.5197312853695,
+ "faster_than_real_time_factor": 0.6335137955851978,
+ "stand": {
+  "copies_passing_all": 0,
+  "copies_fell": 0,
+  "worst_drop_m": 0.007075965404510498,
+  "worst_tilt_deg": 1.9206078052520752,
+  "worst_foot_drift_m": 0.023885495960712433,
+  "worst_pelvis_xy_range_last_2s_m": 0.00766754150390625,
+  "worst_pelvis_z_range_last_2s_m": 0.001665651798248291,
+  "criteria": "drop<=3cm, tilt<5deg, feet drift<=1cm, pelvis xy range last 2s<=5mm, z range last 2s<=2mm, no fall, no NaN (the centre-of-mass criterion of the single-copy check is not repeated here)"
+ },
+ "copies_agree_max_abs_pelvis_difference_m": 0.0022106170654296875,
+ "copy_spread": {
+  "max_origin_distance_m": 63.639610290527344,
+  "worst_5_copies_by_foot_drift": [
+   {
+    "copy": 9,
+    "origin_xy": [
+     -15.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.023885495960712433,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 11,
+    "origin_xy": [
+     -15.0,
+     45.0
+    ],
+    "foot_drift_m": 0.023878416046500206,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9205057621002197
+   },
+   {
+    "copy": 4,
+    "origin_xy": [
+     15.0,
+     -45.0
+    ],
+    "foot_drift_m": 0.023874865844845772,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9206078052520752
+   },
+   {
+    "copy": 1,
+    "origin_xy": [
+     45.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.023872017860412598,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 15,
+    "origin_xy": [
+     -45.0,
+     45.0
+    ],
+    "foot_drift_m": 0.023868191987276077,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9204039573669434
+   }
+  ],
+  "corr_foot_drift_vs_origin_distance": 0.5399536225241239,
+  "corr_xy_range_vs_origin_distance": 0.5407349174392428,
+  "final_pelvis_xy_relative_to_origin_mm_min": [
+   2.180000066757202,
+   -13.989999771118164
+  ],
+  "final_pelvis_xy_relative_to_origin_mm_max": [
+   2.609999895095825,
+   -11.770000457763672
+  ],
+  "copy_0": {
+   "foot_drift_m": 0.023859968408942223,
+   "xy_range_last_2s_m": 0.00766754150390625,
+   "tilt_deg": 1.9204039573669434
+  },
+  "per_copy": [
+   {
+    "copy": 0,
+    "origin_xy": [
+     45.0,
+     -45.0
+    ],
+    "foot_drift_m": 0.023859968408942223,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.200000047683716,
+     -11.779999732971191
+    ]
+   },
+   {
+    "copy": 1,
+    "origin_xy": [
+     45.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.023872017860412598,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.190000057220459,
+     -11.770000457763672
+    ]
+   },
+   {
+    "copy": 2,
+    "origin_xy": [
+     45.0,
+     15.0
+    ],
+    "foot_drift_m": 0.004866692703217268,
+    "xy_range_last_2s_m": 0.005672454833984375,
+    "tilt_deg": 1.226369023323059,
+    "final_pelvis_xy_mm": [
+     2.5899999141693115,
+     -13.989999771118164
+    ]
+   },
+   {
+    "copy": 3,
+    "origin_xy": [
+     45.0,
+     45.0
+    ],
+    "foot_drift_m": 0.023860255256295204,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.920302152633667,
+    "final_pelvis_xy_mm": [
+     2.190000057220459,
+     -11.789999961853027
+    ]
+   },
+   {
+    "copy": 4,
+    "origin_xy": [
+     15.0,
+     -45.0
+    ],
+    "foot_drift_m": 0.023874865844845772,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9206078052520752,
+    "final_pelvis_xy_mm": [
+     2.180000066757202,
+     -11.779999732971191
+    ]
+   },
+   {
+    "copy": 5,
+    "origin_xy": [
+     15.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.004887601360678673,
+    "xy_range_last_2s_m": 0.00566864013671875,
+    "tilt_deg": 1.2266881465911865,
+    "final_pelvis_xy_mm": [
+     2.609999895095825,
+     -13.989999771118164
+    ]
+   },
+   {
+    "copy": 6,
+    "origin_xy": [
+     15.0,
+     15.0
+    ],
+    "foot_drift_m": 0.004879212472587824,
+    "xy_range_last_2s_m": 0.005667686462402344,
+    "tilt_deg": 1.226369023323059,
+    "final_pelvis_xy_mm": [
+     2.5999999046325684,
+     -13.989999771118164
+    ]
+   },
+   {
+    "copy": 7,
+    "origin_xy": [
+     15.0,
+     45.0
+    ],
+    "foot_drift_m": 0.004900016356259584,
+    "xy_range_last_2s_m": 0.005669593811035156,
+    "tilt_deg": 1.2268476486206055,
+    "final_pelvis_xy_mm": [
+     2.609999895095825,
+     -13.949999809265137
+    ]
+   },
+   {
+    "copy": 8,
+    "origin_xy": [
+     -15.0,
+     -45.0
+    ],
+    "foot_drift_m": 0.004906132817268372,
+    "xy_range_last_2s_m": 0.005669593811035156,
+    "tilt_deg": 1.2268476486206055,
+    "final_pelvis_xy_mm": [
+     2.609999895095825,
+     -13.949999809265137
+    ]
+   },
+   {
+    "copy": 9,
+    "origin_xy": [
+     -15.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.023885495960712433,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.180000066757202,
+     -11.770000457763672
+    ]
+   },
+   {
+    "copy": 10,
+    "origin_xy": [
+     -15.0,
+     15.0
+    ],
+    "foot_drift_m": 0.004885472357273102,
+    "xy_range_last_2s_m": 0.005669593811035156,
+    "tilt_deg": 1.2268476486206055,
+    "final_pelvis_xy_mm": [
+     2.609999895095825,
+     -13.989999771118164
+    ]
+   },
+   {
+    "copy": 11,
+    "origin_xy": [
+     -15.0,
+     45.0
+    ],
+    "foot_drift_m": 0.023878416046500206,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9205057621002197,
+    "final_pelvis_xy_mm": [
+     2.180000066757202,
+     -11.779999732971191
+    ]
+   },
+   {
+    "copy": 12,
+    "origin_xy": [
+     -45.0,
+     -45.0
+    ],
+    "foot_drift_m": 0.023857129737734795,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.200000047683716,
+     -11.779999732971191
+    ]
+   },
+   {
+    "copy": 13,
+    "origin_xy": [
+     -45.0,
+     -15.0
+    ],
+    "foot_drift_m": 0.023865705356001854,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.200000047683716,
+     -11.770000457763672
+    ]
+   },
+   {
+    "copy": 14,
+    "origin_xy": [
+     -45.0,
+     15.0
+    ],
+    "foot_drift_m": 0.023867905139923096,
+    "xy_range_last_2s_m": 0.007666587829589844,
+    "tilt_deg": 1.9206078052520752,
+    "final_pelvis_xy_mm": [
+     2.190000057220459,
+     -11.770000457763672
+    ]
+   },
+   {
+    "copy": 15,
+    "origin_xy": [
+     -45.0,
+     45.0
+    ],
+    "foot_drift_m": 0.023868191987276077,
+    "xy_range_last_2s_m": 0.00766754150390625,
+    "tilt_deg": 1.9204039573669434,
+    "final_pelvis_xy_mm": [
+     2.190000057220459,
+     -11.779999732971191
+    ]
+   }
+  ]
+ },
+ "env_spacing_m": 30.0,
+ "passed": false,
+ "versions": {
+  "isaaclab": "6.1.17",
+  "isaaclab_newton": "0.13.6",
+  "newton": "1.2.1",
+  "warp": "1.13.0"
+ }
+}

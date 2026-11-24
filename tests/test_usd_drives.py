@@ -34,3 +34,26 @@ def test_d6_joint_gets_a_drive_on_every_axis_and_existing_drives_are_kept():
 def test_missing_root_is_reported_not_raised():
     assert U.prime_usd_drives(_stage(), "/World/Nothing")["joints_found"] == 0
     assert U.describe_joints(_stage(), "/World/Nothing") == []
+
+
+def test_prime_usd_file_saves_in_place_and_is_repeatable(tmp_path):
+    path = tmp_path / "robot.usda"
+    stage = Usd.Stage.CreateNew(str(path))
+    root = UsdGeom.Xform.Define(stage, "/Robot")
+    stage.SetDefaultPrim(root.GetPrim())
+    UsdPhysics.Joint.Define(stage, "/Robot/hip_x")
+    stage.GetRootLayer().Save()
+    first = U.prime_usd_file(str(path))
+    assert first["axes_primed"] == 3 and first["root_prim"] == "/Robot"
+    reopened = Usd.Stage.Open(str(path))
+    for axis in U.D6_AXES:
+        assert UsdPhysics.DriveAPI.Get(reopened.GetPrimAtPath("/Robot/hip_x"), axis).GetStiffnessAttr().Get() > 0
+    assert U.prime_usd_file(str(path))["axes_primed"] == 0
+
+
+def test_prime_usd_file_without_default_prim_raises(tmp_path):
+    path = tmp_path / "empty.usda"
+    stage = Usd.Stage.CreateNew(str(path))
+    stage.GetRootLayer().Save()
+    with pytest.raises(ValueError):
+        U.prime_usd_file(str(path))

@@ -1,0 +1,115 @@
+{
+ "num_envs": 2048,
+ "sim_dt": 0.005555555555555556,
+ "control_hz": 30.0,
+ "decimation": 6,
+ "seconds": 5.0,
+ "control_steps": 150,
+ "joint_count": 63,
+ "prime": {
+  "joints_found": 21,
+  "axes_primed": 0,
+  "axes_already_driven": 63,
+  "root_prim": "/smplx_humanoid",
+  "copied_from": "existing copy"
+ },
+ "build_seconds": 43.30367136001587,
+ "gpu_used_gb_before": 1.68558592,
+ "gpu_used_gb_after_build": 2.690121728,
+ "gpu_used_gb_after_run": 2.866282496,
+ "timed_seconds": 3.0685245990753174,
+ "sim_steps_timed": 870,
+ "sim_steps_per_second_all_copies": 283.5238799331019,
+ "copy_steps_per_second": 580656.9061029927,
+ "faster_than_real_time_factor": 1.575132666295011,
+ "stand": {
+  "copies_passing_all": 1,
+  "copies_fell": 0,
+  "worst_drop_m": 0.007076084613800049,
+  "worst_tilt_deg": 1.9206078052520752,
+  "worst_foot_drift_m": 0.023886913433670998,
+  "worst_pelvis_xy_range_last_2s_m": 0.00766754150390625,
+  "worst_pelvis_z_range_last_2s_m": 0.0016657710075378418,
+  "criteria": "drop<=3cm, tilt<5deg, feet drift<=1cm, pelvis xy range last 2s<=5mm, z range last 2s<=2mm, no fall, no NaN (the centre-of-mass criterion of the single-copy check is not repeated here)"
+ },
+ "copies_agree_max_abs_pelvis_difference_m": 0.0022592544555664062,
+ "copy_spread": {
+  "max_origin_distance_m": 94.40471649169922,
+  "worst_5_copies_by_foot_drift": [
+   {
+    "copy": 884,
+    "origin_xy": [
+     10.5,
+     21.0
+    ],
+    "foot_drift_m": 0.023886913433670998,
+    "xy_range_last_2s_m": 0.007663726806640625,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 822,
+    "origin_xy": [
+     13.5,
+     -30.0
+    ],
+    "foot_drift_m": 0.02388635091483593,
+    "xy_range_last_2s_m": 0.007663726806640625,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 1185,
+    "origin_xy": [
+     -10.5,
+     -21.0
+    ],
+    "foot_drift_m": 0.02388635091483593,
+    "xy_range_last_2s_m": 0.007663726806640625,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 1202,
+    "origin_xy": [
+     -10.5,
+     30.0
+    ],
+    "foot_drift_m": 0.023885639384388924,
+    "xy_range_last_2s_m": 0.007663726806640625,
+    "tilt_deg": 1.9204039573669434
+   },
+   {
+    "copy": 823,
+    "origin_xy": [
+     13.5,
+     -27.0
+    ],
+    "foot_drift_m": 0.023885495960712433,
+    "xy_range_last_2s_m": 0.007663726806640625,
+    "tilt_deg": 1.9204039573669434
+   }
+  ],
+  "corr_foot_drift_vs_origin_distance": 0.056889107781553275,
+  "corr_xy_range_vs_origin_distance": 0.05527822563365812,
+  "final_pelvis_xy_relative_to_origin_mm_min": [
+   2.1700000762939453,
+   -14.029999732971191
+  ],
+  "final_pelvis_xy_relative_to_origin_mm_max": [
+   2.619999885559082,
+   -11.770000457763672
+  ],
+  "copy_0": {
+   "foot_drift_m": 0.004837691783905029,
+   "xy_range_last_2s_m": 0.005645751953125,
+   "tilt_deg": 1.2266881465911865
+  },
+  "per_copy": null
+ },
+ "env_spacing_m": 3.0,
+ "passed": false,
+ "versions": {
+  "isaaclab": "6.1.17",
+  "isaaclab_newton": "0.13.6",
+  "newton": "1.2.1",
+  "warp": "1.13.0"
+ }
+}
