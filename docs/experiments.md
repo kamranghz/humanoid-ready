@@ -19,11 +19,11 @@ Commit IDs are deliberately not recorded here.
 | Subject splits and cohorts | E1 | `configs/ego_splits.yaml` | `results/splits/splits.json`, `results/splits/cohort_counts.json`, `results/splits/floor_work_clips.csv` | done |
 | Support-contact labels | E1b, support-contact labels v2 | `configs/support_contact_labels.yaml` | `results/support_contact/label_rates.json` | done |
 | Observation simulator (oracle evidence) | E2-A | `configs/ego_observation.yaml` | — (leak and byte-stability checks run on demand) | done |
-| Egocentric perception stage | E2-B | — | — | not started |
-| Egocentric render set | E2-B1, B1 | — | — | not started |
-| Perception baseline measurement | E2-B2, B2 | — | — | not started |
-| Perception training | E2-B3, B3 | — | — | not started |
-| Perception model selection | E2-B4, B4 | — | — | not started |
+| Egocentric perception stage | E2-B | — | `results/E/perception/` | B1 to B4 done 2026-11-24 (synthetic renders only; real-pixel perception is a separate step, see the tracker rows E2-B5 and E2-B6) |
+| Egocentric render set | E2-B1, B1 | `scripts/ego_render_set.py` | `results/E/perception/render_visibility.json` | done (aria_rect profile, 512 x 512) |
+| Perception baseline measurement | E2-B2, B2 | `scripts/ego_perception_b2.py` | `results/E/perception/b2_baseline_keypointrcnn_val.json` | done (VAL, pretrained detector as released: 4.9 % detection) |
+| Perception training | E2-B3, B3 | `scripts/ego_perception_b3_train.py`, `scripts/ego_perception_b3_eval.py` | `results/E/perception/b3_PC_seed{0,1}_val.json`, `results/E/perception/b3_PA_seed{0,1}_val.json` | done (two seeds each; VAL 3D error P-C 4.23 cm, P-A 5.57 cm) |
+| Perception model selection | E2-B4, B4 | `scripts/ego_perception_b4.py` | `results/E/perception/b4_selected_val_test.json` | done: P-C seed 0 selected on VAL, TEST used once (3D mean 4.17 cm); per-frame evidence written outside the repository |
 | Realistic observation model | E2-C | — | `docs/realistic_observation_design.md` (design note and pre-registration) | design note written 2026-10-13; no experiments run yet; acceptance criteria pre-registered |
 | Oracle completion baselines | E3 (oracle mode) | `configs/oracle_completion_baselines.yaml` | `results/completion/oracle_baselines.json` | done (oracle control) |
 | Completion baselines on realistic observations | E3 (perceived mode) | — | — | not started |
@@ -33,13 +33,14 @@ Commit IDs are deliberately not recorded here.
 | Decoupled contact grounding | E4b | `configs/contact_grounding.yaml` | `results/completion/contact_grounding.json`, `results/completion/contact_temperature.json` | run 2026-10-13 (oracle control, VAL only): skate and full-MPJPE criteria met, contact-ECE criterion not met (0.042 against 0.015); partial failure, design in `docs/decoupled_contact_grounding.md` |
 | Deterministic completion at the main budget | (new) | `configs/deterministic_main.yaml` | `results/completion/deterministic_main.json` | run 2026-10-13 to 2026-10-15 (oracle control, VAL only, 150000 steps, best checkpoint step 140000): skate 0.159 m/s (limit 0.202), full MPJPE 57.4 mm (limit 66.7), no divergence (worst selection metric 75.1 mm at step 5000, limit 150); all criteria met; design in `docs/decoupled_contact_grounding.md` (second study) |
 | End-to-end evaluation | E5 | — | — | not started |
+| SMPL-X-skeleton humanoid asset | E6a | `scripts/humanoid_asset_build.py` | `results/E/asset/asset_summary.json` | generated 2026-11-24 (22 bodies, 63 joints, 75 kg) |
+| SMPL-X-skeleton humanoid, 5 s stand check in Isaac Lab + Newton | E6a | `hready/robot/isaaclab_humanoid_stand.py` | `results/E/asset/isaac_stand_check.json` | run 2026-11-24: all 7 criteria met (pelvis drop 0.5 cm, tilt 1.2 deg, feet drift 0.3 cm, pelvis range in last 2 s 4.2 mm, centre of mass 10.1 cm inside the support polygon at the closest point, no NaN). Criteria changed after the first Isaac result: the absolute pelvis drift limit of 1 cm (measured 1.3 cm, same as the MuJoCo reference 1.4 cm) was replaced by the support-polygon and steadiness criteria; the old value is kept in the file. First falling runs were caused by empty importer drives, fixed by `--prime-drives` |
 | HR-Refine auxiliary heads and IMU fusion ablation | — | `configs/hr_refine_auxiliary_heads.yaml` | `results/contact_torques/contact_f1.txt` (the action and intent file was removed on 2026-11-20) | done (2000 steps per condition, one seed) |
 | Joint torques by inverse dynamics, raw vs refined | — | `scripts/compute_torques.py`, `scripts/plot_torques.py` | `results/B2/torque_comparison.npz`, `results/B2/torque_plots.png` | done (3 val clips x 4 windows, one seed) |
 | Real egocentric validation | E5b | — | — | in progress on Nymeria (rows below); the selected perception and completion pipeline has not been run on real video |
 | Nymeria foot-lock detector, learned from head pose | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_test_result.json`, `<data root>/review/nymeria_learned_controls.json` | run 2026-11-21 on the 60 test sequences; outcome in `docs/decisions.md` |
 | Nymeria foot-lock detector, trained with simulated noise | E5b | `scripts/nymeria_foot_lock_learned.py` | `<data root>/review/nymeria_learned_noise_result.json` | run 2026-11-21: lead over the speed threshold kept at 1 and 2 cm of independent noise, clean-pose accuracy lost; neither network better everywhere |
 | Nymeria head-pose error from video | E5b | `scripts/nymeria_pose_noise.py` | `<data root>/review/nymeria_pose_noise.json` | run 2026-11-21, VGGT-Omega only (MonST3R dropped, 2 h 50 min per window): step jitter about 0.13 cm, error smooth, scale unstable (24 to 52%); next input needs a scale source |
-| Humanoid simulation asset | E6a | — | — | not started |
 | Simulation tracking training | E6 | — | — | not started |
 | Refinement comparison (none / kinematic / simulation / both) | E7 (arms none, K, S, K+S) | — | — | not started |
 | Qualitative review | E8 | — | — | not started |

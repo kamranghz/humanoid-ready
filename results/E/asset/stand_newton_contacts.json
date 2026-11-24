@@ -1,0 +1,624 @@
+{
+ "joint_count": 63,
+ "body_count": 22,
+ "joint_names_match_asset": true,
+ "pose_source": "canonical zero pose (T-pose)",
+ "mass_total_kg": 75.0,
+ "mass_expected_kg": 75.0,
+ "body_mass_kg": {
+  "pelvis": 6.4526,
+  "left_hip": 10.853,
+  "left_knee": 3.4277,
+  "left_ankle": 0.8479,
+  "left_foot": 0.1496,
+  "right_hip": 10.853,
+  "right_knee": 3.4277,
+  "right_ankle": 0.8479,
+  "right_foot": 0.1496,
+  "spine1": 6.4526,
+  "spine2": 6.4526,
+  "spine3": 6.2276,
+  "left_collar": 0.1125,
+  "left_shoulder": 1.9726,
+  "left_elbow": 1.1251,
+  "left_wrist": 0.4388,
+  "neck": 6.4526,
+  "head": 5.1078,
+  "right_collar": 0.1125,
+  "right_shoulder": 1.9726,
+  "right_elbow": 1.1251,
+  "right_wrist": 0.4388
+ },
+ "body_mass_expected_kg": {
+  "pelvis": 6.4526,
+  "left_hip": 10.853,
+  "left_knee": 3.4277,
+  "left_ankle": 0.8479,
+  "left_foot": 0.1496,
+  "right_hip": 10.853,
+  "right_knee": 3.4277,
+  "right_ankle": 0.8479,
+  "right_foot": 0.1496,
+  "spine1": 6.4526,
+  "spine2": 6.4526,
+  "spine3": 6.2276,
+  "left_collar": 0.1125,
+  "left_shoulder": 1.9726,
+  "left_elbow": 1.1251,
+  "left_wrist": 0.4388,
+  "neck": 6.4526,
+  "head": 5.1078,
+  "right_collar": 0.1125,
+  "right_shoulder": 1.9726,
+  "right_elbow": 1.1251,
+  "right_wrist": 0.4388
+ },
+ "body_mass_max_abs_error_kg": 4.7474045994366776e-07,
+ "upright_at_start": true,
+ "seconds": 5.0,
+ "dt": 0.005,
+ "steps_run": 1000,
+ "fell": true,
+ "fall_step": 61,
+ "first_non_finite_step": -1,
+ "mujoco_contacts": false,
+ "trace": [
+  {
+   "step": 0,
+   "pelvis_xyz": [
+    0.0,
+    -0.0,
+    0.9532
+   ],
+   "tilt_deg": 0.0,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0694,
+     0.0673,
+     0.0786
+    ],
+    "right_ankle": [
+     -0.0921,
+     0.0583,
+     0.0762
+    ],
+    "left_foot": [
+     0.1167,
+     -0.0509,
+     0.0206
+    ],
+    "right_foot": [
+     -0.1309,
+     -0.0608,
+     0.0178
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "right_collar_x:2": 0.0,
+    "left_collar_x:2": 0.0,
+    "neck_x:2": 0.0,
+    "spine3_x:2": -0.0,
+    "left_wrist_x:2": -0.0
+   }
+  },
+  {
+   "step": 4,
+   "pelvis_xyz": [
+    0.0,
+    -0.0,
+    0.9497
+   ],
+   "tilt_deg": 0.0,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0694,
+     0.0673,
+     0.0752
+    ],
+    "right_ankle": [
+     -0.0921,
+     0.0583,
+     0.0727
+    ],
+    "left_foot": [
+     0.1167,
+     -0.0509,
+     0.0172
+    ],
+    "right_foot": [
+     -0.1309,
+     -0.0608,
+     0.0144
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "spine1_x:0": -0.0,
+    "left_collar_x:2": 0.0,
+    "spine3_x:2": -0.0,
+    "neck_x:2": 0.0,
+    "right_collar_x:2": 0.0
+   }
+  },
+  {
+   "step": 9,
+   "pelvis_xyz": [
+    0.0005,
+    -0.0003,
+    0.947
+   ],
+   "tilt_deg": 0.58,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0682,
+     0.0676,
+     0.0738
+    ],
+    "right_ankle": [
+     -0.0915,
+     0.0585,
+     0.0714
+    ],
+    "left_foot": [
+     0.1163,
+     -0.0508,
+     0.0168
+    ],
+    "right_foot": [
+     -0.1307,
+     -0.0607,
+     0.0136
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "spine3_x:0": -0.058,
+    "spine2_x:0": 0.047,
+    "left_knee_x:2": -0.034,
+    "left_ankle_x:2": 0.031,
+    "right_knee_x:2": 0.028
+   }
+  },
+  {
+   "step": 19,
+   "pelvis_xyz": [
+    0.0026,
+    -0.0013,
+    0.9398
+   ],
+   "tilt_deg": 3.08,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0671,
+     0.0675,
+     0.0752
+    ],
+    "right_ankle": [
+     -0.0915,
+     0.0584,
+     0.0727
+    ],
+    "left_foot": [
+     0.116,
+     -0.0507,
+     0.0187
+    ],
+    "right_foot": [
+     -0.1307,
+     -0.0608,
+     0.0148
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "spine3_x:0": -0.3,
+    "spine2_x:0": 0.243,
+    "left_knee_x:2": -0.184,
+    "right_knee_x:2": 0.155,
+    "left_hip_x:2": 0.142
+   }
+  },
+  {
+   "step": 29,
+   "pelvis_xyz": [
+    0.0067,
+    -0.0028,
+    0.9195
+   ],
+   "tilt_deg": 6.55,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0666,
+     0.067,
+     0.0754
+    ],
+    "right_ankle": [
+     -0.0917,
+     0.0577,
+     0.0733
+    ],
+    "left_foot": [
+     0.116,
+     -0.0511,
+     0.0189
+    ],
+    "right_foot": [
+     -0.1307,
+     -0.0612,
+     0.0148
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "spine3_x:0": -0.607,
+    "spine2_x:0": 0.495,
+    "left_knee_x:2": -0.392,
+    "right_knee_x:2": 0.366,
+    "left_hip_x:2": 0.307
+   }
+  },
+  {
+   "step": 39,
+   "pelvis_xyz": [
+    0.0139,
+    -0.0063,
+    0.9135
+   ],
+   "tilt_deg": 14.42,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0506,
+     0.0784,
+     0.0791
+    ],
+    "right_ankle": [
+     -0.0931,
+     0.0621,
+     0.0725
+    ],
+    "left_foot": [
+     0.0964,
+     -0.0392,
+     0.0187
+    ],
+    "right_foot": [
+     -0.133,
+     -0.0567,
+     0.0144
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "spine3_x:0": -0.766,
+    "spine2_x:0": 0.713,
+    "left_collar_x:2": -0.609,
+    "left_knee_x:0": 0.604,
+    "left_ankle_x:1": -0.601
+   }
+  },
+  {
+   "step": 49,
+   "pelvis_xyz": [
+    0.0311,
+    -0.0131,
+    0.8855
+   ],
+   "tilt_deg": 30.02,
+   "feet_xyz": {
+    "left_ankle": [
+     0.0175,
+     0.0887,
+     0.0794
+    ],
+    "right_ankle": [
+     -0.0944,
+     0.0649,
+     0.0731
+    ],
+    "left_foot": [
+     0.1024,
+     -0.0125,
+     0.0335
+    ],
+    "right_foot": [
+     -0.1343,
+     -0.0539,
+     0.015
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "left_knee_x:0": 0.913,
+    "spine1_x:2": 0.75,
+    "left_hip_x:2": 0.729,
+    "spine3_x:2": -0.729,
+    "spine2_x:0": 0.71
+   }
+  },
+  {
+   "step": 59,
+   "pelvis_xyz": [
+    0.0239,
+    -0.0287,
+    0.8569
+   ],
+   "tilt_deg": 40.63,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.0077,
+     0.0737,
+     0.0807
+    ],
+    "right_ankle": [
+     -0.0918,
+     0.0645,
+     0.0718
+    ],
+    "left_foot": [
+     0.1086,
+     0.0019,
+     0.0505
+    ],
+    "right_foot": [
+     -0.1328,
+     -0.0543,
+     0.0144
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "left_knee_x:0": 1.135,
+    "left_hip_x:2": 0.96,
+    "left_shoulder_x:2": -0.872,
+    "spine2_x:2": 0.807,
+    "spine2_x:0": 0.772
+   }
+  },
+  {
+   "step": 79,
+   "pelvis_xyz": [
+    0.0272,
+    -0.0371,
+    0.7705
+   ],
+   "tilt_deg": 67.98,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.0287,
+     0.0091,
+     0.0758
+    ],
+    "right_ankle": [
+     -0.1086,
+     0.071,
+     0.072
+    ],
+    "left_foot": [
+     0.095,
+     -0.0433,
+     0.0369
+    ],
+    "right_foot": [
+     -0.1474,
+     -0.049,
+     0.0157
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "left_shoulder_x:2": -1.77,
+    "left_knee_x:0": 1.318,
+    "neck_x:0": 1.033,
+    "right_hip_x:2": 1.029,
+    "left_hip_x:2": 1.029
+   }
+  },
+  {
+   "step": 99,
+   "pelvis_xyz": [
+    0.0786,
+    -0.1116,
+    0.7046
+   ],
+   "tilt_deg": 105.73,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.0852,
+     -0.051,
+     0.1178
+    ],
+    "right_ankle": [
+     -0.1518,
+     0.084,
+     0.0718
+    ],
+    "left_foot": [
+     0.0038,
+     -0.1182,
+     0.0333
+    ],
+    "right_foot": [
+     -0.1954,
+     -0.0335,
+     0.0138
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "left_shoulder_x:2": -1.949,
+    "left_shoulder_x:0": 1.448,
+    "left_knee_x:0": 1.389,
+    "neck_x:0": 1.154,
+    "neck_x:1": -1.148
+   }
+  },
+  {
+   "step": 149,
+   "pelvis_xyz": [
+    0.182,
+    -0.1603,
+    0.2883
+   ],
+   "tilt_deg": 128.18,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.3171,
+     -0.4777,
+     0.2223
+    ],
+    "right_ankle": [
+     -0.1405,
+     -0.0956,
+     0.2563
+    ],
+    "left_foot": [
+     -0.3345,
+     -0.4566,
+     0.0851
+    ],
+    "right_foot": [
+     -0.2331,
+     -0.0705,
+     0.1569
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "right_elbow_x:1": 2.852,
+    "left_shoulder_x:2": -2.171,
+    "right_knee_x:0": 2.128,
+    "right_elbow_x:0": 1.603,
+    "left_knee_x:0": 1.472
+   }
+  },
+  {
+   "step": 249,
+   "pelvis_xyz": [
+    0.4005,
+    -0.0379,
+    0.1667
+   ],
+   "tilt_deg": 97.96,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.3062,
+     -0.2854,
+     0.0885
+    ],
+    "right_ankle": [
+     -0.212,
+     -0.4535,
+     0.0499
+    ],
+    "left_foot": [
+     -0.3696,
+     -0.409,
+     0.0716
+    ],
+    "right_foot": [
+     -0.2815,
+     -0.5688,
+     0.0806
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "left_shoulder_x:0": 1.501,
+    "right_shoulder_x:1": -1.28,
+    "right_wrist_x:2": 1.165,
+    "right_shoulder_x:0": 1.151,
+    "left_knee_x:0": 1.105
+   }
+  },
+  {
+   "step": 499,
+   "pelvis_xyz": [
+    0.5837,
+    -0.157,
+    0.0943
+   ],
+   "tilt_deg": 91.08,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.2388,
+     -0.3504,
+     0.0917
+    ],
+    "right_ankle": [
+     -0.1565,
+     -0.4552,
+     0.0553
+    ],
+    "left_foot": [
+     -0.3038,
+     -0.4705,
+     0.0613
+    ],
+    "right_foot": [
+     -0.2484,
+     -0.557,
+     0.0718
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "right_shoulder_x:0": -1.937,
+    "left_shoulder_x:0": 1.921,
+    "left_elbow_x:0": -1.379,
+    "right_shoulder_x:1": 1.372,
+    "left_wrist_x:0": 1.19
+   }
+  },
+  {
+   "step": 999,
+   "pelvis_xyz": [
+    0.5818,
+    -0.1556,
+    0.0943
+   ],
+   "tilt_deg": 91.08,
+   "feet_xyz": {
+    "left_ankle": [
+     -0.2423,
+     -0.3549,
+     0.0919
+    ],
+    "right_ankle": [
+     -0.1565,
+     -0.4442,
+     0.0553
+    ],
+    "left_foot": [
+     -0.305,
+     -0.4745,
+     0.0552
+    ],
+    "right_foot": [
+     -0.2542,
+     -0.5412,
+     0.0666
+    ]
+   },
+   "largest_joint_angles_rad": {
+    "right_shoulder_x:2": -1.704,
+    "left_shoulder_x:0": 1.632,
+    "right_elbow_x:0": 1.543,
+    "left_wrist_x:0": -1.184,
+    "right_shoulder_x:1": 1.109
+   }
+  }
+ ],
+ "pelvis_z_first_steps_m": [
+  0.9532,
+  0.9527,
+  0.9519,
+  0.951,
+  0.9497,
+  0.947,
+  0.9398,
+  0.8855,
+  0.7046
+ ],
+ "pelvis_z_start_m": 0.953173816204071,
+ "pelvis_z_end_m": 0.09428596496582031,
+ "pelvis_z_min_m": 0.09420093894004822,
+ "max_tilt_deg": 130.8918991176187,
+ "root_xy_end_m": [
+  0.5818433165550232,
+  -0.15561486780643463
+ ],
+ "versions": {
+  "isaaclab": "6.1.17",
+  "isaaclab_newton": "0.13.6",
+  "newton": "1.2.1",
+  "warp": "1.13.0"
+ }
+}

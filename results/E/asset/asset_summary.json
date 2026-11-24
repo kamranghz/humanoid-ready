@@ -1,0 +1,66 @@
+{
+ "asset": "D:\\projects\\hready_data\\robot_assets\\smplx_humanoid\\smplx_humanoid.xml",
+ "metadata": "D:\\projects\\hready_data\\robot_assets\\smplx_humanoid\\smplx_humanoid.json",
+ "body_model": "D:\\projects\\hready_data\\models\\smplx\\locked_head\\models_lockedhead\\smplx\\SMPLX_NEUTRAL.npz",
+ "joints": 22,
+ "hinges": 63,
+ "total_mass_kg": 75.0,
+ "mass_sum_kg": 74.99999999999999,
+ "mass_source": "de Leva 1996 via hready.losses._constants",
+ "root_height_standing_m": 0.950419075289558,
+ "bone_lengths_m": {
+  "left_hip": 0.11254834060131956,
+  "right_hip": 0.12349588299954563,
+  "spine1": 0.11334155622203626,
+  "left_knee": 0.38279762644142096,
+  "right_knee": 0.3654542837321616,
+  "spine2": 0.13232467870870768,
+  "left_ankle": 0.40664629366311056,
+  "right_ankle": 0.4115127421130719,
+  "spine3": 0.06054846084528428,
+  "left_foot": 0.13990014344363647,
+  "right_foot": 0.1381349612588506,
+  "neck": 0.16860505354983735,
+  "left_collar": 0.09704229591187698,
+  "right_collar": 0.09781296370942179,
+  "head": 0.16409528333378795,
+  "left_shoulder": 0.133377314710193,
+  "right_shoulder": 0.1163939335981253,
+  "left_elbow": 0.267557245549593,
+  "right_elbow": 0.27487141704856927,
+  "left_wrist": 0.2530665029652003,
+  "right_wrist": 0.24977923854074055
+ },
+ "pd_groups": {
+  "leg": {
+   "kp": 1000.0,
+   "kd": 100.0,
+   "torque_limit": 400.0
+  },
+  "foot": {
+   "kp": 1200.0,
+   "kd": 100.0,
+   "torque_limit": 300.0
+  },
+  "spine": {
+   "kp": 1000.0,
+   "kd": 100.0,
+   "torque_limit": 300.0
+  },
+  "head": {
+   "kp": 200.0,
+   "kd": 20.0,
+   "torque_limit": 60.0
+  },
+  "arm": {
+   "kp": 400.0,
+   "kd": 40.0,
+   "torque_limit": 150.0
+  },
+  "hand": {
+   "kp": 100.0,
+   "kd": 10.0,
+   "torque_limit": 40.0
+  }
+ }
+}
