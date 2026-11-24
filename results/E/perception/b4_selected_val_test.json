@@ -1,0 +1,339 @@
+{
+ "script_version": 1,
+ "script_sha1": "63c9d18da1037f70",
+ "protocol": "docs/ego_perception_b4_protocol.md",
+ "selection": {
+  "table": {
+   "P-C": {
+    "per_seed_cm": {
+     "0": 4.204525470733643,
+     "1": 4.252816677093506
+    },
+    "mean_cm": 4.228671073913574
+   },
+   "P-A": {
+    "per_seed_cm": {
+     "0": 5.5933990478515625,
+     "1": 5.551673412322998
+    },
+    "mean_cm": 5.57253623008728
+   }
+  },
+  "variant": "P-C",
+  "seed": 0
+ },
+ "selected": "P-C_seed0",
+ "checkpoint": "D:\\projects\\hready_data\\ego_perception_b3\\P-C_seed0\\final.pt",
+ "checkpoint_sha1": "d9ad206cc478f909",
+ "train_steps": 30000,
+ "visible_prob_threshold": 0.5,
+ "evidence_root": "D:\\projects\\hready_data\\ego_perception_b4",
+ "clip_files": {
+  "val": 2222,
+  "test": 1271,
+  "train": 13856
+ },
+ "results": {
+  "val_all_clips": {
+   "frames": 31013,
+   "visible_joint_instances": 21514,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 21514,
+     "mean": 4.204525470733643,
+     "median": 3.0641002655029297
+    },
+    "hands": {
+     "n": 8569,
+     "mean": 3.2562904357910156,
+     "median": 2.474541425704956
+    },
+    "arms": {
+     "n": 3471,
+     "mean": 2.8959622383117676,
+     "median": 2.209932565689087
+    },
+    "legs": {
+     "n": 9441,
+     "mean": 5.549010276794434,
+     "median": 4.404130935668945
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 3.421518325805664,
+     "median": 2.141084909439087
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 21514,
+     "mean": 1.8095520734786987,
+     "median": 0.7474921941757202
+    },
+    "hands": {
+     "n": 8569,
+     "mean": 1.801151156425476,
+     "median": 0.7753667235374451
+    },
+    "arms": {
+     "n": 3471,
+     "mean": 2.7956295013427734,
+     "median": 1.5228151082992554
+    },
+    "legs": {
+     "n": 9441,
+     "mean": 1.4331332445144653,
+     "median": 0.5242413282394409
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 7.963623046875,
+     "median": 4.5799560546875
+    }
+   },
+   "depth_error_cm": {
+    "n": 21514,
+    "mean": 2.888427495956421,
+    "median": 2.11325740814209
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 16264,
+    "median_px": 0.9641591906547546,
+    "recall_at_12.8px": 0.9762666010821446,
+    "recall_at_25.6px": 0.9936055090998525
+   },
+   "visibility": {
+    "auc": 0.9997689149593268,
+    "visible": 21514,
+    "not_visible": 660772,
+    "share_visible_with_prob_above_0.5": 0.9516593845867807
+   }
+  },
+  "val_without_dfaust_mosh_shared_ids": {
+   "frames": 30909,
+   "visible_joint_instances": 21418,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 21418,
+     "mean": 4.202894687652588,
+     "median": 3.06197452545166
+    },
+    "hands": {
+     "n": 8537,
+     "mean": 3.253605604171753,
+     "median": 2.4718313217163086
+    },
+    "arms": {
+     "n": 3452,
+     "mean": 2.9007973670959473,
+     "median": 2.2179367542266846
+    },
+    "legs": {
+     "n": 9396,
+     "mean": 5.546520233154297,
+     "median": 4.403454780578613
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 3.421518325805664,
+     "median": 2.141084909439087
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 21418,
+     "mean": 1.8095680475234985,
+     "median": 0.7462327480316162
+    },
+    "hands": {
+     "n": 8537,
+     "mean": 1.8014142513275146,
+     "median": 0.7746208310127258
+    },
+    "arms": {
+     "n": 3452,
+     "mean": 2.796663761138916,
+     "median": 1.523416519165039
+    },
+    "legs": {
+     "n": 9396,
+     "mean": 1.4327130317687988,
+     "median": 0.5230249166488647
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 7.963623046875,
+     "median": 4.5799560546875
+    }
+   },
+   "depth_error_cm": {
+    "n": 21418,
+    "mean": 2.886704444885254,
+    "median": 2.109699010848999
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 16189,
+    "median_px": 0.9634341597557068,
+    "recall_at_12.8px": 0.9762184199147569,
+    "recall_at_25.6px": 0.9935758848600902
+   },
+   "visibility": {
+    "auc": 0.999768571779325,
+    "visible": 21418,
+    "not_visible": 658580,
+    "share_visible_with_prob_above_0.5": 0.9517695396395555
+   }
+  },
+  "test_all_clips": {
+   "frames": 16494,
+   "visible_joint_instances": 14496,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 14496,
+     "mean": 4.171790599822998,
+     "median": 3.1319923400878906
+    },
+    "hands": {
+     "n": 5920,
+     "mean": 2.860264539718628,
+     "median": 2.487243175506592
+    },
+    "arms": {
+     "n": 2069,
+     "mean": 2.682934284210205,
+     "median": 2.2152633666992188
+    },
+    "legs": {
+     "n": 6501,
+     "mean": 5.837004661560059,
+     "median": 4.7806596755981445
+    },
+    "trunk_head": {
+     "n": 6,
+     "mean": 7.358865737915039,
+     "median": 5.0648298263549805
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 14496,
+     "mean": 1.6484745740890503,
+     "median": 0.822688102722168
+    },
+    "hands": {
+     "n": 5920,
+     "mean": 1.6400489807128906,
+     "median": 0.8634771108627319
+    },
+    "arms": {
+     "n": 2069,
+     "mean": 3.0814225673675537,
+     "median": 1.7793467044830322
+    },
+    "legs": {
+     "n": 6501,
+     "mean": 1.1895779371261597,
+     "median": 0.5714389681816101
+    },
+    "trunk_head": {
+     "n": 6,
+     "mean": 13.047696113586426,
+     "median": 7.834256649017334
+    }
+   },
+   "depth_error_cm": {
+    "n": 14496,
+    "mean": 2.864394187927246,
+    "median": 2.1620094776153564
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 11536,
+    "median_px": 1.0452373027801514,
+    "recall_at_12.8px": 0.9884708737864077,
+    "recall_at_25.6px": 0.9972260748959778
+   },
+   "visibility": {
+    "auc": 0.9997505772530108,
+    "visible": 14496,
+    "not_visible": 348372,
+    "share_visible_with_prob_above_0.5": 0.9599199779249448
+   }
+  },
+  "test_without_dfaust_mosh_shared_ids": {
+   "frames": 16416,
+   "visible_joint_instances": 14469,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 14469,
+     "mean": 4.175374984741211,
+     "median": 3.1356122493743896
+    },
+    "hands": {
+     "n": 5906,
+     "mean": 2.8630776405334473,
+     "median": 2.4928932189941406
+    },
+    "arms": {
+     "n": 2065,
+     "mean": 2.6847598552703857,
+     "median": 2.217646360397339
+    },
+    "legs": {
+     "n": 6492,
+     "mean": 5.840416431427002,
+     "median": 4.7874064445495605
+    },
+    "trunk_head": {
+     "n": 6,
+     "mean": 7.358865737915039,
+     "median": 5.0648298263549805
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 14469,
+     "mean": 1.648599624633789,
+     "median": 0.8220034837722778
+    },
+    "hands": {
+     "n": 5906,
+     "mean": 1.6403303146362305,
+     "median": 0.864018440246582
+    },
+    "arms": {
+     "n": 2065,
+     "mean": 3.0844457149505615,
+     "median": 1.7859824895858765
+    },
+    "legs": {
+     "n": 6492,
+     "mean": 1.1888679265975952,
+     "median": 0.5710655450820923
+    },
+    "trunk_head": {
+     "n": 6,
+     "mean": 13.047696113586426,
+     "median": 7.834256649017334
+    }
+   },
+   "depth_error_cm": {
+    "n": 14469,
+    "mean": 2.8668694496154785,
+    "median": 2.1640448570251465
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 11510,
+    "median_px": 1.0451104640960693,
+    "recall_at_12.8px": 0.9884448305821025,
+    "recall_at_25.6px": 0.9972198088618592
+   },
+   "visibility": {
+    "auc": 0.9997496457609902,
+    "visible": 14469,
+    "not_visible": 346683,
+    "share_visible_with_prob_above_0.5": 0.9598451862602806
+   }
+  }
+ },
+ "run": "2026-11-24 06:22:32"
+}

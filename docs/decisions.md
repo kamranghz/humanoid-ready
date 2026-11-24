@@ -410,3 +410,22 @@ Full format notes: `docs/nymeria_data_format.md`. Inventory tool: `scripts/nymer
 - **Result.** A person is detected in 4.9% of frames; labelled recall at 25.6 px is 0.077 (0.08 without the DFaust/MoSh shared ids); median error of detected joints 85 px, wrists 21 px; visibility AUC 0.755.
 - **Reading by the rules fixed before the run.** Recall below 0.5: B3 must include P-C (adapted pretrained) next to P-A (own model) and P-B (pretrained as released). Side-agnostic recall is not 0.2 higher: left/right naming is not the main error.
 - **Not claimed.** Nothing about real images, other pretrained models, or test.
+
+### B3 protocol approved; own BEDLAM-pretrained model kept as a fourth variant (2026-11-23)
+
+- **Decision (owner).** Go ahead with B3 as written in `docs/ego_perception_b3_protocol.md`: P-C (COCO Keypoint R-CNN backbone, adapted) and P-A (ViT-S from random init, ego renders only, labelled as such), two seeds, 30,000 steps, fixed hyperparameters, VAL only.
+- **Items 12 and 13 stay on the plan.** The own model "BEDLAM-pretrained by us" is added later as P-A' (same encoder, head and budget; only the initial weights differ) by an amendment to the B3 protocol. B4 (selection, the single use of TEST) is not run until P-A' exists or the owner records that it is dropped, so TEST is not used twice. A claim "own model, BEDLAM-pretrained" is made only after P-A' is trained and evaluated.
+- **Code.** `hready/models/ego_perception.py`, `hready/data/ego_perception_data.py`, `scripts/ego_perception_b3_train.py`, `scripts/ego_perception_b3_eval.py`, `tests/test_ego_perception.py`. Checked on random labels only (full train, resume and eval path for both variants on CPU, 6 tests); no real number exists yet.
+
+### B3 two-seed result; B4 runs now, own BEDLAM-pretrained model becomes a later extra row (2026-11-24)
+
+- **B3 seed 1 done** (`docs/ego_perception_b3_protocol.md` section 9): VAL visible-joint 3D mean, P-C 4.253 cm and P-A 5.552 cm; two-seed means 4.23 and 5.57 cm, seed differences 0.05 and 0.04 cm. By the pre-registered criterion P-C is ahead.
+- **Decision (owner delegated, taken by Claude, 2026-11-24).** B4 is run now with P-C and P-A (and P-B, 2D only). Items 12 and 13 stay on the plan; their model P-A' is added later as an extra row "added after selection" with VAL numbers only. This reverses the earlier rule "B4 waits for P-A'" (2026-11-23). Reason: the numbers on synthetic frames are close to saturation, the real test of perception is E5b on real data, and the critical path (E4, E5) was blocked. The selection rule and TEST single use are unchanged.
+- **Protocol:** `docs/ego_perception_b4_protocol.md` (written before TEST is read). Script `scripts/ego_perception_b4.py`, converter `hready/data/ego_evidence.py`, checked on synthetic geometry and on random labels only.
+
+### B4 run: P-C selected, TEST used once (2026-11-24)
+
+- **What was run.** `scripts/ego_perception_b4.py` once (protocol `docs/ego_perception_b4_protocol.md`): selection P-C (VAL mean 4.229 cm against 5.573 cm for P-A), checkpoint P-C seed 0; val, test and train passes; per-clip evidence in `ego_perception_b4/`.
+- **Result.** TEST visible-joint 3D error mean 4.17 cm (median 3.13), VAL 4.21 cm; B2-comparable recall at 25.6 px 0.997; no val-to-test gap; the DFaust/MoSh shared ids change nothing. Result file `results/E/perception/b4_selected_val_test.json`, written once.
+- **Not claimed.** Anything about real egocentric images; P-A on TEST; the trunk and head group (6 visible instances on TEST).
+- **Open for completion (E4, E5).** The evidence is per frame (render set strided); perceived-evidence windows need contiguous renders of chosen windows.
