@@ -76,4 +76,33 @@ torch frontend, Newton with the MuJoCo-Warp solver, one process per copy count):
   6.6 h; 3 000 iterations about 0.7 h; 10 billion control steps about 22 h. The cost of policy, reward and observations is
   measured in the single-clip study.
 
-Still to do in this stage: reference export and the open-loop baseline on validation clips.
+## Amendment 2026-11-24: reference windows and open-loop baseline (written before the export and before any run)
+
+Reference windows (rule fixed here; code `scripts/tracking_reference_export.py`, `hready/robot/tracking_reference.py`):
+
+- Source: validation split. Categories: walk and fast (BABEL walk and run segments), sit_support and floor_work (kneel and lie
+  segments of `results/splits/floor_work_clips.csv`; segments flagged for foot skate are left out).
+- This refines the earlier "validation clips of 5 to 15 s": the categories are labelled per segment, not per clip, so the unit
+  is a segment of at least 5 s, and the window is its first 10 s.
+- Per category: sort by clip path and start time, shuffle with a generator seeded by (0, category index), keep the first segment of
+  each subject, take the first 8 usable windows. A window is unusable if the clip is a floor-outlier or the window is shorter
+  than 5 s inside the clip. The first window of each category is the stage 2 clip. If a category has fewer than 8 usable
+  segments, all are taken; if it has none, the export stops and the rule is not changed after seeing that.
+- Reference of the humanoid: the neutral-shape asset driven by the clip's hinge angles, clipped to the asset's joint limits
+  (the clipped fraction is reported per window), and the clip's root orientation. Root position is the subject's pelvis joint plus
+  one constant vertical offset per window, chosen so that the lowest point of the humanoid is 3 mm above the floor at its lowest
+  frame; horizontal position starts at the origin. The subject's body shape is not reproduced; this is the same asset for every clip.
+- No support object is modelled. In sit_support windows the humanoid must hold the seated pose without the seat. This is a limit of
+  that category: results there say how well the pose is held in the air, not how well a person sits.
+
+Open-loop baseline (code `hready/robot/isaaclab_open_loop_baseline.py`, `hready/robot/tracking_metrics.py`):
+
+- All windows of all categories, one copy each, simulation step 0.005 s, control step 6 simulation steps; reference interpolated at the
+  control times. Each copy starts at the first reference frame with zero velocity. PD target at each control step = reference
+  joint angles at that time (no lead). No policy, no reset.
+- Termination (recorded, not acted on): pelvis or ankle or wrist height error above 0.25 m, or pelvis orientation error above
+  0.8 rad. Success (PHC): mean joint distance below 0.5 m in every frame. Errors: global and root-relative MPJPE, velocity and
+  acceleration error of the joint positions at the control rate.
+- Check on the joint mapping: the pose error of all copies at the first frame, before any step, must be below 1 cm.
+- Foot skate, ground penetration and float are defined with their thresholds in the amendment that adds the numeric stage 2
+  thresholds, after this baseline.
