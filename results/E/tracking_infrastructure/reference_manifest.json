@@ -1,0 +1,965 @@
+{
+ "rule": "docs/simulation_tracking_protocol.md, amendment on reference windows",
+ "seed": 0,
+ "fps": 30.0,
+ "min_segment_s": 5.0,
+ "max_window_s": 10.0,
+ "windows_per_category": 8,
+ "usable_segments": {
+  "walk": 18,
+  "fast": 4,
+  "sit_support": 2,
+  "floor_work": 4
+ },
+ "excluded_clip_flags": "exclude_physical_eval or treadmill name",
+ "windows_taken": {
+  "walk": 8,
+  "fast": 4,
+  "sit_support": 2,
+  "floor_work": 4
+ },
+ "skipped": [],
+ "windows": [
+  {
+   "file": "walk_00.npz",
+   "category": "walk",
+   "rank_in_category": 0,
+   "stage2_clip": true,
+   "rel_path": "TotalCapture/s1/acting2_stageii.npz",
+   "subject": "TotalCapture/s1",
+   "segment_s": [
+    39.773,
+    51.356
+   ],
+   "frames": [
+    1193,
+    1493
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.0026455026455026454,
+   "frames_with_any_clipped_hinge": 0.16,
+   "max_clip_rad": 0.1384373981977307,
+   "offset_m": 0.07194081867998037,
+   "offset_without_clipping_m": 0.07194081867998037,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.06,
+     "max_exceedance_rad": 0.1384373981977307
+    },
+    {
+     "joint": "right_knee",
+     "axis": "x",
+     "frames_fraction": 0.056666666666666664,
+     "max_exceedance_rad": 0.12907448508368866
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.02666666666666667,
+     "max_exceedance_rad": 0.05785371256699812
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.023333333333333334,
+     "max_exceedance_rad": 0.11973473011552455
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.271697209789455,
+   "clip_max_joint_shift_m": 0.061352292857113126,
+   "root_height_min_m": 0.9289560111886779,
+   "root_height_max_m": 0.9976959618455687,
+   "horizontal_path_m": 7.752843187916174
+  },
+  {
+   "file": "walk_01.npz",
+   "category": "walk",
+   "rank_in_category": 1,
+   "stage2_clip": false,
+   "rel_path": "KIT/348/parkour06_stageii.npz",
+   "subject": "KIT/348",
+   "segment_s": [
+    1.252,
+    10.294
+   ],
+   "frames": [
+    37,
+    309
+   ],
+   "steps": 272,
+   "duration_s": 9.033333333333333,
+   "hinge_values_clipped_fraction": 0.00338468720821662,
+   "frames_with_any_clipped_hinge": 0.20955882352941177,
+   "max_clip_rad": 0.2428673442878156,
+   "offset_m": 0.10969244642814391,
+   "offset_without_clipping_m": 0.10969244642814391,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.13970588235294118,
+     "max_exceedance_rad": 0.2428673442878156
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.07352941176470588,
+     "max_exceedance_rad": 0.15425118446076008
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.15819600968322614,
+   "clip_max_joint_shift_m": 0.03036990778101087,
+   "root_height_min_m": 0.9294843594606756,
+   "root_height_max_m": 0.9762274543817877,
+   "horizontal_path_m": 7.804470282482494
+  },
+  {
+   "file": "walk_02.npz",
+   "category": "walk",
+   "rank_in_category": 2,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/kaiwa/walk-26-exhausted-kaiwa_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/kaiwa",
+   "segment_s": [
+    4.14,
+    21.86
+   ],
+   "frames": [
+    124,
+    424
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.0004761904761904762,
+   "frames_with_any_clipped_hinge": 0.03,
+   "max_clip_rad": 0.06964914451561348,
+   "offset_m": 0.020953318641860782,
+   "offset_without_clipping_m": 0.020953318641860782,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.03,
+     "max_exceedance_rad": 0.06964914451561348
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.04149961998347289,
+   "clip_max_joint_shift_m": 0.029992607774843222,
+   "root_height_min_m": 0.9187905998689726,
+   "root_height_max_m": 0.977376005218704,
+   "horizontal_path_m": 6.142311649333507
+  },
+  {
+   "file": "walk_03.npz",
+   "category": "walk",
+   "rank_in_category": 3,
+   "stage2_clip": false,
+   "rel_path": "HDM05/tr/HDM_tr_01-03_01_120_stageii.npz",
+   "subject": "HDM05/tr",
+   "segment_s": [
+    5.106,
+    13.711
+   ],
+   "frames": [
+    153,
+    412
+   ],
+   "steps": 259,
+   "duration_s": 8.6,
+   "hinge_values_clipped_fraction": 0.002206287920573635,
+   "frames_with_any_clipped_hinge": 0.1274131274131274,
+   "max_clip_rad": 0.15441963581832147,
+   "offset_m": -0.06155776815545533,
+   "offset_without_clipping_m": -0.0640801925140656,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "right_knee",
+     "axis": "x",
+     "frames_fraction": 0.0888030888030888,
+     "max_exceedance_rad": 0.061499962212684584
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.019305019305019305,
+     "max_exceedance_rad": 0.15441963581832147
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.019305019305019305,
+     "max_exceedance_rad": 0.0838684554375006
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.011583011583011582,
+     "max_exceedance_rad": 0.007626163376509031
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.1163344289887209,
+   "clip_max_joint_shift_m": 0.029904045598491826,
+   "root_height_min_m": 0.9209829585062268,
+   "root_height_max_m": 0.9896039978967908,
+   "horizontal_path_m": 7.745474884815175
+  },
+  {
+   "file": "walk_04.npz",
+   "category": "walk",
+   "rank_in_category": 4,
+   "stage2_clip": false,
+   "rel_path": "KIT/8/WalkingStraightBackwards02_stageii.npz",
+   "subject": "KIT/8",
+   "segment_s": [
+    0.0,
+    5.53
+   ],
+   "frames": [
+    0,
+    166
+   ],
+   "steps": 166,
+   "duration_s": 5.5,
+   "hinge_values_clipped_fraction": 0.009083954867087397,
+   "frames_with_any_clipped_hinge": 0.3674698795180723,
+   "max_clip_rad": 0.11639370887520074,
+   "offset_m": 0.006746523215677811,
+   "offset_without_clipping_m": 0.006746523215677811,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.3674698795180723,
+     "max_exceedance_rad": 0.11639370887520074
+    },
+    {
+     "joint": "right_knee",
+     "axis": "x",
+     "frames_fraction": 0.20481927710843373,
+     "max_exceedance_rad": 0.07202308492090403
+    }
+   ],
+   "clip_mean_joint_shift_mm": 1.4680135971688848,
+   "clip_max_joint_shift_m": 0.05326815042571246,
+   "root_height_min_m": 0.9510183261178995,
+   "root_height_max_m": 0.9819384740137125,
+   "horizontal_path_m": 2.008497430053252
+  },
+  {
+   "file": "walk_05.npz",
+   "category": "walk",
+   "rank_in_category": 5,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/hamada/turn-05-turn-hamada_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/hamada",
+   "segment_s": [
+    4.481,
+    11.461
+   ],
+   "frames": [
+    134,
+    344
+   ],
+   "steps": 210,
+   "duration_s": 6.966666666666667,
+   "hinge_values_clipped_fraction": 0.004081632653061225,
+   "frames_with_any_clipped_hinge": 0.23809523809523808,
+   "max_clip_rad": 0.27124605655050366,
+   "offset_m": 0.062127993003716075,
+   "offset_without_clipping_m": 0.062127993003716075,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.15714285714285714,
+     "max_exceedance_rad": 0.27124605655050366
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.05238095238095238,
+     "max_exceedance_rad": 0.110278523336178
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.047619047619047616,
+     "max_exceedance_rad": 0.1488287418429562
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.2649848713570954,
+   "clip_max_joint_shift_m": 0.05183198859257974,
+   "root_height_min_m": 0.9303791378897329,
+   "root_height_max_m": 0.9771731947821279,
+   "horizontal_path_m": 2.1365600891940923
+  },
+  {
+   "file": "walk_06.npz",
+   "category": "walk",
+   "rank_in_category": 6,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/aita/walk-22-look_around-aita_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/aita",
+   "segment_s": [
+    3.051,
+    9.237
+   ],
+   "frames": [
+    91,
+    278
+   ],
+   "steps": 187,
+   "duration_s": 6.2,
+   "hinge_values_clipped_fraction": 0.0073847720906544435,
+   "frames_with_any_clipped_hinge": 0.36363636363636365,
+   "max_clip_rad": 0.13855171667630112,
+   "offset_m": 0.08395035364206349,
+   "offset_without_clipping_m": 0.08395035364206349,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.32085561497326204,
+     "max_exceedance_rad": 0.1354728391591467
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.12834224598930483,
+     "max_exceedance_rad": 0.13855171667630112
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.016042780748663103,
+     "max_exceedance_rad": 0.039362846683774655
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.8535275223943867,
+   "clip_max_joint_shift_m": 0.06249425667140467,
+   "root_height_min_m": 0.9513016472059063,
+   "root_height_max_m": 1.0095648298459818,
+   "horizontal_path_m": 5.55042705614914
+  },
+  {
+   "file": "walk_07.npz",
+   "category": "walk",
+   "rank_in_category": 7,
+   "stage2_clip": false,
+   "rel_path": "BMLrub/rub085/0030_scamper_stageii.npz",
+   "subject": "BMLrub/rub085",
+   "segment_s": [
+    0.0,
+    6.961
+   ],
+   "frames": [
+    0,
+    209
+   ],
+   "steps": 209,
+   "duration_s": 6.933333333333334,
+   "hinge_values_clipped_fraction": 0.005164426217057796,
+   "frames_with_any_clipped_hinge": 0.2583732057416268,
+   "max_clip_rad": 0.47820128511346005,
+   "offset_m": 0.12666095562857227,
+   "offset_without_clipping_m": 0.12666095562857227,
+   "second_euler_solution_fraction": 0.007746639325586694,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.09569377990430622,
+     "max_exceedance_rad": 0.47820128511346005
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.09090909090909091,
+     "max_exceedance_rad": 0.4758601828191764
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.09090909090909091,
+     "max_exceedance_rad": 0.2255759102669586
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.028708133971291867,
+     "max_exceedance_rad": 0.0577549841530855
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.014354066985645933,
+     "max_exceedance_rad": 0.06646428220036321
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "x",
+     "frames_fraction": 0.004784688995215311,
+     "max_exceedance_rad": 0.05020051470528397
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.5652982240178431,
+   "clip_max_joint_shift_m": 0.11986122933390356,
+   "root_height_min_m": 0.8982830769626482,
+   "root_height_max_m": 1.1423127777187212,
+   "horizontal_path_m": 8.422189316069916
+  },
+  {
+   "file": "fast_00.npz",
+   "category": "fast",
+   "rank_in_category": 0,
+   "stage2_clip": true,
+   "rel_path": "CMU/111/111_34_stageii.npz",
+   "subject": "CMU/111",
+   "segment_s": [
+    0.0,
+    15.33
+   ],
+   "frames": [
+    0,
+    300
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.007248677248677248,
+   "frames_with_any_clipped_hinge": 0.45666666666666667,
+   "max_clip_rad": 0.3420120201016617,
+   "offset_m": 0.024993912225645506,
+   "offset_without_clipping_m": 0.024993912225645506,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.44333333333333336,
+     "max_exceedance_rad": 0.3420120201016617
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.013333333333333334,
+     "max_exceedance_rad": 0.025055993120506374
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.46678697406672914,
+   "clip_max_joint_shift_m": 0.043185051071848585,
+   "root_height_min_m": 0.9333990969714341,
+   "root_height_max_m": 1.0184456267413315,
+   "horizontal_path_m": 7.0090758264703705
+  },
+  {
+   "file": "fast_01.npz",
+   "category": "fast",
+   "rank_in_category": 1,
+   "stage2_clip": false,
+   "rel_path": "HDM05/tr/HDM_tr_01-03_03_120_stageii.npz",
+   "subject": "HDM05/tr",
+   "segment_s": [
+    19.606,
+    26.377
+   ],
+   "frames": [
+    588,
+    792
+   ],
+   "steps": 204,
+   "duration_s": 6.766666666666667,
+   "hinge_values_clipped_fraction": 0.0070028011204481795,
+   "frames_with_any_clipped_hinge": 0.3333333333333333,
+   "max_clip_rad": 0.5605906640182006,
+   "offset_m": -0.06054011211908705,
+   "offset_without_clipping_m": -0.06054011211908705,
+   "second_euler_solution_fraction": 0.0070028011204481795,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.24509803921568626,
+     "max_exceedance_rad": 0.5605906640182006
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "x",
+     "frames_fraction": 0.058823529411764705,
+     "max_exceedance_rad": 0.23566324769910318
+    },
+    {
+     "joint": "spine1",
+     "axis": "x",
+     "frames_fraction": 0.049019607843137254,
+     "max_exceedance_rad": 0.07475382238575645
+    },
+    {
+     "joint": "right_knee",
+     "axis": "x",
+     "frames_fraction": 0.029411764705882353,
+     "max_exceedance_rad": 0.03868076179440943
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.024509803921568627,
+     "max_exceedance_rad": 0.1499420089867678
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.024509803921568627,
+     "max_exceedance_rad": 0.029568195937526853
+    }
+   ],
+   "clip_mean_joint_shift_mm": 1.070452068815543,
+   "clip_max_joint_shift_m": 0.14000968436228922,
+   "root_height_min_m": 0.837154058355919,
+   "root_height_max_m": 0.9940980352350389,
+   "horizontal_path_m": 10.390306056102961
+  },
+  {
+   "file": "fast_02.npz",
+   "category": "fast",
+   "rank_in_category": 2,
+   "stage2_clip": false,
+   "rel_path": "BMLmovi/Subject_33_F_MoSh/Subject_33_F_7_stageii.npz",
+   "subject": "BMLmovi/Subject_33_F_MoSh",
+   "segment_s": [
+    0.0,
+    6.27
+   ],
+   "frames": [
+    0,
+    188
+   ],
+   "steps": 188,
+   "duration_s": 6.233333333333333,
+   "hinge_values_clipped_fraction": 0.0060790273556231,
+   "frames_with_any_clipped_hinge": 0.32978723404255317,
+   "max_clip_rad": 0.2705926500763272,
+   "offset_m": -0.0009675673937404898,
+   "offset_without_clipping_m": -0.0009675673937404898,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "right_foot",
+     "axis": "z",
+     "frames_fraction": 0.25,
+     "max_exceedance_rad": 0.2705926500763272
+    },
+    {
+     "joint": "left_foot",
+     "axis": "z",
+     "frames_fraction": 0.0851063829787234,
+     "max_exceedance_rad": 0.11359148145115694
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.02127659574468085,
+     "max_exceedance_rad": 0.026697946393169192
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.02127659574468085,
+     "max_exceedance_rad": 0.01869931390773233
+    },
+    {
+     "joint": "right_foot",
+     "axis": "y",
+     "frames_fraction": 0.005319148936170213,
+     "max_exceedance_rad": 0.0032463766772151126
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.003930045246504589,
+   "clip_max_joint_shift_m": 0.0026809081117124688,
+   "root_height_min_m": 0.9146475143933689,
+   "root_height_max_m": 1.0338051863217745,
+   "horizontal_path_m": 5.070907865231584
+  },
+  {
+   "file": "fast_03.npz",
+   "category": "fast",
+   "rank_in_category": 3,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/hamada/walk-04-fast-hamada_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/hamada",
+   "segment_s": [
+    11.92,
+    26.02
+   ],
+   "frames": [
+    357,
+    657
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.004603174603174603,
+   "frames_with_any_clipped_hinge": 0.2866666666666667,
+   "max_clip_rad": 0.13428641601696095,
+   "offset_m": 0.06748982345459009,
+   "offset_without_clipping_m": 0.0659339851544124,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.2833333333333333,
+     "max_exceedance_rad": 0.13428641601696095
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.006666666666666667,
+     "max_exceedance_rad": 0.008903278160190941
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.15744289684509719,
+   "clip_max_joint_shift_m": 0.019697440125142653,
+   "root_height_min_m": 0.8938382474124148,
+   "root_height_max_m": 0.9739300218760684,
+   "horizontal_path_m": 12.380985468899278
+  },
+  {
+   "file": "sit_support_00.npz",
+   "category": "sit_support",
+   "rank_in_category": 0,
+   "stage2_clip": true,
+   "rel_path": "Eyes_Japan_Dataset/hamada/sitdown_standup-14-hold_chair-hamada_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/hamada",
+   "segment_s": [
+    5.023,
+    25.898
+   ],
+   "frames": [
+    150,
+    450
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.06476190476190476,
+   "frames_with_any_clipped_hinge": 0.98,
+   "max_clip_rad": 0.6864887398876607,
+   "offset_m": 0.055311871386561684,
+   "offset_without_clipping_m": 0.0479994497389572,
+   "second_euler_solution_fraction": 0.0380952380952381,
+   "worst_clipped_hinges": [
+    {
+     "joint": "spine1",
+     "axis": "x",
+     "frames_fraction": 0.96,
+     "max_exceedance_rad": 0.6864887398876607
+    },
+    {
+     "joint": "left_hip",
+     "axis": "z",
+     "frames_fraction": 0.8866666666666667,
+     "max_exceedance_rad": 0.11490425654879721
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.7,
+     "max_exceedance_rad": 0.5955613164440432
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.6633333333333333,
+     "max_exceedance_rad": 0.5196061674166987
+    },
+    {
+     "joint": "right_collar",
+     "axis": "y",
+     "frames_fraction": 0.52,
+     "max_exceedance_rad": 0.14026770385612075
+    },
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.15,
+     "max_exceedance_rad": 0.07865725393944717
+    }
+   ],
+   "clip_mean_joint_shift_mm": 81.81839358793867,
+   "clip_max_joint_shift_m": 0.3463639784060928,
+   "root_height_min_m": 0.6570031174192765,
+   "root_height_max_m": 0.8900154956350663,
+   "horizontal_path_m": 0.3568183114002995
+  },
+  {
+   "file": "sit_support_01.npz",
+   "category": "sit_support",
+   "rank_in_category": 1,
+   "stage2_clip": false,
+   "rel_path": "CMU/01/01_08_stageii.npz",
+   "subject": "CMU/01",
+   "segment_s": [
+    11.044,
+    18.502
+   ],
+   "frames": [
+    331,
+    556
+   ],
+   "steps": 225,
+   "duration_s": 7.466666666666667,
+   "hinge_values_clipped_fraction": 0.03231040564373898,
+   "frames_with_any_clipped_hinge": 0.9377777777777778,
+   "max_clip_rad": 0.9056311687067258,
+   "offset_m": -0.7678278525855831,
+   "offset_without_clipping_m": -0.7678278525855831,
+   "second_euler_solution_fraction": 0.024973544973544974,
+   "worst_clipped_hinges": [
+    {
+     "joint": "spine1",
+     "axis": "x",
+     "frames_fraction": 0.6266666666666667,
+     "max_exceedance_rad": 0.14838978272939218
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.49333333333333335,
+     "max_exceedance_rad": 0.8091360941817609
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "x",
+     "frames_fraction": 0.2088888888888889,
+     "max_exceedance_rad": 0.7668196878453868
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.18666666666666668,
+     "max_exceedance_rad": 0.9056311687067258
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "x",
+     "frames_fraction": 0.12,
+     "max_exceedance_rad": 0.5876067536650647
+    },
+    {
+     "joint": "left_collar",
+     "axis": "y",
+     "frames_fraction": 0.10666666666666667,
+     "max_exceedance_rad": 0.13296585518248882
+    }
+   ],
+   "clip_mean_joint_shift_mm": 7.789733557249743,
+   "clip_max_joint_shift_m": 0.19930790001356233,
+   "root_height_min_m": 0.7856621901008793,
+   "root_height_max_m": 0.852288262030811,
+   "horizontal_path_m": 0.5631665081838608
+  },
+  {
+   "file": "floor_work_00.npz",
+   "category": "floor_work",
+   "rank_in_category": 0,
+   "stage2_clip": true,
+   "rel_path": "CMU/111/111_07_stageii.npz",
+   "subject": "CMU/111",
+   "segment_s": [
+    0.0,
+    5.398
+   ],
+   "frames": [
+    0,
+    162
+   ],
+   "steps": 162,
+   "duration_s": 5.366666666666666,
+   "hinge_values_clipped_fraction": 0.028414658044287673,
+   "frames_with_any_clipped_hinge": 0.9074074074074074,
+   "max_clip_rad": 0.585063214043475,
+   "offset_m": 0.0751818740594189,
+   "offset_without_clipping_m": 0.05688256501220457,
+   "second_euler_solution_fraction": 0.03409758965314521,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.6975308641975309,
+     "max_exceedance_rad": 0.16884278177962458
+    },
+    {
+     "joint": "spine1",
+     "axis": "x",
+     "frames_fraction": 0.36419753086419754,
+     "max_exceedance_rad": 0.17029172673903392
+    },
+    {
+     "joint": "right_knee",
+     "axis": "y",
+     "frames_fraction": 0.2839506172839506,
+     "max_exceedance_rad": 0.09428297026391058
+    },
+    {
+     "joint": "left_knee",
+     "axis": "x",
+     "frames_fraction": 0.15432098765432098,
+     "max_exceedance_rad": 0.06409335159043687
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.09259259259259259,
+     "max_exceedance_rad": 0.5734642363060349
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.08641975308641975,
+     "max_exceedance_rad": 0.585063214043475
+    }
+   ],
+   "clip_mean_joint_shift_mm": 7.755584927900293,
+   "clip_max_joint_shift_m": 0.14938178714807407,
+   "root_height_min_m": 0.2901055687892239,
+   "root_height_max_m": 0.3732962334382336,
+   "horizontal_path_m": 0.35406421996250625
+  },
+  {
+   "file": "floor_work_01.npz",
+   "category": "floor_work",
+   "rank_in_category": 1,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/hamada/pose-11-bended_knees-hamada_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/hamada",
+   "segment_s": [
+    6.06,
+    20.673
+   ],
+   "frames": [
+    181,
+    481
+   ],
+   "steps": 300,
+   "duration_s": 9.966666666666667,
+   "hinge_values_clipped_fraction": 0.014338624338624338,
+   "frames_with_any_clipped_hinge": 0.9033333333333333,
+   "max_clip_rad": 0.1337740194735198,
+   "offset_m": 0.07003935999743416,
+   "offset_without_clipping_m": 0.06287215484212572,
+   "second_euler_solution_fraction": 0.0,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "y",
+     "frames_fraction": 0.9033333333333333,
+     "max_exceedance_rad": 0.1337740194735198
+    }
+   ],
+   "clip_mean_joint_shift_mm": 0.6398973012119805,
+   "clip_max_joint_shift_m": 0.01338708560853272,
+   "root_height_min_m": 0.5485028309332557,
+   "root_height_max_m": 0.5830639881598182,
+   "horizontal_path_m": 0.32890212864758755
+  },
+  {
+   "file": "floor_work_02.npz",
+   "category": "floor_work",
+   "rank_in_category": 2,
+   "stage2_clip": false,
+   "rel_path": "ACCAD/Female1General_c3d/A9_-_lie_t2_stageii.npz",
+   "subject": "ACCAD/Female1General_c3d",
+   "segment_s": [
+    0.0,
+    7.9
+   ],
+   "frames": [
+    0,
+    237
+   ],
+   "steps": 237,
+   "duration_s": 7.866666666666666,
+   "hinge_values_clipped_fraction": 0.0,
+   "frames_with_any_clipped_hinge": 0.0,
+   "max_clip_rad": 0.0,
+   "offset_m": 0.0166926763144877,
+   "offset_without_clipping_m": 0.0166926763144877,
+   "second_euler_solution_fraction": 0.09523809523809523,
+   "worst_clipped_hinges": [],
+   "clip_mean_joint_shift_mm": 0.0,
+   "clip_max_joint_shift_m": 0.0,
+   "root_height_min_m": 0.14943719721712137,
+   "root_height_max_m": 0.15869254685319925,
+   "horizontal_path_m": 0.08035605089654013
+  },
+  {
+   "file": "floor_work_03.npz",
+   "category": "floor_work",
+   "rank_in_category": 3,
+   "stage2_clip": false,
+   "rel_path": "Eyes_Japan_Dataset/kaiwa/pose-11-bended_knees-kaiwa_stageii.npz",
+   "subject": "Eyes_Japan_Dataset/kaiwa",
+   "segment_s": [
+    15.045,
+    20.811
+   ],
+   "frames": [
+    451,
+    625
+   ],
+   "steps": 174,
+   "duration_s": 5.766666666666667,
+   "hinge_values_clipped_fraction": 0.02481299033023171,
+   "frames_with_any_clipped_hinge": 1.0,
+   "max_clip_rad": 0.5595584086323009,
+   "offset_m": 0.004314289156355342,
+   "offset_without_clipping_m": 0.004314289156355342,
+   "second_euler_solution_fraction": 0.05692391899288451,
+   "worst_clipped_hinges": [
+    {
+     "joint": "left_knee",
+     "axis": "z",
+     "frames_fraction": 1.0,
+     "max_exceedance_rad": 0.15903748484534813
+    },
+    {
+     "joint": "left_collar",
+     "axis": "z",
+     "frames_fraction": 0.3505747126436782,
+     "max_exceedance_rad": 0.07768801046686769
+    },
+    {
+     "joint": "left_elbow",
+     "axis": "z",
+     "frames_fraction": 0.10919540229885058,
+     "max_exceedance_rad": 0.5595584086323009
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "z",
+     "frames_fraction": 0.09770114942528736,
+     "max_exceedance_rad": 0.49541277959437635
+    },
+    {
+     "joint": "right_elbow",
+     "axis": "x",
+     "frames_fraction": 0.005747126436781609,
+     "max_exceedance_rad": 0.046013883795477994
+    }
+   ],
+   "clip_mean_joint_shift_mm": 4.972457628024736,
+   "clip_max_joint_shift_m": 0.13975864323259587,
+   "root_height_min_m": 0.5645548558868546,
+   "root_height_max_m": 0.5716799951233048,
+   "horizontal_path_m": 0.14020552330989156
+  }
+ ]
+}

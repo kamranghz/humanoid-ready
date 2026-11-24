@@ -116,3 +116,30 @@ also drops every clip the project already excludes from physical evaluation (`ex
 floor outlier, too short) and every clip with "treadmill" in its path. The flags are an existing, objective property of the clip,
 not chosen after looking at any tracking result. Counts before this change: walk 18, fast 5, sit_support 2, floor_work 4 usable
 segments. Everything else in the rule stays as written.
+
+## Amendment 2026-11-24 (third): hinge solution fixed in the reference export, before any run
+
+The first exports (no simulation run) showed hinge values far outside the limits in sit and floor windows, mostly at the elbows
+(up to 120 degrees on the z hinge). Cause: a rotation R = Rx(a) Ry(b) Rz(c) has two equal solutions, (a, b, c) with |b| < 90 degrees
+and (a + 180, 180 - b, c + 180) degrees. The export always took the first, which cannot hold an elbow flexion above 90 degrees
+(the elbow flexes about y, limit 150 degrees); it returned a near-straight elbow with large a and c, which the limits then clipped.
+The export now takes, per joint and frame, the solution with the smaller limit violation (the first on a tie). The rotation
+is the same; only the representation changes. Tests: the 125 degree elbow flexion is kept without clipping, and both solutions give the
+same rotation. The window selection is unchanged. The manifest now also reports, per window, the clipped fraction, the mean and maximum
+joint shift caused by clipping, the offset without clipping, and the worst clipped hinges. What remains clipped after this change is a
+real limit of the asset (for example spine forward bending beyond 45 degrees), and is reported as such.
+
+## Amendment 2026-11-24 (fourth): reference quality of the 18 windows, recorded before the baseline run
+
+After the hinge fix (export only, no simulation run), all 18 windows are kept; none is dropped. Walk and fast windows: clipped values
+0.0 to 0.9 percent, mean joint shift from clipping at most 1 mm. Floor work: 0.0 to 2.8 percent, mean shift at most 8 mm (the lying window
+is clean). Two sit_support windows are reference-limited and every result for them is reported with these numbers:
+
+- sit_support window 0 (stage 2 sit clip): the spine1 forward-bending limit of 45 degrees is exceeded by up to 39 degrees in 96 percent of the
+  frames; mean joint shift from clipping 82 mm, maximum 0.35 m. The humanoid reference is therefore a seated pose with a more upright
+  trunk than the person.
+- sit_support window 1: the humanoid had to be lowered by 0.77 m to touch the floor with its lowest point, with or without clipping, so the
+  person in that clip was seated far above the floor estimate of the clip. Its result says little about sitting on a low support.
+
+The reference quality numbers are in `results/E/tracking_infrastructure/reference_manifest.json`. No window is reselected after the
+baseline result is known.

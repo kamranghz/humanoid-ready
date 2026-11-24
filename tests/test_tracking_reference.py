@@ -53,6 +53,7 @@ def test_reference_stands_on_the_floor_and_starts_at_the_origin():
     assert abs(ref["lowest_m"].min() - R.CLEARANCE_M) < 1e-9
     assert np.allclose(ref["joints"][:, 0], ref["root_pos"])  # root joint is the pelvis
     assert ref["stats"]["hinge_values_clipped_fraction"] == 0.0
+    assert ref["stats"]["clip_mean_joint_shift_mm"] < 1e-6 and abs(ref["stats"]["offset_without_clipping_m"] - ref["offset_m"]) < 1e-9
     assert ref["root_quat_xyzw"].shape == (t, 4)
 
 
@@ -64,6 +65,7 @@ def test_reference_clips_hinges_to_the_limits():
     pose[:, 17 - 1] = [0.0, 3.0, 0.0]  # a left elbow at 3 rad about y is far beyond its 150 deg limit
     ref = R.build_reference(meta, np.zeros((2, 3)), pose, np.tile([0.0, 0.0, 1.0], (2, 1)))
     assert ref["stats"]["hinge_values_clipped_fraction"] > 0.0
+    assert ref["stats"]["clip_max_joint_shift_m"] > 0.1  # clipping a 3 rad elbow moves the hand a long way
     lim = R.hinge_limits(meta)
     assert (ref["hinges"] >= lim[:, 0] - 1e-12).all() and (ref["hinges"] <= lim[:, 1] + 1e-12).all()
 
@@ -119,3 +121,30 @@ def test_resampling_onto_the_control_times():
     q = np.tile([0.0, 0.0, 0.0, 1.0], (5, 1))
     q[3:] = [0.0, 0.0, 1.0, 0.0]
     assert np.allclose(np.linalg.norm(R.resample(q, np.array([0.05]), 30.0, normalise=True), axis=-1), 1.0)
+
+
+def test_elbow_flexion_beyond_ninety_degrees_is_kept():
+    meta = _meta()
+    j = meta["joint_names"].index("left_elbow")
+    pose = np.zeros((3, 21, 3))
+    pose[:, j - 1] = [0.0, -np.deg2rad(125.0), 0.0]  # left flexion is negative b, limit 150 degrees
+    ref = R.build_reference(meta, np.zeros((3, 3)), pose, np.tile([0.0, 0.0, 1.0], (3, 1)))
+    assert ref["stats"]["hinge_values_clipped_fraction"] == 0.0
+    assert np.allclose(ref["hinges"][0].reshape(21, 3)[j - 1], [0.0, -np.deg2rad(125.0), 0.0], atol=1e-9)
+    assert ref["stats"]["second_euler_solution_fraction"] > 0.0
+    assert np.abs(H.hinges_to_matrix(ref["hinges"][0].reshape(21, 3)) - H.aa_to_matrix(pose[0])).max() < 1e-9
+
+
+def test_both_euler_solutions_are_the_same_rotation():
+    rng = np.random.default_rng(3)
+    lim = np.tile([-10.0, 10.0], (63, 1))  # wide limits: the first solution always wins
+    for _ in range(20):
+        aa = rng.normal(0, 1.5, (21, 3))
+        main = H.pose_to_hinges(aa).reshape(21, 3)
+        alt = main.copy()
+        alt[:, 0] += np.pi
+        alt[:, 1] = np.where(main[:, 1] >= 0, np.pi - main[:, 1], -np.pi - main[:, 1])
+        alt[:, 2] += np.pi
+        assert np.abs(H.hinges_to_matrix(alt) - H.hinges_to_matrix(main)).max() < 1e-9
+    h, used = R.hinges_within_limits(aa, lim)
+    assert not used.any() and np.allclose(h, H.pose_to_hinges(aa))

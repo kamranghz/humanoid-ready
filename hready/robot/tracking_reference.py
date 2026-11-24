@@ -77,6 +77,29 @@ def hinge_limits(meta: dict) -> np.ndarray:
     return np.concatenate([np.asarray(meta["limits_rad"][meta["joint_names"][j]], dtype=float) for j in range(1, 22)], axis=0)
 
 
+def _wrap(a: np.ndarray) -> np.ndarray:
+    return (a + np.pi) % (2 * np.pi) - np.pi
+
+
+def hinges_within_limits(pose_aa: np.ndarray, lim: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
+    """Hinge angles (63,) of one frame, choosing for every joint between the two equal Euler solutions of R = Rx(a) Ry(b) Rz(c):
+    (a, b, c) with |b| < pi/2, and (a + pi, pi - b, c + pi). The second is the one that holds a flexion about y beyond 90 degrees
+    (the elbows, limit 150 degrees). The solution with less limit violation wins; ties keep the first. Also returns which joints
+    use the second solution (21,)."""
+    main = H.pose_to_hinges(pose_aa).reshape(21, 3)
+    alt = main.copy()
+    alt[:, 0] = _wrap(main[:, 0] + np.pi)
+    alt[:, 1] = np.where(main[:, 1] >= 0, np.pi - main[:, 1], -np.pi - main[:, 1])
+    alt[:, 2] = _wrap(main[:, 2] + np.pi)
+    lim3 = lim.reshape(21, 3, 2)
+
+    def violation(h: np.ndarray) -> np.ndarray:
+        return (np.clip(lim3[..., 0] - h, 0, None) + np.clip(h - lim3[..., 1], 0, None)).sum(-1)
+
+    use_alt = violation(alt) < violation(main) - 1e-9
+    return np.where(use_alt[:, None], alt, main).reshape(63), use_alt
+
+
 def _quat_series(root_rot: np.ndarray) -> np.ndarray:
     q = np.stack([H.matrix_to_quat_xyzw(r) for r in root_rot])
     for t in range(1, len(q)):
@@ -92,7 +115,9 @@ def build_reference(meta: dict, root_orient: np.ndarray, pose_body: np.ndarray, 
     parents = np.asarray(meta["parents"])
     lim = hinge_limits(meta)
     t_len = len(root_orient)
-    raw = np.stack([H.pose_to_hinges(p) for p in pose_body])
+    solved = [hinges_within_limits(p, lim) for p in pose_body]
+    raw = np.stack([h for h, _ in solved])
+    switched = np.stack([u for _, u in solved])
     hing = np.clip(raw, lim[:, 0], lim[:, 1])
     clipped = np.abs(raw - hing) > 1e-6
     root_rot = H.aa_to_matrix(root_orient)
@@ -106,11 +131,22 @@ def build_reference(meta: dict, root_orient: np.ndarray, pose_body: np.ndarray, 
     offset = -float(np.min(pelvis[:, 2] + low)) + CLEARANCE_M
     root_pos = pelvis + np.array([0.0, 0.0, offset])
     joints = np.stack([H.forward_joints(rest, parents, root_rot[t], root_pos[t], local[t]) for t in range(t_len)])
+    # how far clipping moves the reference: the same root, unclipped hinges, and the offset the unclipped pose would have needed
+    local_raw = np.concatenate([np.tile(np.eye(3), (t_len, 1, 1, 1)), H.hinges_to_matrix(raw.reshape(t_len, 21, 3))], axis=1)
+    joints_raw = np.stack([H.forward_joints(rest, parents, root_rot[t], root_pos[t], local_raw[t]) for t in range(t_len)])
+    low_raw = np.array([H.lowest_height(meta, root_rot[t], local_raw[t]) for t in range(t_len)])
+    shift = np.linalg.norm(joints - joints_raw, axis=-1)
+    over = np.abs(raw - hing)
+    worst = sorted(((float(clipped[:, k].mean()), float(over[:, k].max()), k) for k in range(63)), reverse=True)[:6]
+    worst_hinges = [{"joint": meta["joint_names"][1 + k // 3], "axis": "xyz"[k % 3], "frames_fraction": f, "max_exceedance_rad": m}
+                    for f, m, k in worst if f > 0]
     return {
         "root_pos": root_pos, "root_quat_xyzw": _quat_series(root_rot), "hinges": hing, "joints": joints,
         "lowest_m": low + root_pos[:, 2], "offset_m": offset,
         "stats": {"hinge_values_clipped_fraction": float(clipped.mean()), "frames_with_any_clipped_hinge": float(clipped.any(1).mean()),
                   "max_clip_rad": float(np.abs(raw - hing).max()), "offset_m": offset,
+                  "offset_without_clipping_m": -float(np.min(pelvis[:, 2] + low_raw)) + CLEARANCE_M,
+                  "second_euler_solution_fraction": float(switched.mean()), "worst_clipped_hinges": worst_hinges, "clip_mean_joint_shift_mm": float(1000 * shift.mean()), "clip_max_joint_shift_m": float(shift.max()),
                   "root_height_min_m": float(root_pos[:, 2].min()), "root_height_max_m": float(root_pos[:, 2].max()),
                   "horizontal_path_m": float(np.linalg.norm(np.diff(root_pos[:, :2], axis=0), axis=1).sum())},
     }
