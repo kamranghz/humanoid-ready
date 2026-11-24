@@ -60,3 +60,18 @@ Both variants trained 30,000 steps on the train split and evaluated on VAL (31,0
 Reading by section 5: both variants are far above the B2 recall (0.077), so the pipeline is not broken; both VAL/train ratios are well below 2, so no generalisation gap is reported. On seed 0 P-C has the lower 3D error; the seed spread is unknown until seed 1.
 
 Why the numbers are this high, and what they do not show: the renders are flat colours with one colour per body region, so the image almost names the joint; train and VAL use the same renderer and body model; 97% of the joint instances in the visibility AUC are far-out-of-image or plainly absent, which makes the AUC easy (it does not separate occluded from visible joints inside the image). These are numbers for synthetic flat-colour frames only, an upper bound for real footage; nothing here is evidence for real egocentric images.
+
+## 9. Result, seed 1 and the two-seed summary (run 2026-11-24; `b3_PC_seed1_val.json`, `b3_PA_seed1_val.json`, same script sha1 b74993d959ea4442)
+| VAL, visible joints | P-C seed 0 | P-C seed 1 | P-A seed 0 | P-A seed 1 |
+|---|---|---|---|---|
+| 3D error mean (cm) | 4.205 | 4.253 | 5.593 | 5.552 |
+| 3D error median (cm) | 3.06 | 3.08 | 4.16 | 4.21 |
+| 2D error mean (px) | 1.81 | 1.85 | 4.44 | 4.29 |
+| recall at 25.6 px (12 joints of B2) | 0.994 | 0.994 | 0.971 | 0.970 |
+| VAL / train 3D error | 1.23 | 1.25 | 1.15 | 1.12 |
+
+Mean over the two seeds: P-C 4.23 cm (seeds differ by 0.05 cm), P-A 5.57 cm (seeds differ by 0.04 cm). The difference between the variants (1.34 cm) is about 30 times the seed difference. By the criterion fixed in section 5 (lowest mean visible-joint 3D error on VAL, mean of the two seeds) P-C is ahead of P-A; this is not the B4 selection, which also waits for P-A' (section 3). Both rules of section 5 pass for both seeds. Without the DFaust/MoSh shared ids the means are unchanged (4.20 to 4.25 and 5.60).
+
+One difference between seeds: the trunk-and-head group of P-C is 3.42 cm (seed 0) and 5.26 cm (seed 1); the other groups differ by at most 0.1 cm. The group has few visible instances and is not analysed further here.
+
+Same limits as section 8: synthetic flat-colour frames, one renderer for train and VAL, two seeds, P-A not BEDLAM-pretrained.

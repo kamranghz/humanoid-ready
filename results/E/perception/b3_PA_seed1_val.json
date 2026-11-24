@@ -1,0 +1,239 @@
+{
+ "script_version": 1,
+ "script_sha1": "b74993d959ea4442",
+ "protocol": "docs/ego_perception_b3_protocol.md",
+ "variant": "P-A",
+ "seed": 1,
+ "checkpoint": "D:\\projects\\hready_data\\ego_perception_b3\\P-A_seed1\\final.pt",
+ "train_steps": 30000,
+ "split": "val",
+ "every": 1,
+ "results": {
+  "val_all_clips": {
+   "frames": 31013,
+   "visible_joint_instances": 21514,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 21514,
+     "mean": 5.551673412322998,
+     "median": 4.209372520446777
+    },
+    "hands": {
+     "n": 8569,
+     "mean": 4.528153896331787,
+     "median": 3.5224266052246094
+    },
+    "arms": {
+     "n": 3471,
+     "mean": 3.633841037750244,
+     "median": 3.0104188919067383
+    },
+    "legs": {
+     "n": 9441,
+     "mean": 7.1846466064453125,
+     "median": 5.694504737854004
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 5.867918014526367,
+     "median": 4.450629711151123
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 21514,
+     "mean": 4.28592586517334,
+     "median": 1.9760096073150635
+    },
+    "hands": {
+     "n": 8569,
+     "mean": 4.2652740478515625,
+     "median": 2.0411713123321533
+    },
+    "arms": {
+     "n": 3471,
+     "mean": 7.045980453491211,
+     "median": 4.066717147827148
+    },
+    "legs": {
+     "n": 9441,
+     "mean": 3.258049964904785,
+     "median": 1.3923537731170654
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 13.406722068786621,
+     "median": 13.729297637939453
+    }
+   },
+   "depth_error_cm": {
+    "n": 21514,
+    "mean": 3.817382335662842,
+    "median": 2.849146842956543
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 16264,
+    "median_px": 2.5501387119293213,
+    "recall_at_12.8px": 0.9138588293162814,
+    "recall_at_25.6px": 0.9698106246925725
+   },
+   "visibility": {
+    "auc": 0.9987124074863754,
+    "visible": 21514,
+    "not_visible": 660772,
+    "share_visible_with_prob_above_0.5": 0.9200985404852654
+   }
+  },
+  "val_without_dfaust_mosh_shared_ids": {
+   "frames": 30909,
+   "visible_joint_instances": 21418,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 21418,
+     "mean": 5.5546159744262695,
+     "median": 4.213227272033691
+    },
+    "hands": {
+     "n": 8537,
+     "mean": 4.5285820960998535,
+     "median": 3.522252321243286
+    },
+    "arms": {
+     "n": 3452,
+     "mean": 3.636859178543091,
+     "median": 3.0097551345825195
+    },
+    "legs": {
+     "n": 9396,
+     "mean": 7.19031286239624,
+     "median": 5.70096492767334
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 5.867918014526367,
+     "median": 4.450629711151123
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 21418,
+     "mean": 4.286851406097412,
+     "median": 1.9739153385162354
+    },
+    "hands": {
+     "n": 8537,
+     "mean": 4.2656779289245605,
+     "median": 2.040053367614746
+    },
+    "arms": {
+     "n": 3452,
+     "mean": 7.046588897705078,
+     "median": 4.0464935302734375
+    },
+    "legs": {
+     "n": 9396,
+     "mean": 3.2601566314697266,
+     "median": 1.3922537565231323
+    },
+    "trunk_head": {
+     "n": 33,
+     "mean": 13.406722068786621,
+     "median": 13.729297637939453
+    }
+   },
+   "depth_error_cm": {
+    "n": 21418,
+    "mean": 3.8191115856170654,
+    "median": 2.8480231761932373
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 16189,
+    "median_px": 2.5505712032318115,
+    "recall_at_12.8px": 0.9137686083142875,
+    "recall_at_25.6px": 0.9696707640990796
+   },
+   "visibility": {
+    "auc": 0.9987163742456148,
+    "visible": 21418,
+    "not_visible": 658580,
+    "share_visible_with_prob_above_0.5": 0.920067233168363
+   }
+  },
+  "train_frames_for_gap": {
+   "frames": 3000,
+   "visible_joint_instances": 2746,
+   "error_3d_cm": {
+    "all_22": {
+     "n": 2746,
+     "mean": 4.978379726409912,
+     "median": 3.5946714878082275
+    },
+    "hands": {
+     "n": 1044,
+     "mean": 3.743159532546997,
+     "median": 2.8967947959899902
+    },
+    "arms": {
+     "n": 401,
+     "mean": 3.2273693084716797,
+     "median": 2.70979380607605
+    },
+    "legs": {
+     "n": 1292,
+     "mean": 6.532106399536133,
+     "median": 4.709219932556152
+    },
+    "trunk_head": {
+     "n": 9,
+     "mean": 3.2351152896881104,
+     "median": 2.8471744060516357
+    }
+   },
+   "error_2d_px": {
+    "all_22": {
+     "n": 2746,
+     "mean": 3.535621404647827,
+     "median": 1.9641770124435425
+    },
+    "hands": {
+     "n": 1044,
+     "mean": 3.080949068069458,
+     "median": 1.8420376777648926
+    },
+    "arms": {
+     "n": 401,
+     "mean": 5.385468006134033,
+     "median": 3.750250816345215
+    },
+    "legs": {
+     "n": 1292,
+     "mean": 3.23837947845459,
+     "median": 1.637009859085083
+    },
+    "trunk_head": {
+     "n": 9,
+     "mean": 16.527408599853516,
+     "median": 18.52029037475586
+    }
+   },
+   "depth_error_cm": {
+    "n": 2746,
+    "mean": 3.4682188034057617,
+    "median": 2.4673283100128174
+   },
+   "b2_comparable_12_joints": {
+    "visible_instances": 2125,
+    "median_px": 2.3228025436401367,
+    "recall_at_12.8px": 0.944,
+    "recall_at_25.6px": 0.9915294117647059
+   },
+   "visibility": {
+    "auc": 0.9984881702508742,
+    "visible": 2746,
+    "not_visible": 63254,
+    "share_visible_with_prob_above_0.5": 0.9166059723233795
+   }
+  }
+ },
+ "run": "2026-11-23 23:58:04"
+}
